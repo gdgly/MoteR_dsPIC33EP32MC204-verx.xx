@@ -1,0 +1,12 @@
+MoteR SVM Ver1.0 for sheet shutter PCB            初次作成
+                                                  在sheet shutter PCB基础之上使用MoteR电机，在卷帘门上可以正反转，只是没有上下限。
+                                                  
+MoteR SVM Ver1.0 for MoteR PCB                    初次作成        
+                                                  在MoteR PCB基础之上使用MoteR电机，在卷帘门上可以正反转，只是没有上下限。
+                                                  相线转接线的1、2脚要交换，即PCB上的U、V交换
+                                                  
+MoteR SVM Ver1.1                                  在MoteR PCB基础之上使用MoteR电机
+                                                  （1）优化代码，将1500W不需要的代码去掉；  
+                                                  （2）变更HALL预定义，使用相位表{-1,4,2,3,0,5,1,-1}；这样的话相线转接线不变。 
+                                                  
+MoteR SVM Ver1.2                                  继续优化代码                                                                                                                                

@@ -1,0 +1,194 @@
+/******************************************************************************************/
+/*  FILE        :defs_ram.h                                                               */
+/*  DATE        :Mar, 2016                                                                */
+/*  Programmer	:xiang 'R                                                                 */
+/*  DESCRIPTION :                                                                         */
+/******************************************************************************************/
+
+//============================================
+    #define	UINT8		unsigned char
+    #define	INT8		char
+    #define	UINT16		unsigned short int
+    #define	INT16		short int
+    #define	UINT32		unsigned long
+    #define	INT32		long
+    #define     NOP()           asm ("nop")
+ //--------------------------------------------
+
+//#define __Fin8MHz_Fosc20MHz__
+#define __Fin16MHz_Fosc140MHz__
+
+#define __RPI32_AD_SELCET__
+//#define __RPI32_UART_SELCET__
+
+#if defined(__Fin16MHz_Fosc140MHz__)
+            /*
+            Using the Fosc = Fin * (M/(N1*N2)) =140M
+                      Fcy  =	140M/2 = 70MIP
+            */
+
+            //#define CLOSEDLOOP
+            #define FOSC  140000000			// xtal = 16.0Mhz, 140.0Mhz after PLL
+            #define FCY  FOSC/2
+            #define FPWM 40000
+
+            #define MILLISEC FCY/140000		// 1 mSec delay constant
+
+            #define T1PR1 ((FCY/1000)/64)
+
+            /* Based on using the internal Fcy and Timer 3 prescaler of 256
+             * Fcy/256 = 70M/256 = 273437.5 ticks/sec
+             * or, 16406250 ticks = 1RPM
+             * => RPM would be 16406250/T3ticks
+             */
+            #define SPEEDMULT	16406250
+            #define POTMULT 4				// pot to speed ratio
+
+           // Period Calculation
+           // Period = (FCY / PDIV * 60) / (RPM * NO_POLEPAIRS )
+           #define TIMER3_DIV   256
+           #define POLEPAIRS		4		// number of pole pairs
+           #define MAX_RPM         10000
+           #define MIN_RPM         50//10//100
+           #define MIN_PERIOD	((unsigned long)((FCY/TIMER3_DIV)*60)/((unsigned long)MAX_RPM*2*POLEPAIRS))
+           #define MAX_PERIOD	((unsigned long)((FCY/TIMER3_DIV)*60)/((unsigned long)MIN_RPM*2*POLEPAIRS))
+                   /*****MIN_PERIOD=342   (FCY=70MIPS,TIMER3_DIV=256,MAX_RPM=6000,POLEPAIRS=4)*******/
+                   /*****MAX_PERIOD=41015 (FCY=70MIPS,TIMER3_DIV=256,MAX_RPM=50,POLEPAIRS=4)*******/
+
+           /* for speed rpm calculation */
+           #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
+#endif
+
+#if defined(__Fin8MHz_Fosc20MHz__)
+            /*
+            Using the Fosc = Fin * (M/(N1*N2)) =20M
+                      Fcy  =	20M/2 = 10MIP
+            */
+
+            #define CLOSEDLOOP
+            #define FOSC  20000000			// xtal = 8.0Mhz, 20.0Mhz after PLL
+            #define FCY  FOSC/2
+            #define MILLISEC FCY/20000		// 1 mSec delay constant
+            #define FPWM 39000
+
+            #define POLEPAIRS		5		// number of pole pairs
+            #define HALL_INDEX_R	4		// Hall sensor position index
+            #define HALL_INDEX_F	5		// Hall sensor position index
+
+            #define S2	PORTAbits.RA8
+            #define S3	PORTBbits.RB4
+
+            #define T1PR1 ((FCY/1000)/64)
+
+            /* Based on using the internal Fcy and Timer 3 prescaler of 256
+             * Fcy/256 = 10M/256 = 39062.5 ticks/sec
+             * or, 2343750 ticks = 1RPM
+             * => RPM would be 2343750/T3ticks
+             */
+            #define SPEEDMULT	2343750
+            #define OFFSET 8
+            #define POTMULT 4				// pot to speed ratio
+
+            //#define Kps	50					// Kp and Ks terms need to be adjusted
+            //#define Kis	1					// as per the motor and load
+#endif
+
+
+//========================================================================
+    #define In_LOW_LIM_dir                TRISBbits.TRISB9
+    #define In_STOP_dir                   TRISCbits.TRISC7
+    #define In_OPEN_dir                   TRISCbits.TRISC8
+    #define In_CLOSE_dir                  TRISCbits.TRISC9
+    #define In_PHOTO_LED2_dir             TRISAbits.TRISA10
+    #define In_PHOTO_LED1_dir             TRISAbits.TRISA7
+    #define In_SENSOR_dir                 TRISAbits.TRISA1
+    #define In_MSS1_dir                   TRISCbits.TRISC4
+    #define In_MSS2_dir                   TRISCbits.TRISC5
+    #define In_COLUMN_dir                 TRISBbits.TRISB7
+    #define In_SCREEN_dir                 TRISCbits.TRISC0
+    #define In_TEMP_PROTECT_dir           TRISCbits.TRISC3
+
+    #define In_IBUS_dir                   TRISAbits.TRISA0
+    #define In_HALL_U_dir                 TRISBbits.TRISB1
+    #define In_HALL_V_dir                 TRISBbits.TRISB2
+    #define In_HALL_W_dir                 TRISBbits.TRISB3
+    #define In_FLT1_dir                   TRISBbits.TRISB8
+    #define Out_PWM3H_dir                 TRISBbits.TRISB10
+    #define Out_PWM3L_dir                 TRISBbits.TRISB11
+    #define Out_PWM2H_dir                 TRISBbits.TRISB12
+    #define Out_PWM2L_dir                 TRISBbits.TRISB13
+    #define Out_PWM1H_dir                 TRISBbits.TRISB14
+    #define Out_PWM1L_dir                 TRISBbits.TRISB15
+
+    #define Out_ENABLE_BRAKE_dir          TRISAbits.TRISA9
+    #define Out_RELAY_DOWN_dir            TRISBbits.TRISB4
+    #define Out_RELAY_UP_dir              TRISAbits.TRISA8
+    #define Out_RELAY_DOWN_LIM_dir        TRISCbits.TRISC1
+    //#define Out_RELAY_UP_LIM_dir          TRISCbits.TRISC2
+    #define Out_RELAY_UP_LIM_dir          TRISBbits.TRISB6
+    #define Out_LED_PGD_dir               TRISBbits.TRISB5
+    //========================================================
+    #define In_LOW_LIM                    PORTBbits.RB9
+    #define In_STOP                       PORTCbits.RC7
+    #define In_OPEN                       PORTCbits.RC8
+    #define In_CLOSE                      PORTCbits.RC9
+    #define In_PHOTO_LED2                 PORTAbits.RA10
+    #define In_PHOTO_LED1                 PORTAbits.RA7
+    #define In_SENSOR                     PORTAbits.RA1
+    #define In_MSS1                       PORTCbits.RC4
+    #define In_MSS2                       PORTCbits.RC5
+    #define In_COLUMN                     PORTBbits.RB7
+    #define In_SCREEN                     PORTCbits.RC0
+    #define In_TEMP_PROTECT               PORTCbits.RC3
+    #define In_HALL_U                     PORTBbits.RB1
+    #define In_HALL_V                     PORTBbits.RB2
+    #define In_HALL_W                     PORTBbits.RB3
+
+    #define Out_ENABLE_BRAKE              LATAbits.LATA9
+    #define Out_RELAY_DOWN                LATBbits.LATB4
+    #define Out_RELAY_UP                  LATAbits.LATA8
+    #define Out_RELAY_DOWN_LIM            LATCbits.LATC1
+    //#define Out_RELAY_UP_LIM              LATCbits.LATC2
+    #define Out_RELAY_UP_LIM              LATBbits.LATB6
+    #define Out_LED_PGD                   LATBbits.LATB5
+//========================================================================
+
+#define lockApply  (Out_ENABLE_BRAKE = 0 )
+#define lockRelease (Out_ENABLE_BRAKE = 1)
+
+
+struct MotorFlags
+{
+unsigned RunMotor 	:1;
+unsigned Direction	:1;
+unsigned StartStop      :1;
+unsigned unused		:13;
+};
+
+
+extern unsigned int StateTableFwdPwm1[];
+extern unsigned int StateTableFwdPwm2[];
+extern unsigned int StateTableFwdPwm3[];
+extern unsigned int StateTableRevPwm1[];
+extern unsigned int StateTableRevPwm2[];
+extern unsigned int StateTableRevPwm3[];
+
+extern struct MotorFlags Flags;
+
+extern unsigned int HallValue;
+extern unsigned int HallValue_Last;
+extern unsigned int timer3value;
+extern unsigned int timer3value_Last;
+extern unsigned long timer3avg;
+extern unsigned char FLAG_read_HALL_time;
+extern int ActualSpeed;
+
+extern unsigned int AD_SET_SPEED;
+extern unsigned int refSpeed;
+
+extern unsigned int IBUS_value;
+extern unsigned int IBUS_value_Last;
+extern unsigned char FLAG_read_IBUS;
+extern unsigned int  sum_IBUS_value;
+extern unsigned int  avg_IBUS_value;
+extern unsigned char IBUS_value_count;

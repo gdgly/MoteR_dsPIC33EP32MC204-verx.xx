@@ -1,0 +1,43 @@
+Bunka STM8L151C6 MoteR Source Ver1.0              初次作成
+                                                  在Bunka STM8L151G6 RX Source Ver1.18 G4U6基础之上修改而来
+ 
+MoteR_dsPIC33EP32MC204 ver1.1                     初次作成，hardware：（PCB 3.4.3）
+                                                  上电开环3000prm OK
+                                                  
+MoteR_dsPIC33EP32MC204 ver1.2                     将defined(__Fin8MHz_Fosc20MHz__)相关的code取消掉
+
+MoteR_dsPIC33EP32MC204 ver2.0                     hardware：（CY-1601 OP-0401）
+                                                  PCB重新垒板，部分I/O有变动       
+                                                  
+Bunka STM8L151C6 MoteR Source Ver2.0              hardware：（CY-1601 OP-0401）
+                                                  PCB重新垒板，部分I/O有变动  
+                      Ver2.0    马达和无线板都可以连接动作，开环    
+ 
+                      
+MoteR_dsPIC33EP32MC204 ver2.1                     马达和无线板都可以连接动作，闭环，可以到0.4N.m
+
+MoteR_dsPIC33EP32MC204 ver2.2                     修改马达开始启动的soft 
+
+MoteR_dsPIC33EP32MC204 ver2.3                     继续优化马达开始启动的soft，与ver2.1、2.2算法都不一样 
+                     
+Bunka STM8L151C6 MoteR Source Ver2.1              与Ver2.0没有变         
+
+Bunka STM8L151C6 MoteR Source Ver2.2              追加人机操作，以及数据保存  
+
+MoteR_dsPIC33EP32MC204 ver2.4                     （1）追加DSW switch,即左右随意切换   命令0x0103
+                                                  （2）追加P25、P26参数到电机          命令0x0201
+                                                  （3）追加在设置参数时，电机必须停止  命令0x0102
+                                                  
+Bunka STM8L151C6 MoteR Source Ver2.3              （1）追加DSW switch,即左右随意切换   命令0x0103
+                                                  （2）追加P25、P26参数到电机          命令0x0201
+                                                  （3）追加在设置参数时，电机必须停止  命令0x0102       
+
+
+Bunka STM8L151C6 MoteR Source Ver2.4               追加原点、上下限设置
+
+MoteR_dsPIC33EP32MC204 ver2.5.2                    追加原点、上下限设置，PI采用的是Ver2.2   
+
+MoteR_dsPIC33EP32MC204 ver2.6                      追加P27、P29、P30 、P31 、P32 到电机参数里
+
+Bunka STM8L151C6 MoteR Source Ver2.5               修改P29、P30最小值和默认值       
+                                                   修改P31、P32最小值、最大值和默认值     
