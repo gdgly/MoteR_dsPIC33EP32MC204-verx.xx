@@ -51,10 +51,12 @@ VOID initGPIO(VOID);
     #define In_ADC_IBUS_dir               TRISAbits.TRISA1
     #define In_ADC_VBUS_dir               TRISCbits.TRISC0
     #define Out_LED_PGD_dir               TRISBbits.TRISB5
+    #define Out_DBR_CTRL_dir              TRISAbits.TRISA7
                     //=======================================
     #define In_STOP                       PORTAbits.RA8
     #define In_OPEN                       PORTCbits.RC2
     #define In_CLOSE                      PORTCbits.RC1
     #define Out_LED_PGD                   LATBbits.LATB5
+    #define Out_DBR_CTRL                  LATAbits.LATA7
 
 #endif /* GPIO_H */

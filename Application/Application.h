@@ -26,6 +26,40 @@
 #define APPLICATION_H
 #include "./Common/Typedefs/Typedefs.h"
 
+struct MotorFlags
+{
+unsigned StartStop      :1;
+unsigned flag_open      :1;
+unsigned flag_close     :1;
+unsigned flag_stop      :1;
+unsigned flag_CW        :1;
+unsigned flag_CCW       :1;
+unsigned flag_origin    :1;
+unsigned flag_power_on    :1;
+unsigned flag_up_limit     :1;
+unsigned flag_down_limit     :1;
+unsigned flag_EEPROM_LOAD_OK     :1;
+unsigned flag_PWMFLTorIBUS    :1;
+unsigned flag_Origin_mode_down   :1;
+unsigned unused		:3;
+};
+
+extern struct MotorFlags M_Flags;
+
+void BOOT_DELAY(void );
+
+
+
+
+
+
+
+
+
+
+
+
+
 EXTERN BOOL OvercurrentfaultTrigrd;
 
 /* This function implements the task loop for the Drive Application */ 

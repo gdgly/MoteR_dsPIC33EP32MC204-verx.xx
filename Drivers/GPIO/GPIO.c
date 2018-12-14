@@ -90,7 +90,10 @@ Added for motor control board hardware version 2 on 30 Dec 2014
         HALLC_dir = 1;
         RPINR8 = 0;
         RPINR8bits.IC3R = 33;//35;/*  Assign IC3(HALLC) to RP35 */
-    
+    /*UART configuration*/
+        RPOR6bits.RP54R=1;         //Set RP54 RC6-->U1TX
+        RPINR18bits.U1RXR=32;         //Set U1RX-->RPI32 RB0    
+        
         In_STOP_dir=1;
         In_OPEN_dir=1;
         In_CLOSE_dir=1;
@@ -107,6 +110,9 @@ Added for motor control board hardware version 2 on 30 Dec 2014
 	    
 	__builtin_write_OSCCONL(OSCCON | (1<<6)); 	 /* Set bit 6 */
 
+        Out_DBR_CTRL_dir=0;
+        Out_DBR_CTRL=0;    
         Out_LED_PGD_dir=0;
         Out_LED_PGD=0;    
+        
 }

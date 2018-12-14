@@ -103,7 +103,6 @@ VOID startMotor(VOID)
 #else
     flags.currentControl = 0;
 #endif
-    MotorRunCount = 0;
     if(flags.RunDirection == CCW)
     {
         requiredDirection = CCW;
@@ -184,8 +183,7 @@ VOID stopMotor(VOID)
 #endif
     AD1CON1bits.ADON = 0;   //turn OFF ADC module 
 	flags.motorRunning = 0;	/* Indicate that the motor has been stopped */
-    MotorRunCount = 0;
-    MotorRunInCycle = 0;
+    MotorDecActive = 0;
 }
 
 

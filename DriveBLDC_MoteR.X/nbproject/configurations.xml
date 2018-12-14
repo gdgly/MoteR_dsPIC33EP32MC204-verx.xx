@@ -7,6 +7,7 @@
       <logicalFolder name="Application" displayName="Application" projectFiles="true">
         <itemPath>../Application/RampGenerator/RampGenerator.h</itemPath>
         <itemPath>../Application/Application.h</itemPath>
+        <itemPath>../Application/APP_uart.h</itemPath>
       </logicalFolder>
       <logicalFolder name="Common" displayName="Common" projectFiles="true">
         <itemPath>../Common/Delay/Delay.h</itemPath>
@@ -39,6 +40,7 @@
       <logicalFolder name="Application" displayName="Application" projectFiles="true">
         <itemPath>../Application/Application.c</itemPath>
         <itemPath>../Application/RampGenerator/RampGenerator.c</itemPath>
+        <itemPath>../Application/APP_uart.c</itemPath>
       </logicalFolder>
       <logicalFolder name="Common" displayName="Common" projectFiles="true">
         <itemPath>../Common/Delay/Delay.c</itemPath>
@@ -101,6 +103,8 @@
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>

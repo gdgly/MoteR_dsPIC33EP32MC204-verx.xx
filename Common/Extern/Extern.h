@@ -43,7 +43,7 @@ EXTERN SHORT iTotalOffset;
 EXTERN DWORD iTotalInstFilter;
 EXTERN WORD currentAverage;
 EXTERN WORD measurediTotal;
-EXTERN SHORT hallCounts;
+EXTERN DWORD hallCounts;
 EXTERN SHORT refiTotalCurrent;
 EXTERN DWORD iTotalADCCntAcc;
 EXTERN WORD iTotalADCCntAccSmpls;
@@ -63,12 +63,15 @@ extern WORD systemTick;
 
 
 EXTERN WORD UBUS;
-EXTERN WORD MotorRunCount;
+EXTERN BOOL FLAG_read_UBUS;
 EXTERN WORD MotorCycleCount;
-EXTERN BYTE MotorRunInCycle;
 EXTERN BYTE MotorDecActive;
 EXTERN UINT8 CMDStatus;
 EXTERN WORD MotorStopCount;
 EXTERN UINT16 PhaseAdvance;
 
 EXTERN BOOL Motor_ERR_overcurrent_or_igbtOverTemp;
+
+
+//*********************************this is new add********
+extern unsigned int SET_SPEED;

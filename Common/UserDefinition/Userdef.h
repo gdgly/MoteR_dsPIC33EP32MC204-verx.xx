@@ -60,18 +60,7 @@
 #define CW	0		/* Counter Clock Wise direction */
 #define CCW	1		/* Clock Wise direction */
 
-#define HALL_INC_DIR     CCW
 
-/* ALGORITHM SPECIFICS */
-//#if (MOTOR_TYPE == PICOMO_MOTOR)
-//    #define NO_POLEPAIRS 6
-//#elif (MOTOR_TYPE == NEW_MOTOR_1)
-//    #define NO_POLEPAIRS 2
-//#elif (MOTOR_TYPE == NEW_MOTOR_2)
-//    #define NO_POLEPAIRS 3
-//#else
-//    #error Motor type not defined
-//#endif
 #define NO_POLEPAIRS_750W  4
 
 #define MAX_RPM         8000//4800

@@ -73,7 +73,7 @@ VOID initADC2(VOID)
 {
 	AD2CON1bits.FORM = 0;//3; /* Signed Fractional */	
 	//	Use Timer 5 as trigger source for ADC2 conversion
-	AD2CON1bits.SSRC = 4;//2;//0;//3; /* Timer5 compare ends sampling and starts conversion */
+	AD2CON1bits.SSRC = 7;//4;//2;//0;//3; /* Timer5 compare ends sampling and starts conversion */
 	AD2CON1bits.SSRCG = 0;//1;//0; /* Sample Trigger Source Group bit */	
     AD2CON1bits.SIMSAM = 1;
 	AD2CON1bits.ASAM = 1; /* Sampling begins immediately after last conversion */	
@@ -85,7 +85,7 @@ VOID initADC2(VOID)
 	/*Select alternet input selection*/
 	//AD1CON2bits.ALTS = 1;
 	/* Set Samples and bit conversion time */
-    AD2CON3 = 0x4;//0x0204;
+    AD2CON3 = 0x032F;//0x4;//0x0204;
 	/* Disable DMA */    
 	AD2CON4 = 0x0000;	
 	/* CH1 positive input is CMP0, CH2 positive input is CMP1, CH3 positive input is CMP2 */
@@ -101,7 +101,8 @@ VOID initADC2(VOID)
 	/* Disable ADC interrupts, disable this interrupt if the DMA is enabled */	  
 	IEC1bits.AD2IE = 1;	
 	/* Turn off ADC module */
-	AD2CON1bits.ADON = 0;      
-    IPC5bits.AD2IP = 4;
+	AD2CON1bits.ADON = 1;      
+    IPC5bits.AD2IP = 1;
+         
 }
 

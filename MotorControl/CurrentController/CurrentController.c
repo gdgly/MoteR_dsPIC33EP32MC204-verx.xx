@@ -29,6 +29,7 @@
 #include "./Common/UserDefinition/Userdef.h"
 #include "./Common/Extern/Extern.h"
 #include "./Application/RampGenerator/RampGenerator.h"
+#include "./Drivers/GPIO/GPIO.h"
 
 #define CURRENT_FILTER_CONST 70//100//500//1000 
 
@@ -48,6 +49,10 @@
 #define ADC_CNT_TO_CURR_FACTOR      56//28500/512 = 56.66 = 56.66//MAX_TOTAL_CURRENT/512
 #define ADC_CNT_AVAILABLE           1024//512
 #define ADC_MEASURABLE_CURRENT_VALUE    8000//30000 //30.5A ie 3.3V = 30.5A
+
+#define MAXIMUM_WORKING_VOLTAGE_ac   178  //??VAC
+#define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*4.414  //??VDC
+#define MAXIMUM_WORKING_VOLTAGE      774  //(MAXIMUM_WORKING_VOLTAGE_DC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
 
 currCntrlFlg currControlFlag;
 
@@ -87,6 +92,7 @@ SHORT diffiTotal;
 WORD phaseValue;
 
 WORD UBUS = 0;
+BOOL FLAG_read_UBUS;
 
 #define NO_LOAD_CURRENT_750W 300 //300 mA
 
@@ -134,16 +140,21 @@ void __attribute__((interrupt, no_auto_psv)) _AD1Interrupt (void)
 //	Added for implementation of power fail functionality on DC Bus for version 4 board- RN- NOV 2015
 void __attribute__((interrupt, no_auto_psv)) _AD2Interrupt (void)
 {
-	float lfDcBusVoltage = 0;
-	//	Timer variables
+static unsigned int VBUS_value_Last;
 	
     IFS1bits.AD2IF = 0;
 	//	Capture DC Bus volatage
-	lfDcBusVoltage = ADC2BUF0 / 2.25;	//	1V = 2.25 counts
     
-    UBUS = (WORD) lfDcBusVoltage * 100;
+    VBUS_value_Last=UBUS;
+    UBUS = ADC2BUF0;
+    
+    if((UBUS>MAXIMUM_WORKING_VOLTAGE)&&(VBUS_value_Last>MAXIMUM_WORKING_VOLTAGE))
+    {
+        Out_DBR_CTRL=1;
+    }
+    else Out_DBR_CTRL=0; 
 	
-	
+	FLAG_read_UBUS=1;
 }
 
 VOID executePowerFailRoutine(VOID)

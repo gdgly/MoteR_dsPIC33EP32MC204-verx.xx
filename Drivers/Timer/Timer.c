@@ -103,10 +103,10 @@ VOID initTMR9(VOID)
 {
 	T9CON = 0x0030;	 /* internal Tcy/256 clock */
 	TMR9 = 0;
-	PR9 = 27340;				/* 100 ms timer */
+	PR9 = 2734;				/* 10 ms timer */
 	IFS3bits.T9IF = 0;  /* Clear timer 8 flag */
 	IEC3bits.T9IE = 1;	/* Enable interrupts for Timer 8 */
-    T9CONbits.TON = 0; //stop timer
+    T9CONbits.TON = 1; //stop timer
     IPC13bits.T9IP = 1;
 }
 

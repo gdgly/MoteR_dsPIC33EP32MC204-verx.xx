@@ -29,6 +29,7 @@
 #include "./Common/Delay/Delay.h"
 #include "./Application/RampGenerator/RampGenerator.h"
 #include "./Drivers/GPIO/GPIO.h"
+#include "./Application/Application.h"
 
 //	Macro to enable feature of motor cable fault - Dec 2015
 //#define ENABLE_MOTOR_CABLE_FAULT
@@ -66,10 +67,12 @@
                             /* consider stalled and it's stopped    */
 
 /* PI parameters */
-#define P_SPEED_PI_CW_750W 10000//6000//7000//10000//13106//20000//15000//5000
-#define I_SPEED_PI_CW_750W 700//1500//1800//2000//9830//10000//8000//4000
-#define P_SPEED_PI_CCW_750W 10000//22000
-#define I_SPEED_PI_CCW_750W 700//100
+#define P_SPEED_PI_MoteR 10000
+#define I_SPEED_PI_MoteR 700
+//#define P_SPEED_PI_CW_750W 10000//6000//7000//10000//13106//20000//15000//5000
+//#define I_SPEED_PI_CW_750W 700//1500//1800//2000//9830//10000//8000//4000
+//#define P_SPEED_PI_CCW_750W 10000//22000
+//#define I_SPEED_PI_CCW_750W 700//100
 
 #define C_SPEED_PI 0x7FFF 
 #define MAX_SPEED_PI    31128   //95% of max value ie 32767
@@ -81,9 +84,6 @@ SHORT phaseOffsetCW =PHASE_OFFSET_CW_750W;
 SHORT phaseOffsetCCW =PHASE_OFFSET_CCW_750W;
 
 
-#define SET_TARGET_SPEED_750W_CW    1000//1800//1900 //Required final speed
-#define SET_TARGET_SPEED_750W_CCW   1000//1800
-#define SPEED_INC_STP_750W       100
 #define SPD_INC_INTERVAL    100
 
 #define SPD_CAL_FOR_PHASEADVANCE    (int)((float)((((float)(measuredSpeed / 60) * NO_POLEPAIRS_750W) * 360) / 1000))
@@ -148,7 +148,7 @@ DWORD periodStateVar;
 //SHORT speedError;
 
 //Observed hall counts for one hall sensor (IC2) is 155, 148, 151
-SHORT hallCounts = 0;
+DWORD hallCounts = 0;
 
 /* Variable used by inbuilt division function */
 UINT tmpQu = 0;
@@ -159,7 +159,6 @@ DWORD totalTimePeriod;
 
 SHORT phaseInc;
 
-WORD MotorRunCount = 0;
 WORD MotorCycleCount = 0;
 BYTE MotorDecActive = 0;
 
@@ -199,49 +198,17 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
             cnt1000ms = 0;
             if(MotorDecActive == 0)
             {
-                    if(requiredDirection == CW)
-                    {
-                        if(refSpeed < SET_TARGET_SPEED_750W_CW)
-                        {            
-                            refSpeed += SPEED_INC_STP_750W;
-                            if(refSpeed >= SET_TARGET_SPEED_750W_CW)
-                            {
-                                refSpeed = SET_TARGET_SPEED_750W_CW;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(refSpeed < SET_TARGET_SPEED_750W_CCW)
-                        {            
-                            refSpeed += SPEED_INC_STP_750W;
-                            if(refSpeed >= SET_TARGET_SPEED_750W_CCW)
-                            {
-                                refSpeed = SET_TARGET_SPEED_750W_CCW;
-                            }
-                        }
-                    }
+                        if(refSpeed < SET_SPEED) refSpeed += 100;
+                        if(refSpeed >= SET_SPEED)refSpeed = SET_SPEED;
             }
             else
             {
-                if(MotorRunInCycle==1)
-                {
-                    if(refSpeed > 100)
-                    {            
-                        refSpeed -= 100;
-                        if(refSpeed <= 100)
-                            refSpeed = 20;
-                    }                    
-                }
-                else 
-                {
                     if(refSpeed > 200)
                     {            
                         refSpeed -= 100;
                         if(refSpeed <= 200)
                             refSpeed = 200;
                     }
-                }
             }
         }         
 	measureActualSpeed();
@@ -305,23 +272,15 @@ void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt (void)
             //if ((currentSector == SECTOR_ZERO) || (currentSector == SECTOR_THREE))       
             if ((currentSector == sectorTable[2]) || (currentSector == sectorTable[5])) 
             {
-                 #if (HALL_INC_DIR == CW)
-                    currentDirection = CCW;
-                    hallCounts++;
-                #else
                     currentDirection = CW;
-                    hallCounts--;
-                #endif   
+                    if(M_Flags.flag_CW==0)hallCounts++;
+                    else hallCounts--;  
             }
             else
             {
-                #if (HALL_INC_DIR == CW)
-                    currentDirection = CW;
-                    hallCounts--;
-                #else
                     currentDirection = CCW;
-                    hallCounts++;
-                #endif
+                    if(M_Flags.flag_CW==0)hallCounts--;
+                    else hallCounts++;
             }
             calculatePhaseValue(currentSector);
             lastSector = currentSector; /* Update last sector */
@@ -370,23 +329,15 @@ void __attribute__((interrupt, no_auto_psv)) _IC2Interrupt (void)
             //if ((currentSector == SECTOR_FIVE) || (currentSector == SECTOR_TWO))    
             if ((currentSector == sectorTable[3]) || (currentSector == sectorTable[4])) 
             {
-                 #if (HALL_INC_DIR == CW)
-                    currentDirection = CCW;
-                    hallCounts++;
-                #else
                     currentDirection = CW;
-                    hallCounts--;
-                #endif   
+                    if(M_Flags.flag_CW==0)hallCounts++;
+                    else hallCounts--;  
             }
             else
             {
-                #if (HALL_INC_DIR == CW)
-                    currentDirection = CW;
-                    hallCounts--;
-                #else
                     currentDirection = CCW;
-                    hallCounts++;
-                #endif
+                    if(M_Flags.flag_CW==0)hallCounts--;
+                    else hallCounts++;
             }
             calculatePhaseValue(currentSector);
             lastSector = currentSector; /* Update last sector */
@@ -425,23 +376,15 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
             //if ((currentSector == SECTOR_ONE) || (currentSector == SECTOR_FOUR))    
             if ((currentSector == sectorTable[1]) || (currentSector == sectorTable[6]))
             {
-                 #if (HALL_INC_DIR == CW)
-                    currentDirection = CCW;
-                    hallCounts++;
-                #else
                     currentDirection = CW;
-                    hallCounts--;
-                #endif   
+                    if(M_Flags.flag_CW==0)hallCounts++;
+                    else hallCounts--;    
             }
             else
             {
-                #if (HALL_INC_DIR == CW)
-                    currentDirection = CW;
-                    hallCounts--;
-                #else
                     currentDirection = CCW;
-                    hallCounts++;
-                #endif
+                    if(M_Flags.flag_CW==0)hallCounts--;
+                    else hallCounts++;
             }
             calculatePhaseValue(currentSector);
             lastSector = currentSector; /* Update last sector */
@@ -621,16 +564,18 @@ VOID intitSpeedController(VOID)
 	sector = sectorTable[hallValue];	//Get sector from table
     lastSector = sector;
     calculatePhaseValue(sector);
+    
+    initPiNew(&speedPIparms,P_SPEED_PI_MoteR,I_SPEED_PI_MoteR,C_SPEED_PI,5000,-5000,0);
 
-        if(requiredDirection == CW)
-        {
-//            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,currentLimitClamp,-(currentLimitClamp),0);
-            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,5000,-5000,0);
-        }
-        else
-        {
-            initPiNew(&speedPIparms,P_SPEED_PI_CCW_750W,I_SPEED_PI_CCW_750W,C_SPEED_PI,5000,-5000,0);
-        }
+//        if(requiredDirection == CW)
+//        {
+////            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,currentLimitClamp,-(currentLimitClamp),0);
+//            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,5000,-5000,0);
+//        }
+//        else
+//        {
+//            initPiNew(&speedPIparms,P_SPEED_PI_CCW_750W,I_SPEED_PI_CCW_750W,C_SPEED_PI,5000,-5000,0);
+//        }
 
 }
 

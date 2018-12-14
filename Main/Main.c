@@ -32,6 +32,7 @@
 #include "./Drivers/GPIO/GPIO.h"
 #include "./Application/RampGenerator/RampGenerator.h"
 #include "./Application/Application.h"
+#include "./Application/APP_uart.h"
 #include "./Common/Typedefs/Typedefs.h"
 #include "./MotorControl/CurrentController/CurrentController.h"
 #include "./Common/Delay/Delay.h"
@@ -84,11 +85,10 @@ INT main(VOID)
 	CORCONbits.SATA = 0;
     CORCONbits.IF = 0;
     //Add powerup delay
-    delayMs(250);
+    delayMs(50);
 	ClrWdt();   // clear the WDT to inhibit the device reset
     
-    initGPIO(); /* Initialize all the I/O's required in application */
-    
+    initGPIO(); /* Initialize all the I/O's required in application */   
 	initADC();		/* Initialize ADC to be signed fractional */
 	//Added for ADC2- RN- NOV2015
     initADC2();		/* Initialize ADC to be signed fractional */
@@ -99,7 +99,7 @@ INT main(VOID)
 	ClrWdt();   // clear the WDT to inhibit the device reset
 	initMCPWM();
     initTMR9();
-    
+    InitUART1(); 
     measureADCOffset();
 	ClrWdt();   // clear the WDT to inhibit the device reset
 
@@ -111,12 +111,13 @@ INT main(VOID)
 	FCLCON1 = 0x0004;
 	FCLCON2 = 0x0004;
 	FCLCON3 = 0x0004;
-	
-	AD2CON1bits.ADON = 1;
+    
+    BOOT_DELAY();
 	for(;;)
 	{
         ClrWdt();   // clear the WDT to inhibit the device reset
-        application();		
+        application();	
+        UART_Handler();
     }
     return 0; /* Return without error */
 }
