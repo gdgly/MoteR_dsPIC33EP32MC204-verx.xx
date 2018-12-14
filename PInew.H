@@ -48,6 +48,7 @@ extern int Uart_KDL_Ibus_PI;
 void PID_init(void);
 #else
 extern  PIDCTRL32 PI_Speed;
+extern  PIDCTRL32 PI_DCInjection;
    
 extern int Uart_PI_Speed_P;
 extern int Uart_PI_Speed_I;
@@ -55,7 +56,10 @@ extern int Uart_PI_Speed_D;
 extern int Uart_PI_DCInjection_P;
 extern int Uart_PI_DCInjection_I;
 extern int Uart_PI_DCInjection_D;
+extern int Uart_PI_DCInjection_MAX;
+extern int Uart_PI_DCInjection_MIN;
   void Speed_PID_init(void);  
+  void DCInjection_PID_init(void);
 #endif
 
 void PICal(PIDCTRL32 *v);

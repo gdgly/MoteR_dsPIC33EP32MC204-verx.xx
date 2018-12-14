@@ -37,7 +37,7 @@ unsigned int Read_Hall(void)
 ********************************************************************/
 void Motor_Change_Phase(void)
 {
-    if(Flag_DCInjection==0)
+    if(Flag_DCInjection!=1)
     {
         if (Flags.Direction)
         {

@@ -167,15 +167,18 @@ void PID_init(void)
 
 
    PIDCTRL32 PI_Speed;
+   PIDCTRL32 PI_DCInjection;
    
 int Uart_PI_Speed_P=0;
 int Uart_PI_Speed_I=0;
 int Uart_PI_Speed_D=0;
-int Uart_PI_DCInjection_P=0;
-int Uart_PI_DCInjection_I=0;
-int Uart_PI_DCInjection_D=0;
+int Uart_PI_DCInjection_P=900;
+int Uart_PI_DCInjection_I=300;
+int Uart_PI_DCInjection_D=100;
+int Uart_PI_DCInjection_MAX=1250;
+int Uart_PI_DCInjection_MIN=230;
 /*********************************************************************************************************
-** 函数名称: void PIInit(void)
+** 函数名称: void Speed_PID_init(void)
 ** 功能描述:
 **
 ** 作　     者:  ChenPX
@@ -201,9 +204,22 @@ void Speed_PID_init(void)
 	PI_Speed.Kc  = Uart_PI_Speed_D;    
 	
 	PI_Speed.OutMax = PWM_DutyCycle_MAX;//1200;
-	PI_Speed.OutMin = 0;//-PWM_DutyCycle_MAX;//0;
+	PI_Speed.OutMin = 0;//-PWM_DutyCycle_MAX;
 } 
 
+void DCInjection_PID_init(void)
+{  
+	PIRESet(&PI_DCInjection);
+        //Uart_PI_DCInjection_P=0;
+        //Uart_PI_DCInjection_I=0;
+        //Uart_PI_DCInjection_D=0;      
+	PI_DCInjection.Kp  = Uart_PI_DCInjection_P;
+	PI_DCInjection.Kix = Uart_PI_DCInjection_I;
+	PI_DCInjection.Kc  = Uart_PI_DCInjection_D;    
+	
+	PI_DCInjection.OutMax = PWM_DutyCycle_MAX;//Uart_PI_DCInjection_MAX;//PWM_DutyCycle_MAX*0.3;
+	PI_DCInjection.OutMin = 0;//Uart_PI_DCInjection_MIN;//PWM_DutyCycle_MAX*0.1;
+}
 #endif
 /*********************************************************************************************************
 ** 函数名称: static void PIRESet(PIDCTRL32 *v)

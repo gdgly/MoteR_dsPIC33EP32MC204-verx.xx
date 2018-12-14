@@ -180,12 +180,19 @@ void UART_Handler(void)
                         //if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
                         break;
              case 0xEE01:     //test PI
-                        Uart_PI_Speed_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
+                       /* Uart_PI_Speed_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
                         Uart_PI_Speed_I=UART1_DATA[11]+(UART1_DATA[10]<<8);
                         Uart_PI_Speed_D=UART1_DATA[13]+(UART1_DATA[12]<<8);
                         Uart_PI_DCInjection_P=UART1_DATA[15]+(UART1_DATA[14]<<8);
                         Uart_PI_DCInjection_I=UART1_DATA[17]+(UART1_DATA[16]<<8);
-                        Uart_PI_DCInjection_D=UART1_DATA[19]+(UART1_DATA[18]<<8);                       
+                        Uart_PI_DCInjection_D=UART1_DATA[19]+(UART1_DATA[18]<<8);   */   
+
+                        Uart_PI_DCInjection_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
+                        Uart_PI_DCInjection_I=UART1_DATA[11]+(UART1_DATA[10]<<8);
+                        Uart_PI_DCInjection_D=UART1_DATA[13]+(UART1_DATA[12]<<8);
+                        Uart_PI_DCInjection_MAX=UART1_DATA[15]+(UART1_DATA[14]<<8);
+                        Uart_PI_DCInjection_MIN=UART1_DATA[17]+(UART1_DATA[16]<<8);
+                        //=UART1_DATA[19]+(UART1_DATA[18]<<8);                
                         break;
               default:
                         break;
@@ -233,6 +240,11 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
+        DATA_TEST=SPEED_PDC;
+        char_data=DATA_TEST>>8;
+        Send_char(char_data);
+        char_data=DATA_TEST%256;
+        Send_char(char_data);        
         DATA_TEST=SPEED_PDC_out;
         char_data=DATA_TEST>>8;
         Send_char(char_data);
