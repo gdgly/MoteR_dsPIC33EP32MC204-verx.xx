@@ -79,7 +79,7 @@
            #define SET_IBUS_sample_R  30   //µ¥Î»m¦¸
            #define SET_IBUS_gain   6
            #define SET_IBUS_Vpp_AD   1010 //((1650+SET_IBUS_Vpp_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
-           #define SET_IBUS_Vavg_AD   750//850 //((1650+SET_IBUS_Vavg_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
+           #define SET_IBUS_Vavg_AD   850//750//850 //((1650+SET_IBUS_Vavg_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
 #endif
 
 
