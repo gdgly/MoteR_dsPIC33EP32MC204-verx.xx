@@ -112,8 +112,8 @@ void RunMotor(void)
 	IEC5bits.PWM1IE = 1;	// Enable PWM interrupts
 
         Flags.RunMotor = 1;		// set flag
-        refSpeed=400;                  //给定启动转速
-        SPEED_PDC=100;                 //给定启动PWM占空比5%
+        refSpeed=600;                  //给定启动转速
+        SPEED_PDC=150;                 //给定启动PWM占空比5%
 
         flag_open_loop_time=0;
         flag_open_loop=0;
@@ -346,11 +346,13 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             DelayNmSec(20);
             lockApply;
         }
-        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
+        //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
+        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
             if(TIME_down_limit==0){
                 TIME_down_limit=100;
                 SET_SPEED=SET_SPEED-200;
-                if(SET_SPEED<500)SET_SPEED=500;
+                //if(SET_SPEED<500)SET_SPEED=500;
+                if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
             }
        }
 
@@ -368,11 +370,13 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             DelayNmSec(20);
             lockApply;
         }
-        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
+        //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
+        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
             if(TIME_up_limit==0){
                 TIME_up_limit=100;
                 SET_SPEED=SET_SPEED-200;
-                if(SET_SPEED<500)SET_SPEED=500;
+                //if(SET_SPEED<500)SET_SPEED=500;
+                if(SET_SPEED<Motor_MODE_B_data[29]*100)SET_SPEED=Motor_MODE_B_data[29]*100;
             }
         }
     }

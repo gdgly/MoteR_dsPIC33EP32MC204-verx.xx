@@ -260,11 +260,11 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     if(TIME_up_limit)TIME_up_limit--;
     if(TIME_down_limit)TIME_down_limit--;
 
-    if(++cnt100ms >= 200)
+    if(((++cnt100ms >= Motor_MODE_B_data[27]*10)&&(ActualSpeed<800))||(ActualSpeed>=800))
     {
         cnt100ms = 0;
         Out_LED_PGD=!Out_LED_PGD;
-    }
+    
 
        if(SET_SPEED >= 200)
         {
@@ -282,7 +282,8 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                 refSpeed -= 200;
             }
         }
-
+ }
+    
     Motor_SPEED_Compute();
 
 #ifndef CLOSEDLOOP
@@ -293,7 +294,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 #endif
 #ifdef CLOSEDLOOP
          if(flag_open_loop==0)
-            SPEED_PDC=refSpeed/5;   //5
+            SPEED_PDC=refSpeed/3;   //5
         else
         {
             speed_PIparms.qInRef = SET_SPEED;
