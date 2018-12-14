@@ -28,6 +28,7 @@
 #include "./Common/Extern/Extern.h"
 #include "./Common/Delay/Delay.h"
 #include "./Application/RampGenerator/RampGenerator.h"
+#include "./Drivers/GPIO/GPIO.h"
 
 //	Macro to enable feature of motor cable fault - Dec 2015
 //#define ENABLE_MOTOR_CABLE_FAULT
@@ -322,12 +323,12 @@ SHORT getCurrentSectorNo(VOID)
     if(PreMotorType == MOTOR_750W)
     {
         sectorTable[0] = INVALID;
-        sectorTable[1] = 2;//SECTOR_ONE;
-        sectorTable[2] = 4;//SECTOR_THREE;
-        sectorTable[3] = 3;//SECTOR_TWO;
-        sectorTable[4] = 0;//SECTOR_FIVE;
-        sectorTable[5] = 1;//SECTOR_ZERO;
-        sectorTable[6] = 5;//SECTOR_FOUR;
+        sectorTable[1] = 4;//2;//SECTOR_ONE;
+        sectorTable[2] = 2;//4;//SECTOR_THREE;
+        sectorTable[3] = 3;//3;//SECTOR_TWO;
+        sectorTable[4] = 0;//0;//SECTOR_FIVE;
+        sectorTable[5] = 5;//1;//SECTOR_ZERO;
+        sectorTable[6] = 1;//5;//SECTOR_FOUR;
         sectorTable[7] = INVALID;
         //sectorTable[8] = {INVALID,SECTOR_ONE,SECTOR_THREE,SECTOR_TWO,SECTOR_FIVE,SECTOR_ZERO,SECTOR_FOUR,INVALID};
     }
@@ -460,7 +461,7 @@ void __attribute__((interrupt, no_auto_psv)) _IC2Interrupt (void)
     IFS0bits.IC2IF = 0;
     
     currentSector = getCurrentSectorNo();
-    
+     
     /* This MUST be done for getting around the HW slow rate */
 	//	Added check for invalid sector to handle "offset at upper & lower limit"
 	if ((currentSector != lastSector) && (sector != INVALID))
@@ -548,7 +549,7 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
     IFS2bits.IC3IF = 0;
     
     currentSector = getCurrentSectorNo();    
-  
+     
     /* This MUST be done for getting around the HW slow rate */
 	//	Added check for invalid sector to handle "offset at upper & lower limit"
 	if ((currentSector != lastSector) && (sector != INVALID))

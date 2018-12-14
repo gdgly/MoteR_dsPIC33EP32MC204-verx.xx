@@ -73,7 +73,6 @@ VOID DCInjectionON(VOID)
                 IEC5bits.PWM1IE = 1;
                 
             PTCONbits.PTEN = 1;
-            pwmBufferControl(ENABLE);
         }
     }
 }
@@ -91,7 +90,5 @@ VOID DCInjectionON(VOID)
  ********************************************************************************/
 VOID DCInjectionOFF(VOID)
 {    
-    pwmBufferControl(DISABLE);
     PTCONbits.PTEN = 0; 
-    T7CONbits.TON = 0;
 }

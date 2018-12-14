@@ -40,12 +40,27 @@
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
-_FPOR(ALTI2C1_OFF & ALTI2C2_OFF & BOREN_OFF);
-_FWDT(WDTPOST_PS1024 & WDTPRE_PR32 & PLLKEN_ON & WINDIS_OFF & FWDTEN_ON);
-_FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);
+//_FPOR(ALTI2C1_OFF & ALTI2C2_OFF & BOREN_OFF);
+//_FWDT(WDTPOST_PS1024 & WDTPRE_PR32 & PLLKEN_ON & WINDIS_OFF & FWDTEN_ON);
+//_FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);
+//_FGS(GWRP_OFF & GCP_OFF);
+//_FICD(ICS_PGD2 & JTAGEN_OFF);	/* PGD3 for 28pin 	PGD2 for 44pin */
+//_FOSC(FCKSM_CSECMD & POSCMD_XT);		/* XT W/PLL */
+
+_FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);	 // Start with FRC will switch to Primary (XT, HS, EC) Oscillator with PLL
+_FOSC(FCKSM_CSECMD & POSCMD_XT);	// Clock Switching Enabled and Fail Safe Clock Monitor is disable
+    				        // Primary Oscillator Mode: XT Crystal
+_FPOR(ALTI2C1_OFF & ALTI2C2_OFF & WDTWIN_WIN50);
+
+_FWDT(PLLKEN_ON & FWDTEN_OFF);
+/* Turn off Watchdog Timer */
+
 _FGS(GWRP_OFF & GCP_OFF);
-_FICD(ICS_PGD2 & JTAGEN_OFF);	/* PGD3 for 28pin 	PGD2 for 44pin */
-_FOSC(FCKSM_CSECMD & POSCMD_XT);		/* XT W/PLL */
+/* Set Code Protection Off for the General Segment */
+
+_FICD (ICS_PGD2 & JTAGEN_OFF);
+/* Use PGC2/PGD2 for programming and debugging */
+
 
 
 //	Added for implementation of power fail functionality on DC Bus for version 4 board- RN- NOV 2015
@@ -79,13 +94,13 @@ INT main(VOID)
     *             Crystal Frequency  * (DIVISOR+2)
     *  Fcy =     ---------------------------------
     *               PLLPOST * (PRESCLR+2) * 4
-	*  Crystal  = 8 MHz
+	*  Crystal  = 16 MHz
 	*  Fosc		= 140 MHz
 	*  Fcy		= 70 MIPS
     *********************************************************************/
 	PLLFBD = 68;		        /* M=70 */
 	CLKDIVbits.PLLPOST = 0;		/* N1=2 */
-	CLKDIVbits.PLLPRE = 0;		/* N2=2 */
+	CLKDIVbits.PLLPRE = 2;		/* N2=4 */
 	__builtin_write_OSCCONH(0x03);
 	__builtin_write_OSCCONL(0x01);
 	while(OSCCONbits.COSC != 0b011);
@@ -135,22 +150,14 @@ INT main(VOID)
     measureADCOffset();
 	ClrWdt();   // clear the WDT to inhibit the device reset
 
-	// For testing only (Added on 27 Jan 2015 to generate latch pulse on MCU_LATCH_CTRL pin)
-	// to unlatch motor_stall fault
-	/**************************************************/
-	PORTGbits.RG8 = 0;
-	delayUs(1);
-	PORTGbits.RG8 = 1;			//	1uS pulse generated on MCU_LATCH_CTRL pin
-	/**************************************************/
-
 	// For testing only (Added on 27 Jan 2015 to enable fault input)
 	// These lines were disabled in initMCPWM() function called above
 	// in MCPWM.c file.
 	/**************************************************/
 	PWMCON1bits.FLTIEN = 1; /* Enable fault interrupt */
-	FCLCON1 = 0x002C;
-	FCLCON2 = 0x002C;
-	FCLCON3 = 0x002C;
+	FCLCON1 = 0x0004;
+	FCLCON2 = 0x0004;
+	FCLCON3 = 0x0004;
 
 	
 	AD2CON1bits.ADON = 1;
@@ -163,7 +170,6 @@ INT main(VOID)
         IEC0bits.T3IE = 1;
         T3CONbits.TON = 1;
     }
-    fanON;
 	for(;;)
 	{
         ClrWdt();   // clear the WDT to inhibit the device reset

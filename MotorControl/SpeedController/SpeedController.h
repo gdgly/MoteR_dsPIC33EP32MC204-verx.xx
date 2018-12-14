@@ -30,9 +30,9 @@
 #define PHASE_DECREMENT_FLAG    1
 #define PHASE_INCREMENT_FLAG    2
 
-#define HALLA_BIT	(PORTAbits.RA8) /* HALLA port pin - RA8 RPI24 */
-#define HALLB_BIT	(PORTCbits.RC6) /* HALLB port pin - RC6 RP54 */
-#define HALLC_BIT	(PORTFbits.RF0) /* HALLC port pin - RF0 RPI96 */
+#define HALLA_BIT	(PORTBbits.RB3)//(PORTBbits.RB1) /* HALLA port pin - RA8 RPI24 */
+#define HALLB_BIT	(PORTBbits.RB2)//(PORTBbits.RB2) /* HALLB port pin - RC6 RP54 */
+#define HALLC_BIT	(PORTBbits.RB1)//(PORTBbits.RB3) /* HALLC port pin - RF0 RPI96 */
 
 EXTERN tPIParm speedPIparms;
 /* This function initializes all the variables used by speed controller */

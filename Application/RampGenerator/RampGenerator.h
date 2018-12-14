@@ -27,14 +27,9 @@
 #include "./Common/UserDefinition/Userdef.h"
 
 
-#define lockApply  (PORTCbits.RC8 = 0)
-#define lockRelease (PORTCbits.RC8 = 1)
+#define lockApply  (PORTCbits.RC9 = 0)
+#define lockRelease (PORTCbits.RC9 = 1)
 
-#define enablePWMBuffer    (PORTGbits.RG9 = 0)
-#define disablePWMBuffer   (PORTGbits.RG9 = 1)
-
-#define fanON               (PORTCbits.RC13 = 1)
-#define fanOFF              (PORTCbits.RC13 = 0)
 
 //PWM coasting time in ms
 #define PWM_COASTING_TIME   200      //50ms
@@ -96,9 +91,7 @@ VOID startMotor(VOID);
 /* This function stops all services required to run motor */
 VOID stopMotor(VOID);
 VOID forceStopShutter(VOID);
-//	Added on 20Feb2015 for IGBT over temperature fault
-VOID igbtOverTempSensorTriggered(BOOL sts);
-VOID pwmBufferControl(SHORT);
+
 VOID overcurrentfaultTriggered(BOOL);
 VOID checkPwmCoastingRequired(VOID);
 

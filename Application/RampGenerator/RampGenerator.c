@@ -45,18 +45,6 @@ rampStatusFlags_t rampStatusFlags;
 BOOL pwmCostingReq = FALSE;
 
 
-VOID pwmBufferControl(SHORT status)
-{
-    if(status == ENABLE)
-    {
-        enablePWMBuffer;
-    }
-    else
-    {
-        disablePWMBuffer;
-    }
-}
-
 /******************************************************************************
  * chargeBootstraps
  *
@@ -73,16 +61,20 @@ VOID pwmBufferControl(SHORT status)
  ********************************************************************************/    
 VOID chargeBootstraps(VOID)
 {   
-    IOCON1 = 0xC780;        
-	IOCON2 = 0xC780;        
-	IOCON3 = 0xC780;   
+//    IOCON1 = 0xC780;  //PWM?????
+//	  IOCON2 = 0xC780;
+//	  IOCON3 = 0xC780;
+    IOCON1 = 0xC740;   //PWM?????
+	IOCON2 = 0xC740;
+	IOCON3 = 0xC740;  
     PTCONbits.PTEN = 1;
-    pwmBufferControl(ENABLE);
-	delayMs(CHARGE_BOOTSTRAP_CAP); 
-    pwmBufferControl(DISABLE);    
-    IOCON1 = 0xF000;
-    IOCON2 = 0xF000;
-    IOCON3 = 0xF000;
+	delayMs(CHARGE_BOOTSTRAP_CAP);  
+//    IOCON1 = 0xF000;    //PWM?????
+//    IOCON2 = 0xF000;
+//    IOCON3 = 0xF000;
+    IOCON1 = 0xC000;    //PWM?????
+    IOCON2 = 0xC000;
+    IOCON3 = 0xC000; 
     PTCONbits.PTEN = 0;
     
     PDC1 = PHASE1 / 2;	// initialise as 0 volts
@@ -149,12 +141,8 @@ VOID startMotor(VOID)
         IEC5bits.PWM1IE = 1;
     
     PTCONbits.PTEN = 1;	    // start PWM  
-    pwmBufferControl(ENABLE);
     AD1CON1bits.ADON = 1;   //turn ON ADC module 
 	flags.motorRunning = 1;	/* Indicate that the motor is running */  
-    
-    flags.exstFanOn = 1; //set fan status flag
-    fanON;               //Turn ON heat sink fan
     
 }
 
@@ -204,12 +192,8 @@ VOID startMotorCW(VOID)
         IEC5bits.PWM1IE = 1;
     
     PTCONbits.PTEN = 1;	    // start PWM  
-    pwmBufferControl(ENABLE);
     AD1CON1bits.ADON = 1;   //turn ON ADC module 
 	flags.motorRunning = 1;	/* Indicate that the motor is running */  
-    
-    flags.exstFanOn = 1; //set fan status flag
-    fanON;               //Turn ON heat sink fan
     
 }
 
@@ -260,12 +244,8 @@ VOID startMotorCCW(VOID)
         IEC5bits.PWM1IE = 1;
     
     PTCONbits.PTEN = 1;	    // start PWM  
-    pwmBufferControl(ENABLE);
     AD1CON1bits.ADON = 1;   //turn ON ADC module 
 	flags.motorRunning = 1;	/* Indicate that the motor is running */  
-    
-    flags.exstFanOn = 1; //set fan status flag
-    fanON;               //Turn ON heat sink fan
     
 }
 
@@ -283,13 +263,10 @@ VOID startMotorCCW(VOID)
  ********************************************************************************/
 VOID stopMotor(VOID)
 {
-    pwmBufferControl(DISABLE);
     PTCONbits.PTEN = 0; 
-    T7CONbits.TON = 0;
 //	IEC0bits.T1IE = 0;
     IEC0bits.T2IE = 0;
     IEC0bits.T3IE = 0;
-    IEC3bits.T7IE = 0;
     IEC5bits.PWM1IE = 0;
 //	T1CONbits.TON = 0;
     T2CONbits.TON = 0;
@@ -303,52 +280,10 @@ VOID stopMotor(VOID)
 #endif
     AD1CON1bits.ADON = 0;   //turn OFF ADC module 
 	flags.motorRunning = 0;	/* Indicate that the motor has been stopped */
-    fanOFF;
     MotorRunCount = 0;
     MotorRunInCycle = 0;
 }
 
-//	Added on 20Feb2015 for IGBT over temperature fault
-/******************************************************************************
- * _INT1Interrupt
- *
- * This function service the input change notification on port pin RB4
- *
- * PARAMETER REQ: none
- *
- * RETURNS: none
- *
- * ERRNO: none
- ********************************************************************************/ 
-void __attribute__ ((interrupt, no_auto_psv)) _INT1Interrupt(void)
-{
-    IFS1bits.INT1IF = 0;
-    //PORTAbits.RA7 = 0;
-    
-    if(PWMCON1bits.FLTSTAT)
-		overcurrentfaultTriggered(TRUE);
-#if 1
-    else
-        igbtOverTempSensorTriggered(TRUE);
-#endif
-}
-
-
-//	Added on 20Feb2015 for IGBT over temperature fault
-VOID igbtOverTempSensorTriggered(BOOL sts)
-{
-	//PORTAbits.RA7 = 0;
-	
-    //emergency stop sensor is normally open, it is triggered when closed
-    if(sts)
-    {
-        //Sense emergency in all the profiles
-            //if emergency switch is triggered the stop shutter immediately
-            Motor_ERR_overcurrent_or_igbtOverTemp=1;
-            forceStopShutter();
-    }
-	
-}
 
 VOID overcurrentfaultTriggered(BOOL sts)
 {

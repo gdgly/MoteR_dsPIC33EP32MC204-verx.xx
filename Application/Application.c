@@ -24,6 +24,7 @@
 #include "./Common/UserDefinition/Userdef.h"
 #include "./Application/RampGenerator/RampGenerator.h"
 #include "./Drivers/Timer/Timer.h"
+#include "./Drivers/GPIO/GPIO.h"
 #include "./Common/Extern/Extern.h"
 #include "../Common/Delay/Delay.h"
 
@@ -73,7 +74,7 @@ VOID application(VOID)
 {
     if(MotorRunInCycle == 0)
     {
-        CMDStatus = (UINT8) ((PORTDbits.RD8 << 1) | (PORTAbits.RA11));
+        CMDStatus = (UINT8) ((In_OPEN<< 1) | (In_CLOSE));
         if((CMDStatus == 0x02) || (CMDStatus == 0x03))
         {
             Motor_ERR_overcurrent_or_igbtOverTemp=0;

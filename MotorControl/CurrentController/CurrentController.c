@@ -427,10 +427,8 @@ VOID measureADCOffset(VOID)
         IEC5bits.PWM1IE = 1;
         
     PTCONbits.PTEN = 1;	    // start PWM 
-    //pwmBufferControl(ENABLE);
 	AD1CON1bits.ADON = 1;   //turn ON ADC module 
     delayMs(10);        /* wait for offset calculation */
-    //pwmBufferControl(DISABLE);
     PTCONbits.PTEN = 0;	
     T2CONbits.TON = 0;
     TMR2 = 0;	 

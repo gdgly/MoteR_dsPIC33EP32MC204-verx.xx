@@ -43,9 +43,12 @@ VOID initMCPWM(VOID)
 	PHASE3 = (FCY/FPWM - 1);
     PTPER = 2*(FCY/FPWM - 1)+1;
     
-    IOCON1 = 0xF000;
-	IOCON2 = 0xF000;
-	IOCON3 = 0xF000;
+//    IOCON1 = 0xF000;    //PWM?????
+//    IOCON2 = 0xF000;
+//    IOCON3 = 0xF000;
+    IOCON1 = 0xC000;    //PWM?????
+    IOCON2 = 0xC000;
+    IOCON3 = 0xC000; 
 	
 	/* 2 us of dead time */
 	DTR1 = 0x0000;	
@@ -86,9 +89,9 @@ VOID initMCPWM(VOID)
 	// For testing only (Added on 27 Jan 2015 to disable fault input)
 	// These bits are enabled in main.c just before main while loop
 	/**************************************************/
-	FCLCON1 = 0x0003;
-	FCLCON2 = 0x0003;
-	FCLCON3 = 0x0003;
+	FCLCON1 = 0x0007;
+	FCLCON2 = 0x0007;
+	FCLCON3 = 0x0007;
 	/**************************************************/
     
     PMD6bits.PWM4MD = 1; //Disable PWM4 

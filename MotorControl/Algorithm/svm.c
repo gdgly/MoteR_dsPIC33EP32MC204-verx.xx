@@ -38,6 +38,7 @@
 #include "./Common/Extern/Extern.h"
 #include "./MotorControl/SpeedController/SpeedController.h"
 #include "./Application/RampGenerator/RampGenerator.h"
+#include "./Drivers/GPIO/GPIO.h"
 
 /************************************************************************/
 /* These are the definitions for various angles used in the SVM */
@@ -348,10 +349,12 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
     WORD phaseDiff;
     
     IFS5bits.PWM1IF = 0;
-    
+         Out_LED_PGD=!Out_LED_PGD;
     if(PWMCON1bits.FLTSTAT)
+    {
 		overcurrentfaultTriggered(TRUE);  
-    
+        
+    }
 //    phaseInc = (SHORT)((measuredSpeed * 272) / 1000);
 
 #ifdef USE_PHASE_INC_AND_CORRECTION
