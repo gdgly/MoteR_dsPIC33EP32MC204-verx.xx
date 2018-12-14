@@ -211,102 +211,113 @@ void TEST_uart_speed_pi(void)
 {
     unsigned char  char_data,char0;
     UINT8 d_xx[4];
+    UINT16 DATA_TEST=0;
      uni_l d_num;
 
     if(test_SPEED_PI_FLAG>=2){
         test_SPEED_PI_FLAG=0;
-
-        char_data=refSpeed>>8;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=refSpeed%256;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        Send_char(' ');
+        
+        DATA_TEST=ActualSpeed;
+        Send_char(0xA5);
+        char_data=DATA_TEST>>8;
+        Send_char(char_data);
+        char_data=DATA_TEST%256;
+        Send_char(char_data);
+        Send_char(0xAA);
+        
+        
 //
-//        char_data=ActualSpeed>>8;
+//        char_data=refSpeed>>8;
 //        char0=hex_asc(char_data/16);
 //        Send_char(char0);
 //        char0=hex_asc(char_data%16);
 //        Send_char(char0);
-//        char_data=ActualSpeed%256;
+//        char_data=refSpeed%256;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        Send_char(' ');
+////
+////        char_data=ActualSpeed>>8;
+////        char0=hex_asc(char_data/16);
+////        Send_char(char0);
+////        char0=hex_asc(char_data%16);
+////        Send_char(char0);
+////        char_data=ActualSpeed%256;
+////        char0=hex_asc(char_data/16);
+////        Send_char(char0);
+////        char0=hex_asc(char_data%16);
+////        Send_char(char0);
+////        Send_char(' ');
+////
+////        char_data=SPEED_PI_qOut>>8;
+////        char0=hex_asc(char_data/16);
+////        Send_char(char0);
+////        char0=hex_asc(char_data%16);
+////        Send_char(char0);
+////        char_data=SPEED_PI_qOut%256;
+////        char0=hex_asc(char_data/16);
+////        Send_char(char0);
+////        char0=hex_asc(char_data%16);
+////        Send_char(char0);
+////        Send_char(' ');
+////
+////        char_data=SPEED_PDC_offset>>8;
+////        char0=hex_asc(char_data/16);
+////        Send_char(char0);
+////        char0=hex_asc(char_data%16);
+////        Send_char(char0);
+////        char_data=SPEED_PDC_offset%256;
+////        char0=hex_asc(char_data/16);
+////        Send_char(char0);
+////        char0=hex_asc(char_data%16);
+////        Send_char(char0);
+////        Send_char(' ');
+////
+//        char_data=SET_SPEED>>8;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=SET_SPEED%256;
 //        char0=hex_asc(char_data/16);
 //        Send_char(char0);
 //        char0=hex_asc(char_data%16);
 //        Send_char(char0);
 //        Send_char(' ');
 //
-//        char_data=SPEED_PI_qOut>>8;
+//
+//
+//            d_num.ul=Motor_place;
+//            d_xx[0]=d_num.u_char[0];
+//            d_xx[1]=d_num.u_char[1];
+//            d_xx[2]=d_num.u_char[2];
+//            d_xx[3]=d_num.u_char[3];
+//
+//        char_data=d_xx[0];
 //        char0=hex_asc(char_data/16);
 //        Send_char(char0);
 //        char0=hex_asc(char_data%16);
 //        Send_char(char0);
-//        char_data=SPEED_PI_qOut%256;
+//        char_data=d_xx[1];
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=d_xx[2];
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=d_xx[3];
 //        char0=hex_asc(char_data/16);
 //        Send_char(char0);
 //        char0=hex_asc(char_data%16);
 //        Send_char(char0);
 //        Send_char(' ');
 //
-//        char_data=SPEED_PDC_offset>>8;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=SPEED_PDC_offset%256;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        Send_char(' ');
-//
-        char_data=SET_SPEED>>8;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=SET_SPEED%256;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        Send_char(' ');
-
-
-
-            d_num.ul=Motor_place;
-            d_xx[0]=d_num.u_char[0];
-            d_xx[1]=d_num.u_char[1];
-            d_xx[2]=d_num.u_char[2];
-            d_xx[3]=d_num.u_char[3];
-
-        char_data=d_xx[0];
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=d_xx[1];
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=d_xx[2];
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=d_xx[3];
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        Send_char(' ');
-
-        Send_char(13);
-        Send_char(10);
+//        Send_char(13);
+//        Send_char(10);
     }
 }

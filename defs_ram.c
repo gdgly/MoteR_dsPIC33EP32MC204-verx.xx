@@ -56,9 +56,8 @@ unsigned int open_loop_time;
 UINT8 start_open_loop_step;
 UINT8 start_close_loop_step;
 UINT16 start_open_close_loop;
-unsigned char flag_open_loop_time;
   /*******************************************/
-unsigned char flag_open_loop;
+unsigned char Flag_Motor_CloseLOOP;
 unsigned char open_loop_inc;
 unsigned int open_loop_inc_inc;
 unsigned int Flag_CompareSpeed = 0; 

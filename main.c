@@ -64,7 +64,7 @@ int main(void)
            SET_origin_mode();
            Key_scan();
 
-           //TEST_uart_speed_pi();
+           TEST_uart_speed_pi();
 	}
 }
 

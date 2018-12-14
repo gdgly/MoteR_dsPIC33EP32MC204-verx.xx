@@ -14,3 +14,5 @@ extern void runTestCode(void);
 extern void adc_IBUS(void);
 
 extern void APP_Motor_MODE_B_data (void);
+extern void Motor_Start_OpenLoop(void);
+

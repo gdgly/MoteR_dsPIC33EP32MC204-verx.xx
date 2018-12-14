@@ -67,7 +67,7 @@
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
 
-           #define SPEED_PI_P  8000//5000 6000
+           #define SPEED_PI_P  8000//8000//5000 6000
            #define SPEED_PI_I  5
            #define SPEED_PI_C  0
 
@@ -293,10 +293,9 @@ extern unsigned int open_loop_time;
 extern UINT8 start_open_loop_step;
 extern UINT8 start_close_loop_step;
 extern UINT16 start_open_close_loop;
-extern unsigned char flag_open_loop_time;
     /****************************************/
 
-extern unsigned char flag_open_loop;
+extern unsigned char Flag_Motor_CloseLOOP;
 extern unsigned char open_loop_inc;
 extern unsigned int open_loop_inc_inc;
 extern unsigned int Flag_CompareSpeed;
