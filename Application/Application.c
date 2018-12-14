@@ -32,14 +32,11 @@
 WORD systemTick = 0;  
 BOOL OvercurrentfaultTrigrd = FALSE; // indicating PWM fault due to overcurrent
 
-BYTE MotorType;
 
 UINT8 CMDStatus = 0;
 BYTE MotorCountOver = 0;
 WORD MotorStopCount;
-UINT16 DutyCycleCnt = 0;
 
-BYTE gui8StopKeyPressed = 0;
 BYTE MotorRunInCycle = 0;
 
 
@@ -83,16 +80,14 @@ VOID application(VOID)
         if((CMDStatus == 0x00) && (!flags.motorRunning)&&(Motor_ERR_overcurrent_or_igbtOverTemp==0))
         {
             lockRelease;
-            //delayMs(100); 
-            flags.RunDirection = CCW;
-            startMotorCCW();
+            flags.RunDirection = CCW;            
+            startMotor();
         }
         else if((CMDStatus == 0x01) && (!flags.motorRunning)&&(Motor_ERR_overcurrent_or_igbtOverTemp==0))
         {
-            lockRelease;
-            //delayMs(100); 
+            lockRelease; 
             flags.RunDirection = CW;
-            startMotorCW();
+            startMotor();
         }
         else if((CMDStatus == 0x01) && (flags.motorRunning) && (flags.RunDirection == CCW))
         {
@@ -111,9 +106,7 @@ VOID application(VOID)
                 else if(MotorStopCount >= 60)
                 {
                     flags.RunDirection = CW;
-                    startMotorCW();
-                    //requiredDirection = CW;
-                    //MotorDecActive = 0;
+                    startMotor();
                     MotorStopCount = 0;
                     T9CONbits.TON = 0; 
                 }            
@@ -136,9 +129,7 @@ VOID application(VOID)
                 else if(MotorStopCount >= 60)
                 {
                     flags.RunDirection = CCW;
-                    startMotorCCW();
-                    //requiredDirection = CCW;
-                    //MotorDecActive = 0;
+                    startMotor();
                     MotorStopCount = 0;
                     T9CONbits.TON = 0; 
                 }            
@@ -158,7 +149,6 @@ VOID application(VOID)
                     delayMs(100);
                     lockApply;                    
                 }
-            //stopMotor();
 
         }
         else if((CMDStatus == 0x03) && (flags.motorRunning))
@@ -175,7 +165,6 @@ VOID application(VOID)
                     delayMs(100);
                     lockApply;                    
                 }
-            //stopMotor();
         }
     }
 

@@ -104,8 +104,16 @@ VOID startMotor(VOID)
     flags.currentControl = 0;
 #endif
     MotorRunCount = 0;
-    //requiredDirection = CCW;
-    //currentDirection = CCW;
+    if(flags.RunDirection == CCW)
+    {
+        requiredDirection = CCW;
+        currentDirection = CCW;
+    }
+    else 
+    {
+        requiredDirection = CW;
+        currentDirection = CW;        
+    }
     MotorDecActive = 0;
     
     initCurrentLimitPI();
@@ -145,110 +153,6 @@ VOID startMotor(VOID)
 	flags.motorRunning = 1;	/* Indicate that the motor is running */  
     
 }
-
-VOID startMotorCW(VOID)
-{
-    flags.speedControl = 1;
-#if (STARTUP_IN_CURRENT_MODE == 1)
-    flags.currentControl = 1;
-#else
-    flags.currentControl = 0;
-#endif
-    MotorRunCount = 0;
-    requiredDirection = CW;
-    currentDirection = CW;
-    
-    MotorDecActive = 0;
-    
-    initCurrentLimitPI();
-    intitSpeedController();     /* Initialize speed controller */
-    intitCurrentController();   /* Initialize current controller */
-    chargeBootstraps();
-    
-	TMR1 = 0;			/* Reset timer 1 for speed control */
-    TMR2 = 0;			/* Reset timer 2 for current control */
-	TMR3 = 0;			/* Reset timer 3 for speed measurement */
-    
-	T1CONbits.TON = 1;
-    T2CONbits.TON = 1;
-	T3CONbits.TON = 1;
-    
-	IFS0bits.T1IF = 0;		/* Clear timer 1 flag */
-    IFS0bits.T2IF = 0;		/* Clear timer 2 flag */
-    IFS0bits.T3IF = 0;		/* Clear timer 3 flag */
-    
-	IFS0bits.IC1IF = 0;		/* Clear interrupt flag */
-	IFS0bits.IC2IF = 0;	
-	IFS2bits.IC3IF = 0;
-
-    
-    IEC0bits.T1IE = 1;		/* Enable interrupts for timer 1 */
-    IEC0bits.T2IE = 1;		/* Enable interrupts for timer 2 */
-    IEC0bits.T3IE = 1;		/* Enable interrupts for timer 3 */
-	IEC0bits.IC1IE = 1;		/* Enable interrupts on IC1 */
-	IEC0bits.IC2IE = 1;		/* Enable interrupts on IC2 */
-	IEC2bits.IC3IE = 1;
-        IFS5bits.PWM1IF = 0;
-        IEC5bits.PWM1IE = 1;
-    
-    PTCONbits.PTEN = 1;	    // start PWM  
-    AD1CON1bits.ADON = 1;   //turn ON ADC module 
-	flags.motorRunning = 1;	/* Indicate that the motor is running */  
-    
-}
-
-VOID startMotorCCW(VOID)
-{
-    flags.speedControl = 1;
-#if (STARTUP_IN_CURRENT_MODE == 1)
-    flags.currentControl = 1;
-#else
-    flags.currentControl = 0;
-#endif
-    MotorRunCount = 0;
-    requiredDirection = CCW;
-    currentDirection = CCW;
-    MotorDecActive = 0;
-    
-    initCurrentLimitPI();
-    intitSpeedController();     /* Initialize speed controller */
-    intitCurrentController();   /* Initialize current controller */
-    chargeBootstraps();
-    
-	TMR1 = 0;			/* Reset timer 1 for speed control */
-    TMR2 = 0;			/* Reset timer 2 for current control */
-	TMR3 = 0;			/* Reset timer 3 for speed measurement */
-    TMR7 = 0;
-    TMR8 = 0;
-    
-	T1CONbits.TON = 1;
-    T2CONbits.TON = 1;
-	T3CONbits.TON = 1;
-    
-	IFS0bits.T1IF = 0;		/* Clear timer 1 flag */
-    IFS0bits.T2IF = 0;		/* Clear timer 2 flag */
-    IFS0bits.T3IF = 0;		/* Clear timer 3 flag */
-    
-	IFS0bits.IC1IF = 0;		/* Clear interrupt flag */
-	IFS0bits.IC2IF = 0;	
-	IFS2bits.IC3IF = 0;
-
-    
-    IEC0bits.T1IE = 1;		/* Enable interrupts for timer 1 */
-    IEC0bits.T2IE = 1;		/* Enable interrupts for timer 2 */
-    IEC0bits.T3IE = 1;		/* Enable interrupts for timer 3 */
-	IEC0bits.IC1IE = 1;		/* Enable interrupts on IC1 */
-	IEC0bits.IC2IE = 1;		/* Enable interrupts on IC2 */
-	IEC2bits.IC3IE = 1;
-        IFS5bits.PWM1IF = 0;
-        IEC5bits.PWM1IE = 1;
-    
-    PTCONbits.PTEN = 1;	    // start PWM  
-    AD1CON1bits.ADON = 1;   //turn ON ADC module 
-	flags.motorRunning = 1;	/* Indicate that the motor is running */  
-    
-}
-
 /******************************************************************************
  * stopMotor
  *

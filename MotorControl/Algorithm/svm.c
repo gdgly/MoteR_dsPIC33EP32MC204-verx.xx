@@ -60,7 +60,6 @@
 #define SINE_TABLE_SIZE 172
 
 SHORT adcTrigger;
-UINT16 PhaseURAT[388];
 UINT16 i = 0;
 
 /* This sinewave lookup table has 171 entries.  (1024 points per */

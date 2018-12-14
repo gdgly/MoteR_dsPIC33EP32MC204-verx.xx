@@ -96,7 +96,6 @@ INT main(VOID)
 	initTMR1();		/* Initialize TMR1 1 ms periodic ISR for speed controller */
     initTMR2();		/* Initialize TMR2 1 ms periodic ISR for current controller */
     initTMR3();		/* Initialize TMR3 for timebase of capture */
-    initTMR5();
 	ClrWdt();   // clear the WDT to inhibit the device reset
 	initMCPWM();
     initTMR9();
@@ -112,10 +111,8 @@ INT main(VOID)
 	FCLCON1 = 0x0004;
 	FCLCON2 = 0x0004;
 	FCLCON3 = 0x0004;
-
 	
 	AD2CON1bits.ADON = 1;
-    T5CONbits.TON = 1;
 	for(;;)
 	{
         ClrWdt();   // clear the WDT to inhibit the device reset

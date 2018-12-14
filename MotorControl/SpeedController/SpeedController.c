@@ -140,7 +140,6 @@ SHORT refSpeed = 200;	    /* Desired speeds for the PID */
 
 /* Output of PID controller, use its sign for required direction */
 SHORT controlOutput;
-SHORT ctrlOpPercent;
 
 /* Filter used for speed measurement */
 WORD periodFilterConstant;
@@ -162,7 +161,6 @@ SHORT phaseInc;
 
 WORD MotorRunCount = 0;
 WORD MotorCycleCount = 0;
-BYTE MotorStartComplete = 0;
 BYTE MotorDecActive = 0;
 
 
@@ -196,8 +194,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     IFS0bits.T1IF = 0;
     
     static WORD cnt1000ms = 0;
-    //if(!MotorStartComplete)
-    //{
         if(++cnt1000ms >= SPD_INC_INTERVAL)
         {
             cnt1000ms = 0;
@@ -211,7 +207,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                             if(refSpeed >= SET_TARGET_SPEED_750W_CW)
                             {
                                 refSpeed = SET_TARGET_SPEED_750W_CW;
-                                //MotorStartComplete = 1;
                             }
                         }
                     }
@@ -223,7 +218,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                             if(refSpeed >= SET_TARGET_SPEED_750W_CCW)
                             {
                                 refSpeed = SET_TARGET_SPEED_750W_CCW;
-                                //MotorStartComplete = 1;
                             }
                         }
                     }
@@ -586,9 +580,7 @@ VOID speedControl(VOID)
         
         if(flags.speedControl)
             controlOutput = speedPIparms.qOut;
-    
-    //calculate percentage duty
-    ctrlOpPercent = __builtin_divud(((unsigned long)controlOutput*100),MAX_SPEED_PI);
+
 }
 
 

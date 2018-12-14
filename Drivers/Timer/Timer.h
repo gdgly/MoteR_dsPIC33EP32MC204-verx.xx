@@ -32,12 +32,7 @@ VOID initTMR2(VOID);
 
 /* TIMER3 used as a timebase for the two input capture channels */
 VOID initTMR3(VOID);
-
-/* TIMER5 used by ADC2 for DC bus voltage monitoring */
-//	Added Dec 2015
-VOID initTMR5(VOID);
-
-
+/*This function initializes Timer9 used to app*/
 VOID initTMR9(VOID);
 
 #endif /* TIMER_H */

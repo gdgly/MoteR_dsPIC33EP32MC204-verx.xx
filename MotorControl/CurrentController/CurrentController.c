@@ -47,7 +47,7 @@
 //#define ADC_CNT_TO_CURR_FACTOR      83//42500/512 = 83.00 = 83//MAX_TOTAL_CURRENT/512
 #define ADC_CNT_TO_CURR_FACTOR      56//28500/512 = 56.66 = 56.66//MAX_TOTAL_CURRENT/512
 #define ADC_CNT_AVAILABLE           1024//512
-#define ADC_MEASURABLE_CURRENT_VALUE    30000 //30.5A ie 3.3V = 30.5A
+#define ADC_MEASURABLE_CURRENT_VALUE    8000//30000 //30.5A ie 3.3V = 30.5A
 
 currCntrlFlg currControlFlag;
 
@@ -146,13 +146,6 @@ void __attribute__((interrupt, no_auto_psv)) _AD2Interrupt (void)
 	
 }
 
-//	Added for implementation of power fail functionality on DC Bus for version 4 board- RN- NOV 2015
-void __attribute__((interrupt, no_auto_psv)) _T5Interrupt (void)
-{
-	//static unsigned int lsui8Count = 0;
-    IFS1bits.T5IF = 0;
-
-}
 VOID executePowerFailRoutine(VOID)
 {
 	
@@ -179,8 +172,7 @@ void __attribute__((interrupt, no_auto_psv)) _T2Interrupt (void)
     
     runCurrentLimitPI();
     
-    //if( rampStatusFlags.rampCurrentControlRequired)
-        currentControl();
+    //currentControl();
 }
 
 VOID calculateTotalCurrent(VOID)
@@ -338,10 +330,7 @@ VOID currentControl(VOID)
             controlOutput = currentPIparms.qOut;
             speedPIparms.qdSum = currentPIparms.qdSum;
         }
-    //}
     
-    //calculate percentage duty
-    ctrlOpPercent = __builtin_divud(((unsigned long)controlOutput*100),MAX_CURRENT_PI);
 }
 
 /******************************************************************************

@@ -89,9 +89,9 @@ VOID initTMR3(VOID)
 }
 
 /******************************************************************************
- * initTMR5
+ * initTMR9
  *
- * This function initializes Timer5 used to generate trigger for ADC2 sampling
+ * This function initializes Timer9 used to app
  *
  * PARAMETER REQ: none
  *
@@ -99,19 +99,6 @@ VOID initTMR3(VOID)
  *
  * ERRNO: none
  ********************************************************************************/
-//	Added Dec 2015
-VOID initTMR5(VOID)
-{
-	T5CON = 0x0030;	 /* internal Tcy/256 clock */
-	TMR5 = 0;
-	PR5 = 2734*2;;		/* 20ms timer */
-	IFS1bits.T5IF = 0;  /* Clear timer 5 flag */
-	IEC1bits.T5IE = 1;	/* Enable interrupts for Timer 5 */
-    T5CONbits.TON = 0; 	//stop timer
-    IPC7bits.T5IP = 1;
-}
-
-
 VOID initTMR9(VOID)
 {
 	T9CON = 0x0030;	 /* internal Tcy/256 clock */

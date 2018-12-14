@@ -95,8 +95,5 @@ VOID forceStopShutter(VOID);
 VOID overcurrentfaultTriggered(BOOL);
 VOID checkPwmCoastingRequired(VOID);
 
-VOID startMotorCW(VOID);
-VOID startMotorCCW(VOID);
-
 
 #endif /* RAMP_GENERATOR_H */
