@@ -43,7 +43,7 @@ SHORT currentRampProfileNo;
 SHORT rampCurrentState;
 rampStatusFlags_t rampStatusFlags;
 BOOL pwmCostingReq = FALSE;
-
+BOOL FLAG_Motor_start=FALSE;
 
 /******************************************************************************
  * chargeBootstraps
@@ -150,6 +150,7 @@ VOID startMotor(VOID)
     PTCONbits.PTEN = 1;	    // start PWM  
     AD1CON1bits.ADON = 1;   //turn ON ADC module 
 	flags.motorRunning = 1;	/* Indicate that the motor is running */  
+    FLAG_Motor_start=TRUE;
     
 }
 /******************************************************************************

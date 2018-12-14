@@ -84,8 +84,6 @@ SHORT phaseOffsetCW =PHASE_OFFSET_CW_750W;
 SHORT phaseOffsetCCW =PHASE_OFFSET_CCW_750W;
 
 
-#define SPD_INC_INTERVAL    100
-
 #define SPD_CAL_FOR_PHASEADVANCE    (int)((float)((((float)(measuredSpeed / 60) * NO_POLEPAIRS_750W) * 360) / 1000))
 #define MAX_PH_ADV_DEG      1
 #define MAX_PH_ADV 		(int)(((float)MAX_PH_ADV_DEG / 360.0) * 65536.0)
@@ -161,7 +159,7 @@ SHORT phaseInc;
 
 WORD MotorCycleCount = 0;
 BYTE MotorDecActive = 0;
-
+WORD SPD_INC_INTERVAL=100;
 
 /* This function is used to measure actual running speed of motor */
 VOID measureActualSpeed(VOID);
@@ -187,12 +185,20 @@ VOID initSpeedControllerVariables(VOID);
  * ERRNO: none
  ********************************************************************************/  
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
-{
-//    PRIVATE WORD cnt10ms = 0;
-    
+{   
     IFS0bits.T1IF = 0;
     
     static WORD cnt1000ms = 0;
+     if((FLAG_Motor_start==TRUE)&&(measuredSpeed<=200))
+    {
+       SPD_INC_INTERVAL=1;
+    }
+    else if(measuredSpeed>200)
+    {
+        FLAG_Motor_start=FALSE;
+        SPD_INC_INTERVAL=100;
+    }
+     
         if(++cnt1000ms >= SPD_INC_INTERVAL)
         {
             cnt1000ms = 0;
@@ -516,14 +522,13 @@ VOID speedControl(VOID)
 {   
     speedPIparms.qInRef = refSpeed;
     speedPIparms.qInMeas = measuredSpeed;
-    
+
         speedPIparms.qOutMax = currentLimitClamp;
         speedPIparms.qOutMin = -(currentLimitClamp);
         calcPiNew(&speedPIparms);
-        
-        if(flags.speedControl)
-            controlOutput = speedPIparms.qOut;
 
+        if(flags.speedControl)
+            controlOutput = speedPIparms.qOut;  
 }
 
 
