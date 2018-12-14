@@ -40,38 +40,13 @@
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
-//_FPOR(ALTI2C1_OFF & ALTI2C2_OFF & BOREN_OFF);
-//_FWDT(WDTPOST_PS1024 & WDTPRE_PR32 & PLLKEN_ON & WINDIS_OFF & FWDTEN_ON);
-//_FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);
-//_FGS(GWRP_OFF & GCP_OFF);
-//_FICD(ICS_PGD2 & JTAGEN_OFF);	/* PGD3 for 28pin 	PGD2 for 44pin */
-//_FOSC(FCKSM_CSECMD & POSCMD_XT);		/* XT W/PLL */
-
-_FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);	 // Start with FRC will switch to Primary (XT, HS, EC) Oscillator with PLL
-_FOSC(FCKSM_CSECMD & POSCMD_XT);	// Clock Switching Enabled and Fail Safe Clock Monitor is disable
-    				        // Primary Oscillator Mode: XT Crystal
-_FPOR(ALTI2C1_OFF & ALTI2C2_OFF & WDTWIN_WIN50);
-
-_FWDT(PLLKEN_ON & FWDTEN_OFF);
-/* Turn off Watchdog Timer */
-
+_FPOR(ALTI2C1_OFF & ALTI2C2_OFF & BOREN_OFF);
+_FWDT(WDTPOST_PS1024 & WDTPRE_PR32 & PLLKEN_ON & WINDIS_OFF & FWDTEN_ON);
+_FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);
 _FGS(GWRP_OFF & GCP_OFF);
-/* Set Code Protection Off for the General Segment */
+_FICD(ICS_PGD2 & JTAGEN_OFF);	/* PGD3 for 28pin 	PGD2 for 44pin */
+_FOSC(FCKSM_CSECMD & POSCMD_XT);		/* XT W/PLL */
 
-_FICD (ICS_PGD2 & JTAGEN_OFF);
-/* Use PGC2/PGD2 for programming and debugging */
-
-
-
-//	Added for implementation of power fail functionality on DC Bus for version 4 board- RN- NOV 2015
-BYTE gucPowerFailFlag = 0;
-BYTE gucPowerRestoredFlag = 0;
-UINT8 MotorTypeStatus = 0;
-UINT8 CurrentMotorType = 0;
-UINT8 PreMotorType = 0;
-UINT8 s = 0;
-//UINT16 DutyCycleSet = 15000;
-//UINT16 DutyCycle = 3600;
 
 #define     Reset()     {__asm__   volatile ("reset");}
 /******************************************************************************
@@ -114,35 +89,14 @@ INT main(VOID)
     
     initGPIO(); /* Initialize all the I/O's required in application */
     
-    MotorTypeStatus = 1;
-    
 	initADC();		/* Initialize ADC to be signed fractional */
 	//Added for ADC2- RN- NOV2015
-    if(MotorTypeStatus == 1)
-    {
-        initADC2();		/* Initialize ADC to be signed fractional */
-        CurrentMotorType = MOTOR_750W; 
-        PreMotorType = CurrentMotorType;
-    }
-    else
-    {
-        initADC2For1500W();
-        CurrentMotorType = MOTOR_1500W;
-        PreMotorType = CurrentMotorType;
-    }
+    initADC2();		/* Initialize ADC to be signed fractional */
 	initInputCapture();		/* Initialize Hall sensor inputs ISRs	 */
 	initTMR1();		/* Initialize TMR1 1 ms periodic ISR for speed controller */
     initTMR2();		/* Initialize TMR2 1 ms periodic ISR for current controller */
-    
-    if(MotorTypeStatus == 1)
-    {
-        initTMR3();		/* Initialize TMR3 for timebase of capture */
-        initTMR5();
-    }
-    else
-    {
-        initTMR3For1500W();
-    }
+    initTMR3();		/* Initialize TMR3 for timebase of capture */
+    initTMR5();
 	ClrWdt();   // clear the WDT to inhibit the device reset
 	initMCPWM();
     initTMR9();
@@ -161,15 +115,7 @@ INT main(VOID)
 
 	
 	AD2CON1bits.ADON = 1;
-    if(MotorTypeStatus == 1)
-    {
-        T5CONbits.TON = 1;
-    }
-    else
-    {
-        IEC0bits.T3IE = 1;
-        T3CONbits.TON = 1;
-    }
+    T5CONbits.TON = 1;
 	for(;;)
 	{
         ClrWdt();   // clear the WDT to inhibit the device reset

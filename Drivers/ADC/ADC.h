@@ -29,6 +29,5 @@
 VOID initADC(VOID);
 //Added for ADC2- RN- NOV2015
 VOID initADC2(VOID);
-VOID initADC2For1500W(VOID);
 
 #endif /* ADC_H */

@@ -89,14 +89,11 @@ WORD phaseValue;
 WORD UBUS = 0;
 
 #define NO_LOAD_CURRENT_750W 300 //300 mA
-#define NO_LOAD_CURRENT_1500W 400 //300 mA
 
 #define CURRENT_DIFF_FOR_PHASE_INC_750W 275//225//250//300
-#define CURRENT_DIFF_FOR_PHASE_INC_1500W 350
 
 #define PHASE_INC_STEP  182
 #define MAX_PHASE_COMP_750W  9646    //(PHASE_INC_STEP * 53)
-#define MAX_PHASE_COMP_1500W  9828 
 #define MIN_PHASE_COMP  0
 
 
@@ -227,8 +224,6 @@ VOID checkPhaseCompensation(VOID)
     
     curriTotal = measurediTotal;
     //phase compensation should be applied when measured current is more than 300 mA 
-    if(PreMotorType == MOTOR_750W)
-    {
         if(curriTotal > NO_LOAD_CURRENT_750W)
         {
         //check difference between current and previous total current value
@@ -265,46 +260,7 @@ VOID checkPhaseCompensation(VOID)
         {
             phaseValue = MIN_PHASE_COMP * PHASE_INC_STEP;
         }
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        if(curriTotal > NO_LOAD_CURRENT_1500W)
-        {
-            //check difference between current and previous total current value
-            diffiTotal = curriTotal - previTotal;
-            //if difference is positive side then icnrement phase, if difference is negative side then 
-            //decrement phse
-            if(diffiTotal < 0)
-            {
-                if(diffiTotal <= (-CURRENT_DIFF_FOR_PHASE_INC_1500W))
-                {
-                    diffiTotal = -diffiTotal;
-                    phaseIncAng = __builtin_divud(diffiTotal,CURRENT_DIFF_FOR_PHASE_INC_1500W);
-                    if(phaseValue > MIN_PHASE_COMP)
-                    {
-                        phaseValue -= (PHASE_INC_STEP * phaseIncAng);
-                    }
-                    previTotal = curriTotal;
-                }
-            }
-            else
-            {
-                if(diffiTotal >= CURRENT_DIFF_FOR_PHASE_INC_1500W)
-                {
-                    phaseIncAng = __builtin_divud(diffiTotal,CURRENT_DIFF_FOR_PHASE_INC_1500W);
-                    if(phaseValue < MAX_PHASE_COMP_1500W)
-                    {
-                        phaseValue += (PHASE_INC_STEP * phaseIncAng);
-                    }
-                    previTotal = curriTotal;
-                }
-            }
-        }
-        else
-        {
-            phaseValue = MIN_PHASE_COMP * PHASE_INC_STEP;
-        }
-    }
+
 }
 
 /******************************************************************************
@@ -350,14 +306,7 @@ VOID initCurrentControllerVariables(VOID)
     measurediTotal = 0;
 
     curriTotal = 0;
-    if(PreMotorType == MOTOR_750W)
-    {
         previTotal = NO_LOAD_CURRENT_750W;
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        previTotal = NO_LOAD_CURRENT_1500W;
-    }
     
     diffiTotal = 0;
     phaseValue = MIN_PHASE_COMP * PHASE_INC_STEP;

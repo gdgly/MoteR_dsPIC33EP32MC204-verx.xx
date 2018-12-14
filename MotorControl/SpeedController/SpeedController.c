@@ -37,30 +37,10 @@
                                     //and the delay introduced */
 /* In the sinewave generation algorithm we need an offset to be added to the */
 /* pointer when energizing the motor */
-//#define PHASE_OFFSET_CW 1800 //measured offset is 100*(360/65536) = 5.4 degrees.
-//#define PHASE_OFFSET_CCW 9840 //182 counts for 1 degree
 
 #ifdef USE_PHASE_INC_AND_CORRECTION
 #define PHASE_OFFSET_CW_750W  364//8500//2002     //1274 //measured offset is 1274*(360/65536) = 7 degrees.
 #define PHASE_OFFSET_CCW_750W 10558//10740     //9828//9646//53 degrees
-
-//#define PHASE_OFFSET_CW_1500W 9828//6916//6006//5460//5096//4004//1820//728//364//1274 //measured offset is 1274*(360/65536) = 7 degrees.
-//#define PHASE_OFFSET_CCW_1500W 364 //5096//5460//6006//6370//6916//7280//8372//8736//9464//9828//9100//53 degrees
-
-//#define PHASE_OFFSET_CW_def_1500W 6916//2366//6916//364 //measured offset is 364*(360/65536) = 2 degrees.
-//#define PHASE_OFFSET_CCW_def_1500W 5460//5096//8008//9828 // Fukui result - 54 degree 10192
-//#define PHASE_OFFSET_CW_MAX_1500W 10556
-//#define PHASE_OFFSET_CCW_MAX_1500W 364 //5096     //2016/08/17 Down Moving after Over Current by IME
-//#define PHASE_OFFSET_INC_STEP_1500W 10
-//#define PHASE_OFFSET_DEC_STEP_1500W 20
-
-#define PHASE_OFFSET_CW_def_1500W 2366//2366//6916//364 //measured offset is 364*(360/65536) = 2 degrees.
-#define PHASE_OFFSET_CCW_def_1500W 9828//5096//8008//9828 // Fukui result - 54 degree 10192
-#define PHASE_OFFSET_CW_MAX_1500W 6916
-#define PHASE_OFFSET_CCW_MAX_1500W 5096 //9828 //5096     //2016/08/17 Down Moving after Over Current by IME
-#define PHASE_OFFSET_INC_STEP_1500W 1
-#define PHASE_OFFSET_DEC_STEP_1500W 20
-
 #else
 #define PHASE_OFFSET_CW 10000 
 #define PHASE_OFFSET_CCW 0
@@ -86,33 +66,24 @@
                             /* consider stalled and it's stopped    */
 
 /* PI parameters */
-//#define P_SPEED_PI_CW 10000//12000
-//#define I_SPEED_PI_CW 1000//9000
-//#define P_SPEED_PI_CCW 10000//9000//15000//9000
-//#define I_SPEED_PI_CCW 500//300//800//1000//2000//6000
 #define P_SPEED_PI_CW_750W 10000//6000//7000//10000//13106//20000//15000//5000
 #define I_SPEED_PI_CW_750W 700//1500//1800//2000//9830//10000//8000//4000
 #define P_SPEED_PI_CCW_750W 10000//22000
 #define I_SPEED_PI_CCW_750W 700//100
-#define P_SPEED_PI_CW_1500W 10000//6000//7000//10000//13106//20000//15000//5000
-#define I_SPEED_PI_CW_1500W 1000//1500//1800//2000//9830//10000//8000//4000
-#define P_SPEED_PI_CCW_1500W 10000//22000
-#define I_SPEED_PI_CCW_1500W 500//100
+
 #define C_SPEED_PI 0x7FFF 
 #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 
 /* In the sinewave generation algorithm we need an offset to be added to the */
 /* pointer when energizing the motor in CCW. This is done to compensate an   */
 /* asymetry of the sinewave */
-SHORT phaseOffsetCW =PHASE_OFFSET_CW_def_1500W;
-SHORT phaseOffsetCCW =PHASE_OFFSET_CCW_def_1500W;
+SHORT phaseOffsetCW =PHASE_OFFSET_CW_750W;
+SHORT phaseOffsetCCW =PHASE_OFFSET_CCW_750W;
 
 
 #define SET_TARGET_SPEED_750W_CW    1000//1800//1900 //Required final speed
 #define SET_TARGET_SPEED_750W_CCW   1000//1800
 #define SPEED_INC_STP_750W       100
-#define SET_TARGET_SPEED_1500W    2500//1900//1900 //Required final speed
-#define SPEED_INC_STP_1500W       50
 #define SPD_INC_INTERVAL    100
 
 #define SPD_CAL_FOR_PHASEADVANCE    (int)((float)((((float)(measuredSpeed / 60) * NO_POLEPAIRS_750W) * 360) / 1000))
@@ -152,15 +123,8 @@ WORD lastSector;
 /* proper sector.  Hall values of 0 or 7 represent illegal values and therefore */
 /* return -1. */
 
-//#if (MOTOR_TYPE == PICOMO_MOTOR)
-//    CHAR sectorTable[] = {INVALID,SECTOR_ZERO,SECTOR_FOUR,SECTOR_FIVE,SECTOR_TWO,SECTOR_ONE,SECTOR_THREE,INVALID};
-//#elif (MOTOR_TYPE == NEW_MOTOR_1)
-//    CHAR sectorTable[] = {INVALID,SECTOR_THREE,SECTOR_FIVE,SECTOR_FOUR,SECTOR_ONE,SECTOR_TWO,SECTOR_ZERO,INVALID};
-//#elif (MOTOR_TYPE == NEW_MOTOR_2)
-CHAR sectorTable[8];
-//#else
-//    #error Motor sectors not defined
-//#endif
+
+CHAR sectorTable[8]={-1,4,2,3,0,5,1,-1};
   
 /* Variables containing the Period of half an electrical cycle, which is an */
 /* interrupt each edge of one of the hall sensor input */
@@ -239,8 +203,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
             cnt1000ms = 0;
             if(MotorDecActive == 0)
             {
-                if(PreMotorType == MOTOR_750W)
-                {
                     if(requiredDirection == CW)
                     {
                         if(refSpeed < SET_TARGET_SPEED_750W_CW)
@@ -265,19 +227,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                             }
                         }
                     }
-                }
-                else if(PreMotorType == MOTOR_1500W)
-                {
-                    if(refSpeed < SET_TARGET_SPEED_1500W)
-                    {            
-                        refSpeed += SPEED_INC_STP_1500W;
-                        if(refSpeed >= SET_TARGET_SPEED_1500W)
-                        {
-                            refSpeed = SET_TARGET_SPEED_1500W;
-                        //MotorStartComplete = 1;
-                        }
-                    }
-                }
             }
             else
             {
@@ -320,30 +269,7 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt (void)
 
 SHORT getCurrentSectorNo(VOID)
 {
-    if(PreMotorType == MOTOR_750W)
-    {
-        sectorTable[0] = INVALID;
-        sectorTable[1] = 4;//2;//SECTOR_ONE;
-        sectorTable[2] = 2;//4;//SECTOR_THREE;
-        sectorTable[3] = 3;//3;//SECTOR_TWO;
-        sectorTable[4] = 0;//0;//SECTOR_FIVE;
-        sectorTable[5] = 5;//1;//SECTOR_ZERO;
-        sectorTable[6] = 1;//5;//SECTOR_FOUR;
-        sectorTable[7] = INVALID;
-        //sectorTable[8] = {INVALID,SECTOR_ONE,SECTOR_THREE,SECTOR_TWO,SECTOR_FIVE,SECTOR_ZERO,SECTOR_FOUR,INVALID};
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        sectorTable[0] = INVALID;
-        sectorTable[1] = SECTOR_ZERO;
-        sectorTable[2] = SECTOR_TWO;
-        sectorTable[3] = SECTOR_ONE;
-        sectorTable[4] = SECTOR_FOUR;
-        sectorTable[5] = SECTOR_FIVE;
-        sectorTable[6] = SECTOR_THREE;
-        sectorTable[7] = INVALID;
-//        sectorTable[8] = {INVALID,SECTOR_ZERO,SECTOR_TWO,SECTOR_ONE,SECTOR_FOUR,SECTOR_FIVE,SECTOR_THREE,INVALID};
-    }
+
     hallValue = HALLA_BIT + (HALLB_BIT << 1) + (HALLC_BIT << 2);      
 	sector = sectorTable[hallValue];	//Get sector from table
    
@@ -382,8 +308,6 @@ void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt (void)
 	//	Added check for invalid sector to handle "offset at upper & lower limit"
 	if ((currentSector != lastSector) && (sector != INVALID))	
 	{         
-        if(PreMotorType == MOTOR_750W)
-        {
             //if ((currentSector == SECTOR_ZERO) || (currentSector == SECTOR_THREE))       
             if ((currentSector == sectorTable[2]) || (currentSector == sectorTable[5])) 
             {
@@ -407,30 +331,6 @@ void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt (void)
             }
             calculatePhaseValue(currentSector);
             lastSector = currentSector; /* Update last sector */
-        }
-        else if(PreMotorType == MOTOR_1500W)
-        {
-            if ((currentSector == SECTOR_FIVE) || (currentSector == SECTOR_TWO))
-            {
-                currentDirection = CW;
-                #if (HALL_INC_DIR == CW)
-                    hallCounts++;
-                #else
-                    hallCounts--;
-                #endif
-            }
-            else
-            {
-                currentDirection = CCW;
-                #if (HALL_INC_DIR == CW)
-                    hallCounts--;
-                #else
-                    hallCounts++;
-                #endif
-            }
-            calculatePhaseValue(currentSector);
-            lastSector = currentSector;
-        }
     }
 }
 
@@ -473,8 +373,6 @@ void __attribute__((interrupt, no_auto_psv)) _IC2Interrupt (void)
 		hall2Triggered = 1;
                 
 		/* Motor current direction is computed based on sector */        
-        if(PreMotorType == MOTOR_750W)
-        {
             //if ((currentSector == SECTOR_FIVE) || (currentSector == SECTOR_TWO))    
             if ((currentSector == sectorTable[3]) || (currentSector == sectorTable[4])) 
             {
@@ -498,30 +396,6 @@ void __attribute__((interrupt, no_auto_psv)) _IC2Interrupt (void)
             }
             calculatePhaseValue(currentSector);
             lastSector = currentSector; /* Update last sector */
-        }
-        else if(PreMotorType == MOTOR_1500W)
-        {            
-			if ((currentSector == SECTOR_FOUR) || (currentSector == SECTOR_ONE))
-            {
-                currentDirection = CW;
-                #if (HALL_INC_DIR == CW)
-                    hallCounts++;
-                #else
-                    hallCounts--;
-                #endif
-            }
-            else
-            {
-                currentDirection = CCW;
-                #if (HALL_INC_DIR == CW)
-                    hallCounts--;
-                #else
-                    hallCounts++;
-                #endif
-            }
-            calculatePhaseValue(currentSector);
-            lastSector = currentSector;
-        }
     }
 }
 
@@ -554,8 +428,6 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
 	//	Added check for invalid sector to handle "offset at upper & lower limit"
 	if ((currentSector != lastSector) && (sector != INVALID))
 	{               
-        if(PreMotorType == MOTOR_750W)
-        {
             //if ((currentSector == SECTOR_ONE) || (currentSector == SECTOR_FOUR))    
             if ((currentSector == sectorTable[1]) || (currentSector == sectorTable[6]))
             {
@@ -579,30 +451,6 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
             }
             calculatePhaseValue(currentSector);
             lastSector = currentSector; /* Update last sector */
-        }
-        else if(PreMotorType == MOTOR_1500W)
-        {
-			if ((currentSector == SECTOR_ZERO) || (currentSector == SECTOR_THREE))
-            {
-                currentDirection = CW;
-                #if (HALL_INC_DIR == CW)
-                    hallCounts++;
-                #else
-                    hallCounts--;
-                #endif
-            }
-            else
-            {
-                currentDirection = CCW;
-                #if (HALL_INC_DIR == CW)
-                    hallCounts--;
-                #else
-                    hallCounts++;
-                #endif
-            }
-            calculatePhaseValue(currentSector);
-            lastSector = currentSector;
-        }
 	}
 }
 
@@ -610,44 +458,8 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
 VOID calculatePhaseValue(WORD sectorNo)
 {   
    
-    if(PreMotorType == MOTOR_750W)
-    {
         phaseOffsetCW = PHASE_OFFSET_CW_750W;
         phaseOffsetCCW = PHASE_OFFSET_CCW_750W;
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-//        phaseOffsetCW = PHASE_OFFSET_CW_1500W;
-//        phaseOffsetCCW = PHASE_OFFSET_CCW_1500W;
-            if(measuredSpeed >= 500)
-            {    
-                if(requiredDirection == CW)
-                {
-                    if(phaseOffsetCW < PHASE_OFFSET_CW_MAX_1500W)
-                        phaseOffsetCW  += PHASE_OFFSET_INC_STEP_1500W;
-                    if(phaseOffsetCW >= PHASE_OFFSET_CW_MAX_1500W)
-                        phaseOffsetCW = PHASE_OFFSET_CW_MAX_1500W;  
-                }
-                else if(requiredDirection == CCW)
-                {
-                    if(phaseOffsetCCW > PHASE_OFFSET_CCW_MAX_1500W)
-                        phaseOffsetCCW  -= PHASE_OFFSET_INC_STEP_1500W;
-                    if(phaseOffsetCCW <= PHASE_OFFSET_CCW_MAX_1500W)
-                        phaseOffsetCCW = PHASE_OFFSET_CCW_MAX_1500W;
-                }
-            }
-            else
-            {
-                if(phaseOffsetCW > PHASE_OFFSET_CW_def_1500W)
-                    phaseOffsetCW -= PHASE_OFFSET_DEC_STEP_1500W;
-                if(phaseOffsetCW <= PHASE_OFFSET_CW_def_1500W)
-                    phaseOffsetCW = PHASE_OFFSET_CW_def_1500W;
-                if(phaseOffsetCCW < PHASE_OFFSET_CCW_def_1500W)
-                    phaseOffsetCCW += PHASE_OFFSET_DEC_STEP_1500W;
-                if(phaseOffsetCCW >= PHASE_OFFSET_CCW_def_1500W)
-                    phaseOffsetCCW = PHASE_OFFSET_CCW_def_1500W;
-            }        
-    }
     #if 1        
     /* Motor commutation is actually based on the required direction, not */
     /* the current dir. This allows driving the motor in four quadrants */    
@@ -740,27 +552,15 @@ VOID measureActualSpeed(VOID)
         hall2Triggered = 0;
         cnt_motor_stop = 0;
     }
-    if(PreMotorType == MOTOR_750W)
-    {
+    
         if (period < MINPERIOD_750W)  
             period = MINPERIOD_750W;
         else if (period > MAXPERIOD_750W)
             period = MAXPERIOD_750W;
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        if (period < MINPERIOD_1500W)  
-            period = MINPERIOD_1500W;
-        else if (period > MAXPERIOD_1500W)
-            period = MAXPERIOD_1500W;
-    }
     
 	periodStateVar+= ((period - periodFilter)*(periodFilterConstant));
 	periodFilter = periodStateVar>>15;
-    if(PreMotorType == MOTOR_750W)
         measuredSpeed = __builtin_divud(SPEED_RPM_CALC_750W,periodFilter);
-    else if(PreMotorType == MOTOR_1500W)
-        measuredSpeed = __builtin_divud(SPEED_RPM_CALC_1500W,periodFilter);
     measuredSpeed_bak=measuredSpeed;
     phaseInc = __builtin_divud(PHASE_INC_CALC,periodFilter);
 //    phaseIncPerSec = __builtin_muluu(measuredSpeed,655);
@@ -780,22 +580,8 @@ VOID speedControl(VOID)
     speedPIparms.qInRef = refSpeed;
     speedPIparms.qInMeas = measuredSpeed;
     
-    if(PreMotorType == MOTOR_1500W)
-        if(requiredDirection == CW)
-        {
-            speedPIparms.qOutMax = currentLimitClamp;
-            speedPIparms.qOutMin = -(currentLimitClamp);
-        }
-        else
-        {
-            speedPIparms.qOutMax = currentLimitClamp;
-            speedPIparms.qOutMin = -(currentLimitClamp);
-        }
-    else if(PreMotorType == MOTOR_750W)
-    {
         speedPIparms.qOutMax = currentLimitClamp;
-        speedPIparms.qOutMin = -(currentLimitClamp);  
-    }
+        speedPIparms.qOutMin = -(currentLimitClamp);
         calcPiNew(&speedPIparms);
         
         if(flags.speedControl)
@@ -829,61 +615,21 @@ VOID intitSpeedController(VOID)
     
     PhaseAdvance = 0;
     
-    if(PreMotorType == MOTOR_750W)
-    {
         controlOutput = 0;
         period = MAXPERIOD_750W;
         periodFilter = MAXPERIOD_750W;
         periodFilterConstant = PERIOD_FILTER_CONST;
         periodStateVar = ((DWORD)MAXPERIOD_750W << 15);
         phaseInc = __builtin_divud(PHASE_INC_CALC, periodFilter);
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        controlOutput = 0;
-        period = MAXPERIOD_1500W;
-        periodFilter = MAXPERIOD_1500W;
-        periodFilterConstant = PERIOD_FILTER_CONST;
-        periodStateVar = ((DWORD)MAXPERIOD_1500W << 15);
-        phaseInc = __builtin_divud(PHASE_INC_CALC, periodFilter);
-    }
-    
-    //speedError = 0;
+
     tmpQu = 0;
     tmpRe = 0;
-    
-    if(PreMotorType == MOTOR_750W)
-    {
-        sectorTable[0] = INVALID;
-        sectorTable[1] = SECTOR_ONE;
-        sectorTable[2] = SECTOR_THREE;
-        sectorTable[3] = SECTOR_TWO;
-        sectorTable[4] = SECTOR_FIVE;
-        sectorTable[5] = SECTOR_ZERO;
-        sectorTable[6] = SECTOR_FOUR;
-        sectorTable[7] = INVALID;
-//        sectorTable[8] = {INVALID,SECTOR_ONE,SECTOR_THREE,SECTOR_TWO,SECTOR_FIVE,SECTOR_ZERO,SECTOR_FOUR,INVALID};
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        sectorTable[0] = INVALID;
-        sectorTable[1] = SECTOR_ZERO;
-        sectorTable[2] = SECTOR_TWO;
-        sectorTable[3] = SECTOR_ONE;
-        sectorTable[4] = SECTOR_FOUR;
-        sectorTable[5] = SECTOR_FIVE;
-        sectorTable[6] = SECTOR_THREE;
-        sectorTable[7] = INVALID;
-//        sectorTable[8] = {INVALID,SECTOR_ZERO,SECTOR_TWO,SECTOR_ONE,SECTOR_FOUR,SECTOR_FIVE,SECTOR_THREE,INVALID};
-    }
 
     hallValue = HALLA_BIT + (HALLB_BIT << 1) + (HALLC_BIT << 2);    
 	sector = sectorTable[hallValue];	//Get sector from table
     lastSector = sector;
     calculatePhaseValue(sector);
 
-    if(PreMotorType == MOTOR_750W)
-    {
         if(requiredDirection == CW)
         {
 //            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,currentLimitClamp,-(currentLimitClamp),0);
@@ -893,18 +639,6 @@ VOID intitSpeedController(VOID)
         {
             initPiNew(&speedPIparms,P_SPEED_PI_CCW_750W,I_SPEED_PI_CCW_750W,C_SPEED_PI,5000,-5000,0);
         }
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        if(requiredDirection == CW)
-        {
-            initPiNew(&speedPIparms,P_SPEED_PI_CW_1500W,I_SPEED_PI_CW_1500W,C_SPEED_PI,15000,-15000,0);
-        }
-        else
-        {
-            initPiNew(&speedPIparms,P_SPEED_PI_CCW_1500W,I_SPEED_PI_CCW_1500W,C_SPEED_PI,15000,-15000,0);
-        }
-    }
 
 }
 

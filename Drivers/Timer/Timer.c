@@ -88,42 +88,6 @@ VOID initTMR3(VOID)
     IPC2bits.T3IP = 1;
 }
 
-VOID initTMR3For1500W(VOID)
-{
-#if (PDIV == PDIV_256)
-    T3CON = 0x0030; /* internal Tcy/256 clock */
-#elif (PDIV == PDIV_64)
-    T3CON = 0x0020; /* internal Tcy/64 clock */
-#else
-    #error Timer3 not configured
-#endif    
-	TMR3 = 0;
-	//Changed for ADC2- RN- NOV2015
-	PR3 = 2734*2;//0xFFFF;			/* 20ms timer */
-    
-    IFS0bits.T3IF = 0;
-    IPC2bits.T3IP = 1;
-}
-
-/******************************************************************************
- * initTMR4
- *
- * This function initializes Timer4 used for Ramp Generator.
- *
- * PARAMETER REQ: none
- *
- * RETURNS: none
- *
- * ERRNO: none
- ********************************************************************************/
-//VOID initTMR4(VOID)
-//{
-//	T4CON = 0x0030;	 /* internal Tcy/256 clock */
-//	TMR4 = 0;
-//	PR4 = 2734;		/* 10ms timer */
-//    IPC6bits.T4IP = 2;
-//}
-
 /******************************************************************************
  * initTMR5
  *
@@ -159,15 +123,5 @@ VOID initTMR9(VOID)
     IPC13bits.T9IP = 1;
 }
 
-VOID initTMR9ForTest(VOID)
-{
-	T9CON = 0x0030;	 /* internal Tcy/256 clock */
-	TMR9 = 0;
-	PR9 = 2734;				/* 100 ms timer */
-	IFS3bits.T9IF = 0;  /* Clear timer 8 flag */
-	IEC3bits.T9IE = 1;	/* Enable interrupts for Timer 8 */
-    T9CONbits.TON = 0; //stop timer
-    IPC13bits.T9IP = 1;
-}
 
 

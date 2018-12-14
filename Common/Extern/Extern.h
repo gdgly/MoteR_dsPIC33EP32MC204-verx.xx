@@ -106,8 +106,6 @@ EXTERN BYTE MotorRunInCycle;
 EXTERN BYTE MotorDecActive;
 EXTERN UINT8 CMDStatus;
 EXTERN WORD MotorStopCount;
-EXTERN UINT8 CurrentMotorType;
-EXTERN UINT8 PreMotorType;
 EXTERN UINT16 PhaseAdvance;
 EXTERN UINT16 DutyCycle;
 EXTERN UINT16 DutyCycleSet;

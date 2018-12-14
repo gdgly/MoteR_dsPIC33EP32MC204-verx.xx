@@ -72,8 +72,7 @@
 //#else
 //    #error Motor type not defined
 //#endif
-#define NO_POLEPAIRS_750W  4//3
-#define NO_POLEPAIRS_1500W 4
+#define NO_POLEPAIRS_750W  4
 
 #define MAX_RPM         8000//4800
 #define MIN_RPM         50//10//100
@@ -95,36 +94,23 @@
 #endif
 
 /* for speed rpm calculation */
-#define SPEED_RPM_CALC_750W      ((((DWORD)FCY*60)/(PDIV*2*4)))    //3
-#define SPEED_RPM_CALC_1500W      ((((DWORD)FCY*60)/(PDIV*2*4)))
+#define SPEED_RPM_CALC_750W      ((((DWORD)FCY*60)/(PDIV*2*4)))   
 
 // Period Calculation
 // Period = (FCY / PDIV * 60) / (RPM * NO_POLEPAIRS )
-#define MINPERIOD_750W	((DWORD)((FCY/PDIV)*60)/((DWORD)MAX_RPM*2*4))  //3
-#define MAXPERIOD_750W	((DWORD)((FCY/PDIV)*60)/((DWORD)MIN_RPM*2*4))  //3
-#define MINPERIOD_1500W	((DWORD)((FCY/PDIV)*60)/((DWORD)MAX_RPM*2*4))
-#define MAXPERIOD_1500W	((DWORD)((FCY/PDIV)*60)/((DWORD)MIN_RPM*2*4))
+#define MINPERIOD_750W	((DWORD)((FCY/PDIV)*60)/((DWORD)MAX_RPM*2*4))  
+#define MAXPERIOD_750W	((DWORD)((FCY/PDIV)*60)/((DWORD)MIN_RPM*2*4))  
 
 #define PHASE_INC_CALC 1792000UL //((DWORD)(FCY/((DWORD)PDIV*2*FPWM))*65536) //For 5Khz
-//#define PHASE_INC_CALC 896000UL //((DWORD)(FCY/((DWORD)PDIV*2*FPWM))*65536) //For 10Khz
-//#define PHASE_INC_CALC 746667UL  //((DWORD)(FCY/((DWORD)PDIV*2*FPWM))*65536) // For 12Khz
-//#define PHASE_INC_CALC 448000UL  //((DWORD)(FCY/((DWORD)PDIV*2*FPWM))*65536) // For 20Khz
 
 /* Half of the PWM Deadtime; The effective deadtime written in ALTDTR registers is 2*ALTDTR_DIV2 */
 #define	ALTDTR_DIV2_750W	140//120
-#define	ALTDTR_DIV2_1500W   140//700
-//#define	ALTDTR_DIV2	280//(70*4)      //5us
 //#define	ALTDTR_DIV2	147//(70*2.1)      //2.1us
-//#define	ALTDTR_DIV2	210//(70*3)      //3us
-//#define	ALTDTR_DIV2	350//(70*5)      //5us
-//#define	ALTDTR_DIV2	700//(70*10)      //10us
 
 /* Use this MACRO when using floats to initialize signed 16-bit fractional variables */
 #define Q15(Float_Value)	\
         ((Float_Value < 0.0) ? (SHORT)(32768 * (Float_Value) - 0.5) \
         : (SHORT)(32767 * (Float_Value) + 0.5))
 
-#define MOTOR_750W 0
-#define MOTOR_1500W 1
 
 #endif

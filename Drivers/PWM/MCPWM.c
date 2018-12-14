@@ -54,19 +54,9 @@ VOID initMCPWM(VOID)
 	DTR1 = 0x0000;	
 	DTR2 = 0x0000;	
 	DTR3 = 0x0000;
-	
-    if(PreMotorType == MOTOR_750W)
-    {
         ALTDTR1 = 2*ALTDTR_DIV2_750W;       //1us		
         ALTDTR2 = 2*ALTDTR_DIV2_750W;
         ALTDTR3 = 2*ALTDTR_DIV2_750W;
-    }
-    else if(PreMotorType == MOTOR_1500W)
-    {
-        ALTDTR1 = 2*ALTDTR_DIV2_1500W;      //5us	
-        ALTDTR2 = 2*ALTDTR_DIV2_1500W;
-        ALTDTR3 = 2*ALTDTR_DIV2_1500W;
-    }
 		
 	PTCON2 = 0x0000;	/* Divide by 1 to generate PWM */  
         PWMCON1 = 0x0605;	/* Enable PWM output pins and configure them as */
