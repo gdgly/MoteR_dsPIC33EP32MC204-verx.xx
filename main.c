@@ -47,6 +47,7 @@ int main(void)
 	InitIC();
         InitUART1();
         BOOT_DELAY();
+        //Flags.flag_open=1;
 #if defined(__Motor_debug__)
         SET_SPEED=2600;
 #endif

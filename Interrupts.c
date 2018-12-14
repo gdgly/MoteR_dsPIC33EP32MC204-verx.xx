@@ -175,23 +175,22 @@ Overview:		This interrupt a 1ms interrupt and outputs a square
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {
     static unsigned int cnt100ms = 0;
+    unsigned int speed_start_error;
 
-   if(flag_open_loop_time) flag_open_loop_time--;
-
-    if(++cnt100ms >= 20)
+    if(++cnt100ms >= 200)
     {
         cnt100ms = 0;
         Out_LED_PGD=!Out_LED_PGD;
-       if(SET_SPEED >= 100)
+    }
+
+       if(SET_SPEED >= 200)
         {
-            if(refSpeed < SET_SPEED)
+            if((ActualSpeed < SET_SPEED)&&(flag_open_loop==0))
             {
-                refSpeed += 200;
-                if(refSpeed >= SET_SPEED){
-                    refSpeed = SET_SPEED;
-                    if(flag_open_loop_time==0){flag_open_loop_time=1;flag_open_loop_time=150;}
-                }
+                speed_start_error=(SET_SPEED-ActualSpeed)/open_loop_inc_inc;
+                refSpeed = refSpeed+open_loop_inc+speed_start_error;
             }
+            else flag_open_loop=1;
         }
         else
         {
@@ -200,7 +199,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                 refSpeed -= 200;
             }
         }
-    }
 
     Motor_SPEED_Compute();
 
@@ -211,20 +209,21 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 	PDC3 = PDC1;    
 #endif
 #ifdef CLOSEDLOOP
-        if(refSpeed!=SET_SPEED)
-          speed_PIparms.qInRef = ActualSpeed;
+         if(flag_open_loop==0)
+            SPEED_PDC=refSpeed/5;   //5
         else
-          speed_PIparms.qInRef = refSpeed;
-        speed_PIparms.qInMeas = ActualSpeed;
+        {
+            speed_PIparms.qInRef = SET_SPEED;
+            speed_PIparms.qInMeas = ActualSpeed;
 
-        CalcPI(&speed_PIparms);
-        SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
+            CalcPI(&speed_PIparms);
+            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
 
-        SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
-        if(refSpeed!=SET_SPEED)
-           SPEED_PDC=refSpeed/5;
-        else if(flag_open_loop_time==0)
-           SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
+            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+        }
+
+
         if(SPEED_PDC<100)SPEED_PDC=100;
         else if(SPEED_PDC>1300)SPEED_PDC=1300;
         PDC1 = SPEED_PDC;
