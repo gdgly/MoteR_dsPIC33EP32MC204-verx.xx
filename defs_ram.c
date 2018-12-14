@@ -8,6 +8,7 @@
 //#include <p33Fxxxx.h>
 #include <p33Exxxx.h>
 #include "defs_ram.h"
+#include "pi.h"
 
 /*************************************************************
 	Low side driver table is as below.  In the StateLoTableClk
@@ -48,8 +49,14 @@ unsigned int timer3value_Last;
 unsigned char FLAG_read_HALL_time;
 int ActualSpeed;
 
-unsigned int AD_SET_SPEED;
-unsigned int refSpeed;
+unsigned int SET_SPEED;
+int refSpeed;
+unsigned int SPEED_open_loop_PDC;
+unsigned int open_loop_time;
+unsigned char flag_open_loop_time;
+int SPEED_PDC;
+int SPEED_PDC_offset;
+int SPEED_PI_qOut;
 
 unsigned int IBUS_value;
 unsigned int IBUS_value_Last;
@@ -65,3 +72,14 @@ UINT8 UART_RX_Size;
 UINT8 FLAG_UART_R;
 UINT16 UART_RX_check_SUM;
 UINT16 BOOT_time;
+
+
+
+
+
+
+
+UINT8 test_SPEED_PI_FLAG;
+
+
+

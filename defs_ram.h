@@ -17,7 +17,9 @@
 
 //#define __SOFT_Ver1__       //hardware：（PCB 3.4.3）   PCB初次作成
 #define __SOFT_Ver2__       //hardware：（CY-1601 OP-0401）   PCB重新垒板，部分I/O有变动
-#define __Motor_debug__     //电机上电后直接跑起，主要是测试电机部分电路是否正常
+//#define __Motor_debug__     //电机上电后直接跑起，主要是测试电机部分电路是否正常
+#define CLOSEDLOOP
+
 //#define __RPI32_AD_SELCET__
 #define __RPI32_UART_SELCET__
 
@@ -27,10 +29,9 @@
                       Fcy  =	140M/2 = 70MIP
             */
 
-            //#define CLOSEDLOOP
             #define FOSC  140000000			// xtal = 16.0Mhz, 140.0Mhz after PLL
             #define FCY  FOSC/2
-            #define FPWM 40000
+            #define FPWM 20000
 
             #define BaudRate 454//(unsigned int)((FCY/(16*9600))-1)      //波特率：9600
 
@@ -59,6 +60,17 @@
 
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
+
+           #define SPEED_PI_P  6000//5000 6000
+           #define SPEED_PI_I  5 //700
+           #define SPEED_PI_C  0
+           //since stack shuts down after 95% of PWM duty therefore limit PI max output to 90%
+           #define MAX_SPEED_PI    31128   //95% of max value ie 32767
+#ifdef CLOSEDLOOP
+           #define SET_SPEED_ref   2900
+#else
+            #define SET_SPEED_ref   5000          //open loop
+#endif
            //*********************************************************************************
 
 #if defined(__SOFT_Ver2__)      //电流采样设置参数
@@ -69,6 +81,11 @@
            #define SET_IBUS_Vpp_AD   1010 //((1650+SET_IBUS_Vpp_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
            #define SET_IBUS_Vavg_AD   850 //((1650+SET_IBUS_Vavg_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
 #endif
+
+
+
+
+
 //========================================================================
 #if defined(__SOFT_Ver1__)
     #define In_LOW_LIM_dir                TRISBbits.TRISB9
@@ -236,8 +253,14 @@ extern unsigned long timer3avg;
 extern unsigned char FLAG_read_HALL_time;
 extern int ActualSpeed;
 
-extern unsigned int AD_SET_SPEED;
-extern unsigned int refSpeed;
+extern unsigned int SET_SPEED;
+extern int refSpeed;
+extern unsigned int SPEED_open_loop_PDC;
+extern unsigned int open_loop_time;
+extern unsigned char flag_open_loop_time;
+extern int SPEED_PDC;
+extern int SPEED_PDC_offset;
+extern int SPEED_PI_qOut;
 
 extern unsigned int IBUS_value;
 extern unsigned int IBUS_value_Last;
@@ -253,3 +276,10 @@ extern UINT8 UART_RX_Size;
 extern UINT8 FLAG_UART_R;
 extern UINT16 UART_RX_check_SUM;
 extern UINT16 BOOT_time;
+
+
+
+
+
+
+extern UINT8 test_SPEED_PI_FLAG;

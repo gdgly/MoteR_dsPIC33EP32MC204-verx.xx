@@ -10,14 +10,7 @@
 #include "defs_ram.h"
 #include "SensoredBLDC.h"
 #include "uart.h"
-
-int DesiredSpeed;
-int SpeedError;
-long SpeedIntegral = 0, SpeedIntegral_n_1 = 0, SpeedProportional = 0;
-long DutyCycle = 0;
-unsigned int Kps = 20000;					// Kp and Ks terms need to be adjusted
-unsigned int Kis = 2000;					// as per the motor and load 
-
+#include "pi.h"
 
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt (void)
@@ -183,32 +176,28 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {
     static unsigned int cnt100ms = 0;
 
-    //Out_RELAY_DOWN_LIM=!Out_RELAY_DOWN_LIM;
+   if(flag_open_loop_time) flag_open_loop_time--;
 
-    if(++cnt100ms >= 100)
+    if(++cnt100ms >= 20)
     {
         cnt100ms = 0;
         Out_LED_PGD=!Out_LED_PGD;
-       if(AD_SET_SPEED >= 100)
+       if(SET_SPEED >= 100)
         {
-            if(refSpeed < AD_SET_SPEED)
+            if(refSpeed < SET_SPEED)
             {
-                refSpeed += 40;
-                if(refSpeed >= AD_SET_SPEED)
-                    refSpeed = AD_SET_SPEED;
+                refSpeed += 200;
+                if(refSpeed >= SET_SPEED){
+                    refSpeed = SET_SPEED;
+                    if(flag_open_loop_time==0){flag_open_loop_time=1;flag_open_loop_time=150;}
+                }
             }
-//            else if(refSpeed > AD_SET_SPEED){
-//                if(refSpeed > 350)
-//                {
-//                    refSpeed -= 50;
-//                }
-//            }
         }
         else
         {
-            if(refSpeed > 50)
+            if(refSpeed > 200)
             {
-                refSpeed -= 40;
+                refSpeed -= 200;
             }
         }
     }
@@ -216,30 +205,33 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     Motor_SPEED_Compute();
 
 #ifndef CLOSEDLOOP
-        PDC1 = refSpeed;
+        SPEED_open_loop_PDC=refSpeed>>2;
+        PDC1 = SPEED_open_loop_PDC;
 	PDC2 = PDC1;
 	PDC3 = PDC1;    
 #endif
 #ifdef CLOSEDLOOP
-	ActualSpeed = SPEEDMULT/timer3avg;
-	SpeedError = DesiredSpeed - ActualSpeed;
-	SpeedProportional = (int)(((long)Kps*(long)SpeedError) >> 15);
-	SpeedIntegral = SpeedIntegral_n_1 + (int)(((long)Kis*(long)SpeedError) >> 15);
-	
-	if (SpeedIntegral < 0)
-		SpeedIntegral = 0;
-	else if (SpeedIntegral > 32767)
-		SpeedIntegral = 32767;
-	SpeedIntegral_n_1 = SpeedIntegral;
-	DutyCycle = SpeedIntegral + SpeedProportional;
-	if (DutyCycle < 0)
-		DutyCycle = 0;
-	else if (DutyCycle > 32767)
-		DutyCycle = 32767;
-	
-	PDC1 = (int)(((long)(PTPER*2)*(long)DutyCycle) >> 15);
-	PDC2 = PDC1;
-	PDC3 = PDC1;
+        if(refSpeed!=SET_SPEED)
+          speed_PIparms.qInRef = ActualSpeed;
+        else
+          speed_PIparms.qInRef = refSpeed;
+        speed_PIparms.qInMeas = ActualSpeed;
+
+        CalcPI(&speed_PIparms);
+        SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
+
+        SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
+        if(refSpeed!=SET_SPEED)
+           SPEED_PDC=refSpeed/5;
+        else if(flag_open_loop_time==0)
+           SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+        if(SPEED_PDC<100)SPEED_PDC=100;
+        else if(SPEED_PDC>1300)SPEED_PDC=1300;
+        PDC1 = SPEED_PDC;
+        PDC2 = PDC1;
+        PDC3 = PDC1;
+
+    test_SPEED_PI_FLAG++;
 #endif								// in closed loop algorithm
 
 	IFS0bits.T1IF = 0;

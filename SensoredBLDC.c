@@ -9,7 +9,7 @@
 #include <p33Exxxx.h>
 #include "defs_ram.h"
 #include "Init.h"
-
+#include "pi.h"
 
 /*********************************************************************
   Function:        void Read_Hall(void)
@@ -112,6 +112,17 @@ void RunMotor(void)
 	IEC5bits.PWM1IE = 1;	// Enable PWM interrupts
 
         Flags.RunMotor = 1;		// set flag
+        refSpeed=400;                  //给定启动转速
+        SPEED_PDC=100;                 //给定启动PWM占空比5%
+
+        flag_open_loop_time=0;
+
+        ActualSpeed=0;
+        timer3value=MAX_PERIOD;
+        timer3value_Last=MAX_PERIOD;
+        timer3avg=MAX_PERIOD;
+
+        InitPI(&speed_PIparms,SPEED_PI_P,SPEED_PI_I,SPEED_PI_C,MAX_SPEED_PI,(-MAX_SPEED_PI),0);
 }
 
 /*********************************************************************
@@ -141,7 +152,7 @@ void StopMotor(void)
         IEC5bits.PWM1IE = 0;
 
 	Flags.RunMotor = 0;			// reset run flag
-        AD_SET_SPEED=0;
+        SET_SPEED=0;
 }
 
 /*********************************************************************
@@ -153,12 +164,13 @@ void StopMotor(void)
 
                                 15k---->950
                                 20k---->cw  Direction=0  650  3000rpm
+ *                                                       1300 6000rpm
                                       ccw  Direction=1  750  3000rpm
 ********************************************************************/
 void runTestCode(void)
 {
 #if defined(__Motor_debug__)
-            if(AD_SET_SPEED >= 500)
+            if(SET_SPEED >= 500)
             {
                 Flags.StartStop = 1;
             }
@@ -188,7 +200,7 @@ void runTestCode(void)
              {
                  if(!Flags.RunMotor)
                  {
-                    AD_SET_SPEED=1300;
+                    SET_SPEED=SET_SPEED_ref;
                     lockRelease;
                     DelayNmSec(100);
                     Flags.Direction = 0;
@@ -198,10 +210,10 @@ void runTestCode(void)
                  {
                      if(Flags.Direction==0);
                      else {
-                         AD_SET_SPEED=0;
-                         if(refSpeed<=50){
+                         SET_SPEED=0;
+                         if(refSpeed<=200){
                              DelayNmSec(100);
-                             AD_SET_SPEED=1300;
+                             SET_SPEED=SET_SPEED_ref;
                              Flags.Direction = 0;
                              RunMotor();
                          }
@@ -213,7 +225,7 @@ void runTestCode(void)
              {
                  if(!Flags.RunMotor)
                  {
-                    AD_SET_SPEED=1350;
+                    SET_SPEED=SET_SPEED_ref;
                     lockRelease;
                     DelayNmSec(100);
                     Flags.Direction = 1;
@@ -223,10 +235,10 @@ void runTestCode(void)
                  {
                      if(Flags.Direction==1);
                      else {
-                         AD_SET_SPEED=0;
-                         if(refSpeed<=50){
+                         SET_SPEED=0;
+                         if(refSpeed<=200){
                              DelayNmSec(100);
-                             AD_SET_SPEED=1350;
+                             SET_SPEED=SET_SPEED_ref;
                              Flags.Direction = 1;
                              RunMotor();
                          }
@@ -236,8 +248,8 @@ void runTestCode(void)
 
              if((Flags.flag_stop==1) && (Flags.RunMotor))
              {
-                 AD_SET_SPEED=0;
-                 if(refSpeed<=50){
+                 SET_SPEED=0;
+                 if(refSpeed<=200){
                      DelayNmSec(100);
                      StopMotor();
                      DelayNmSec(100);

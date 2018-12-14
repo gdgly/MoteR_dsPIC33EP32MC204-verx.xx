@@ -7,3 +7,4 @@
 
 void UART_Handler(void);
 void UART_RX_decode(void);
+void TEST_uart_speed_pi(void);

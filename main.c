@@ -11,6 +11,7 @@
 #include "Init.h"
 #include "SensoredBLDC.h"
 #include "uart.h"
+#include "pi.h"
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
@@ -47,16 +48,14 @@ int main(void)
         InitUART1();
         BOOT_DELAY();
 #if defined(__Motor_debug__)
-        AD_SET_SPEED=650;
+        SET_SPEED=2600;
 #endif
 	while(1)
 	{
-
-#ifndef CLOSEDLOOP
            runTestCode();  /* Run test code */
            adc_IBUS();
            UART_Handler();
-#endif
+           TEST_uart_speed_pi();
 	}
 }
 

@@ -111,3 +111,89 @@ void UART_Handler(void)
     FLAG_UART_R=0;
   }
 }
+
+
+
+
+
+
+
+
+unsigned char hex_asc(unsigned char hex)
+{
+	unsigned char i;
+	hex = hex & 0x0F;
+	if (hex < 0x0A) i = hex | 0x30;
+	else i = hex + 0x37;
+	return i;
+}
+void TEST_uart_speed_pi(void)
+{
+    unsigned char  char_data,char0;
+
+    if(test_SPEED_PI_FLAG>=2){
+        test_SPEED_PI_FLAG=0;
+
+        char_data=refSpeed>>8;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=refSpeed%256;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        Send_char(' ');
+
+        char_data=ActualSpeed>>8;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=ActualSpeed%256;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        Send_char(' ');
+
+        char_data=SPEED_PI_qOut>>8;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=SPEED_PI_qOut%256;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        Send_char(' ');
+
+        char_data=SPEED_PDC_offset>>8;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=SPEED_PDC_offset%256;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        Send_char(' ');
+
+        char_data=SPEED_PDC>>8;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=SPEED_PDC%256;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+
+        Send_char(13);
+        Send_char(10);
+    }
+}
