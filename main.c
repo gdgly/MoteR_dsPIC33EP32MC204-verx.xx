@@ -10,6 +10,7 @@
 #include "defs_ram.h"
 #include "Init.h"
 #include "SensoredBLDC.h"
+#include "uart.h"
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
@@ -43,15 +44,18 @@ int main(void)
 	timer3avg = 0;
 	InitMCPWM();
 	InitIC();
-                              /*15k---->950
-                                20k---->cw  Direction=0  650  3000rpm
-                                      ccw  Direction=1  750  3000rpm*/
-        AD_SET_SPEED=650;//950;
+        InitUART1();
+        BOOT_DELAY();
+#if defined(__Motor_debug__)
+        AD_SET_SPEED=650;
+#endif
 	while(1)
 	{
+
 #ifndef CLOSEDLOOP
            runTestCode();  /* Run test code */
            adc_IBUS();
+           UART_Handler();
 #endif
 	}
 }

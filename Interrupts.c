@@ -9,6 +9,7 @@
 #include <p33Exxxx.h>
 #include "defs_ram.h"
 #include "SensoredBLDC.h"
+#include "uart.h"
 
 int DesiredSpeed;
 int SpeedError;
@@ -18,6 +19,23 @@ unsigned int Kps = 20000;					// Kp and Ks terms need to be adjusted
 unsigned int Kis = 2000;					// as per the motor and load 
 
 
+/*********************************************************************
+Function:		void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt (void)
+
+Overview:
+
+*********************************************************************/
+void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt (void)
+{
+    unsigned char dat;
+    
+    dat = U1RXREG;
+           UART_RX_RT[UART_RX_idx++]=dat;  // Check preamble
+           UART_RX_check_SUM=UART_RX_check_SUM+dat;
+           UART_RX_decode();
+
+    IFS0bits.U1RXIF = 0;
+}
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _ADC1Interrupt (void)
 
@@ -37,9 +55,16 @@ void __attribute__((interrupt, no_auto_psv)) _AD1Interrupt (void)
         //if(AD_SET_SPEED<500)AD_SET_SPEED=500;
 
         IBUS_value_Last=IBUS_value;
+#if defined(__SOFT_Ver1__)
         IBUS_value=ADC1BUF1;
         if((IBUS_value_Last>=1000)&&(IBUS_value>=1000))    // 取样电阻30m欧，放大倍数20，运放零点0.45V
             StopMotor();
+#endif
+#if defined(__SOFT_Ver2__)
+        IBUS_value=ADC1BUF0;
+        //if((IBUS_value_Last>SET_IBUS_Vpp_AD)&&(IBUS_value>SET_IBUS_Vpp_AD))    // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
+        //    StopMotor();
+#endif
         FLAG_read_IBUS=1;
 	// reset ADC interrupt flag
 	IFS0bits.AD1IF = 0;
@@ -164,11 +189,11 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     {
         cnt100ms = 0;
         Out_LED_PGD=!Out_LED_PGD;
-       if(AD_SET_SPEED >= 500)
+       if(AD_SET_SPEED >= 100)
         {
             if(refSpeed < AD_SET_SPEED)
             {
-                refSpeed += 50;
+                refSpeed += 40;
                 if(refSpeed >= AD_SET_SPEED)
                     refSpeed = AD_SET_SPEED;
             }
@@ -181,9 +206,9 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         }
         else
         {
-            if(refSpeed > 350)
+            if(refSpeed > 50)
             {
-                refSpeed -= 50;
+                refSpeed -= 40;
             }
         }
     }

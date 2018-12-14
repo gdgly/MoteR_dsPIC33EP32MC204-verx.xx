@@ -102,11 +102,12 @@ void GPIO_Init(void)
 	RPINR7bits.IC1R = 33;		// IC1 on RP1/RB1
 	RPINR7bits.IC2R = 34;		// IC2 on RP2/RB2
 	RPINR8bits.IC3R = 35;	        // IC3 on RP3/RB3
-#if defined(__RPI32_UART_SELCET__)
-        RPINR18bits.U1RXR=32;
-#endif
+        RPOR5bits.RP54R=1;         //Set RP54 RC6-->U1TX
+        RPINR18bits.U1RXR=32;         //Set U1RX-->RPI32 RB0
 	lockIO();
-        In_IBUS_dir=1;
+
+        In_ADC_IBUS_dir=1;
+        In_ADC_TMEP_dir=1;
         In_HALL_U_dir=1;
         In_HALL_V_dir=1;
         In_HALL_W_dir=1;
@@ -142,8 +143,35 @@ void GPIO_Init(void)
         Out_RELAY_UP_LIM_dir=0;
         Out_RELAY_UP_LIM=0;
 
+        Out_RELAY_LINKAGE_PGC_dir=0;
+        Out_RELAY_LINKAGE_PGC=0;
         Out_LED_PGD_dir=0;
         Out_LED_PGD=1;
+}
+/*********************************************************************
+  Function:        void InitUART1(void)
+
+  Overview:        intializes the UART1
+
+  Note:            None.
+********************************************************************/
+void InitUART1(void)
+{
+    TRISBbits.TRISB0=1;      //必须设置为输入，否则UART RX不正常
+
+    U1BRG = BaudRate; //Set Baud rate
+    U1MODE = 0;
+    U1STA = 0;
+
+    IPC2bits.U1RXIP = 6; // Set priority level=1
+    // Can be done in a single operation by assigning PC2SET = 0x0000000D
+    IFS0bits.U1RXIF = 0; // Clear the timer interrupt status flag
+    IEC0bits.U1RXIE = 1; // Enable timer interrupts
+
+    U1MODEbits.UARTEN = 1; //Enable UART for 8-bit data
+    //no parity, 1 Stop bit
+    //U1STAbits.URXEN= 1; //Enable Transmit and Receive
+    U1STAbits.UTXEN= 1;
 }
 /*******************************************************************
 		Below is the code required to setup the ADC registers for :
@@ -156,10 +184,17 @@ void GPIO_Init(void)
 *********************************************************************/
 void InitADC10(void)
 {
+#if defined(__SOFT_Ver1__)
         ANSELAbits.ANSA0 = 1;		// AN0 for ibus
-        ANSELBbits.ANSB0 = 1;		// AN2 For ZB_AD
+        //ANSELBbits.ANSB0 = 1;		// AN2 For ZB_AD
         CNPUAbits.CNPUA0=0;
-
+#endif
+#if defined(__SOFT_Ver2__)
+        ANSELAbits.ANSA0 = 1;		// AN0 for 电机线圈温度
+        ANSELAbits.ANSA1 = 1;		// AN1 For ibus
+        CNPUAbits.CNPUA0=0;
+        CNPUAbits.CNPUA1=0;
+#endif
  	/* set channel scanning here, auto sampling and convert, 
  	   with default read-format mode */
 	AD1CON1 = 0x006C;
@@ -180,13 +215,20 @@ void InitADC10(void)
         AD1CON3 = 0x0005;
 
 	AD1CSSL = 0x0000;
-	
+#if defined(__SOFT_Ver1__)
 	/* channel select AN2 */
 	AD1CHS0 = 0x0002;     //AN2-->ch0
 
         AD1CON2bits.CHPS=1;   //convert ch0,ch1
         AD1CHS123bits.CH123SA= 0;   //AN0-->ch1
+#endif
+#if defined(__SOFT_Ver2__)
+	/* channel select AN1 */
+	AD1CHS0 = 0x0001;     //AN1-->ch0
 
+        AD1CON2bits.CHPS=1;   //convert ch0,ch1
+        AD1CHS123bits.CH123SA= 0;   //AN0-->ch1
+#endif
         AD1CON1bits.DONE = 0;	//Making sure that there is not any conversion in progress
 	IPC3bits.AD1IP = 5;		//Assigning ADC ISR priority
 	IFS0bits.AD1IF = 0;           
@@ -196,7 +238,7 @@ void InitADC10(void)
 
 /********************************************************************
 InitMCPWM, intializes the PWM as follows:
-1. FPWM = 39000 hz
+1. FPWM = 20000 hz
 2. Independant PWMs
 3. Control outputs using OVDCON
 4. Set Duty Cycle with the ADC value read from pot
@@ -391,4 +433,13 @@ asm volatile ("mov #OSCCON,w1 \n"
 				"mov.b w2,[w1] \n"
 				"mov.b w3,[w1] \n"
 				"bclr OSCCON, #6");
+}
+
+void BOOT_DELAY(void )
+{
+    for(BOOT_time=0;BOOT_time<10;BOOT_time++){
+        DelayNmSec(800);
+        Out_LED_PGD=!Out_LED_PGD;
+    }
+    Out_LED_PGD=1;
 }

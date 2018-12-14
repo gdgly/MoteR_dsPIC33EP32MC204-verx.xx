@@ -150,9 +150,14 @@ void StopMotor(void)
   Overview:        This is test code to run the motor
 
   Note:            None.
+
+                                15k---->950
+                                20k---->cw  Direction=0  650  3000rpm
+                                      ccw  Direction=1  750  3000rpm
 ********************************************************************/
 void runTestCode(void)
 {
+#if defined(__Motor_debug__)
             if(AD_SET_SPEED >= 500)
             {
                 Flags.StartStop = 1;
@@ -176,6 +181,70 @@ void runTestCode(void)
                 DelayNmSec(100);
                 lockApply;
             }
+
+
+#else  
+             if(Flags.flag_open==1)
+             {
+                 if(!Flags.RunMotor)
+                 {
+                    AD_SET_SPEED=1300;
+                    lockRelease;
+                    DelayNmSec(100);
+                    Flags.Direction = 0;
+                    RunMotor();
+                 }
+                 else
+                 {
+                     if(Flags.Direction==0);
+                     else {
+                         AD_SET_SPEED=0;
+                         if(refSpeed<=50){
+                             DelayNmSec(100);
+                             AD_SET_SPEED=1300;
+                             Flags.Direction = 0;
+                             RunMotor();
+                         }
+                     }
+                 }
+             }
+
+             if(Flags.flag_close==1)
+             {
+                 if(!Flags.RunMotor)
+                 {
+                    AD_SET_SPEED=1350;
+                    lockRelease;
+                    DelayNmSec(100);
+                    Flags.Direction = 1;
+                    RunMotor();
+                 }
+                 else
+                 {
+                     if(Flags.Direction==1);
+                     else {
+                         AD_SET_SPEED=0;
+                         if(refSpeed<=50){
+                             DelayNmSec(100);
+                             AD_SET_SPEED=1350;
+                             Flags.Direction = 1;
+                             RunMotor();
+                         }
+                     }
+                 }
+             }
+
+             if((Flags.flag_stop==1) && (Flags.RunMotor))
+             {
+                 AD_SET_SPEED=0;
+                 if(refSpeed<=50){
+                     DelayNmSec(100);
+                     StopMotor();
+                     DelayNmSec(100);
+                     lockApply;
+                 }
+             }
+#endif
 }
 
 /*********************************************************************
@@ -199,8 +268,16 @@ void adc_IBUS(void)
             IBUS_value_count=0;
         }
     }
+#if defined(__SOFT_Ver1__)
     if(avg_IBUS_value>=500)   // 取样电阻30m欧，放大倍数20，运放零点0.45V
     {
         StopMotor();
     }
+#endif
+#if defined(__SOFT_Ver2__)
+    if(avg_IBUS_value>SET_IBUS_Vavg_AD)   // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
+    {
+        StopMotor();
+    }
+#endif
 }

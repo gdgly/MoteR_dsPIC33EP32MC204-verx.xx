@@ -57,3 +57,11 @@ unsigned char FLAG_read_IBUS;
 unsigned int  sum_IBUS_value;
 unsigned int  avg_IBUS_value;
 unsigned char IBUS_value_count;
+
+UINT8 UART_RX_RT[50];
+UINT8 UART1_DATA[50];
+UINT8 UART_RX_idx;
+UINT8 UART_RX_Size;
+UINT8 FLAG_UART_R;
+UINT16 UART_RX_check_SUM;
+UINT16 BOOT_time;
