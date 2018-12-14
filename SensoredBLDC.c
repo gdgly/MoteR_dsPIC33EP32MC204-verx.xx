@@ -333,6 +333,20 @@ void runTestCode(void)
 //  else if((Motor_place<Motor_Origin_data_u32[2])||(Motor_place>Motor_Origin_data_u32[1]))Flags.flag_limit=0;
 
 
+if(Flags.flag_power_on==0)
+{
+    if((Flags.flag_down_limit==1)&&(test_TIME_down==0)){
+                           Flags.flag_open=1;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+    }
+    else if((Flags.flag_up_limit==1)&&(test_TIME_up==0)){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=1;
+    }
+}
+
 if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
 {
     if(Flags.flag_down_limit==0){
@@ -345,6 +359,8 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             StopMotor();
             DelayNmSec(20);
             lockApply;
+
+            test_TIME_down=200;
         }
         //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
         else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
@@ -369,6 +385,8 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             StopMotor();
             DelayNmSec(20);
             lockApply;
+
+            test_TIME_up=200;
         }
         //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
         else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
@@ -471,7 +489,7 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
                  if(refSpeed<=200){
                      //DelayNmSec(100);
                      StopMotor();
-                     DelayNmSec(20);
+                     DelayNmSec(50);
                      lockApply;
                  }
              }
