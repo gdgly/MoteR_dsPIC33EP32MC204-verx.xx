@@ -76,6 +76,9 @@ void Motor_SPEED_Compute(void)
 
         timer3avg=(timer3avg + timer3value_Last + period*2)>>2;
         timer3value_Last=period;
+        
+        //timer3avg=period;
+        
 	if (timer3avg < MIN_PERIOD)
 		timer3avg = MIN_PERIOD;
 	else if (timer3avg > MAX_PERIOD)
@@ -134,10 +137,13 @@ void RunMotor(void)
         Flag_DCInjection=0;
 
         ActualSpeed=0;
+        Time_chargeBootstraps=200;
         timer3value=MAX_PERIOD;
         timer3value_Last=MAX_PERIOD;
         timer3avg=MAX_PERIOD;
-
+        TIME_Origin_mode_join=200;   //在学习模式中，电机开始运行1000ms后才判断速度，找原点时
+                                      //另外，该值必须在运行时才能递减
+        
         //InitPI(&speed_PIparms,SPEED_PI_P,SPEED_PI_I,SPEED_PI_C,MAX_SPEED_PI,(-MAX_SPEED_PI),0);
         Speed_PID_init();
 }
@@ -160,9 +166,9 @@ void StopMotor(void)
 	IOCON3 = 0xc301;
 
         T1CONbits.TON = 0;             
-        T3CONbits.TON = 0;
+        //T3CONbits.TON = 0;
 	IEC0bits.T1IE = 0;
-        IEC0bits.T3IE = 0;
+        //IEC0bits.T3IE = 0;
 	IEC0bits.IC1IE = 0;
 	IEC0bits.IC2IE = 0;
 	IEC2bits.IC3IE = 0;
@@ -170,6 +176,8 @@ void StopMotor(void)
 
 	Flags.RunMotor = 0;			// reset run flag
         SET_SPEED=0;
+        
+     if((Flags.flag_stop!=1)&&(Origin_mode_step==1)) Flags.flag_PWMFLTorIBUS=1;
 }
 /*********************************************************************
   Function:        void APP_Motor_MODE_B_data (void)
@@ -324,7 +332,7 @@ void APP_Motor_MODE_B_data (void)
     if(Origin_mode_step!=0)   //在设置原点、上限、下限时的转速
     {
          //0.5倍速
-                       SET_SPEED=1000;    //500
+                       SET_SPEED=1000;//1000;    //500
     }
 
         if(SET_SPEED<=1000){open_loop_inc=1;open_loop_inc_inc=600;}
@@ -377,10 +385,14 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
         //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
         else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
             if(TIME_down_limit==0){
-                TIME_down_limit=100;
-                SET_SPEED=SET_SPEED-100;
-                //if(SET_SPEED<500)SET_SPEED=500;
-                if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
+                TIME_down_limit=100; //100
+                if(SET_SPEED>=450)
+                {
+                    if(SET_DOWN_SPEED_form_Uart<=1000)SET_SPEED=SET_SPEED-10;  //100
+                    else if(SET_DOWN_SPEED_form_Uart<=2000)SET_SPEED=SET_SPEED-50;
+                    else SET_SPEED=SET_SPEED-90;
+                }
+                if(SET_SPEED<450)SET_SPEED=450;
             }
        }
 
@@ -394,6 +406,7 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
                            Flags.flag_close=0;
             SET_SPEED=0;
             Flags.flag_up_limit=1;
+            if(Flags.flag_Origin_mode_down==1)TIME_Origin_mode_down=3000;
             StopMotor();
             //DelayNmSec(20);
             lockApply;
@@ -401,14 +414,26 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
         //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
         else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
             if(TIME_up_limit==0){
-                TIME_up_limit=100;
-                SET_SPEED=SET_SPEED-200;
-                //if(SET_SPEED<500)SET_SPEED=500;
-                if(SET_SPEED<Motor_MODE_B_data[29]*100)SET_SPEED=Motor_MODE_B_data[29]*100;
+                TIME_up_limit=100;  //100
+                if(SET_SPEED>=350)
+                {
+                    if(SET_UP_SPEED_form_Uart<=1000)SET_SPEED=SET_SPEED-15;  //100
+                    else if(SET_UP_SPEED_form_Uart<=2000)SET_SPEED=SET_SPEED-190;
+                    else SET_SPEED=SET_SPEED-320;
+                }
+                if(SET_SPEED<350)SET_SPEED=350;
             }
         }
     }
     else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
+    
+    if((Flags.flag_Origin_mode_down==1)&&(TIME_Origin_mode_down==0)&&(Flags.flag_up_limit==1))
+    {
+        Flags.flag_Origin_mode_down=0;
+        Flags.flag_open=0;
+        Flags.flag_stop=0;
+        Flags.flag_close=1;        
+    }
 }
 else 
 {
@@ -422,6 +447,8 @@ else
                Flags.flag_origin=0;   
                Flags.flag_up_limit=0;
                Flags.flag_down_limit=1;
+               
+               Flags.flag_Origin_mode_down=1;
     }
 }
 
@@ -530,7 +557,7 @@ else
 void adc_IBUSandVBUS(void)
 {
 static unsigned int  sum_IBUS_value=0,sum_VBUS_value=0;
-static unsigned int  avg_IBUS_value=0;//,avg_VBUS_value=0;
+//static unsigned int  avg_IBUS_value=0,avg_VBUS_value=0;
 static unsigned char IBUS_value_count=0,VBUS_value_count=0;
 static UINT8 FLAG_powerOFF=0;
 

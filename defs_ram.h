@@ -343,7 +343,9 @@ unsigned flag_power_on    :1;
 unsigned flag_up_limit     :1;
 unsigned flag_down_limit     :1;
 unsigned flag_EEPROM_LOAD_OK     :1;
-unsigned unused		:3;
+unsigned flag_PWMFLTorIBUS    :1;
+unsigned flag_Origin_mode_down   :1;
+unsigned unused		:1;
 };
 
 
@@ -386,7 +388,9 @@ extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
 
 extern unsigned int IBUS_value;
+extern unsigned int avg_IBUS_value;
 extern unsigned int VBUS_value;
+extern unsigned int avg_VBUS_value;
 extern unsigned int IBUS_value_Last;
 extern unsigned char FLAG_read_IBUS;
 
@@ -409,6 +413,8 @@ extern UINT8 TIME_down_limit;
 extern UINT8 TIME_up_limit;
 
 extern UINT8 Origin_mode_step;
+extern UINT16 TIME_Origin_mode_step;
+extern UINT16 TIME_Origin_mode_join;
 extern UINT16 TIME_Origin_mode_learning;
 extern UINT8 KEY_wired_value;
 extern UINT8 KEY_wired_value_last;
@@ -423,4 +429,5 @@ extern UINT8 Flag_DCInjection;
 
 extern UINT16 TIME_Key_scan;
 
-extern unsigned int avg_VBUS_value;
+extern UINT8 Time_chargeBootstraps;
+extern UINT16 TIME_Origin_mode_down;

@@ -8,6 +8,7 @@
 //#include <p33Fxxxx.h>
 #include <p33Exxxx.h>
 #include "defs_ram.h"
+#include "SensoredBLDC.h"
 #include "Init.h"
 #include "pi.h"
 #include "uart.h"
@@ -33,6 +34,7 @@ void SET_origin_mode(void)
         d_number[0]=Origin_mode_step;
             Flags.flag_up_limit=0;
             Flags.flag_down_limit=0;
+            if(Origin_mode_step==1)Flags.RunMotor=0;
         if((Origin_mode_step>1)&&(Origin_mode_step<5))
         {
             if(Origin_mode_step==2)Motor_place=0;           
@@ -53,6 +55,45 @@ void SET_origin_mode(void)
 //                Flags.flag_open=1;  
 //            }                      
     }
+    
+    
+                                        //以下是进入学习设置后，原点和上限自动学习
+    if(Origin_mode_step==1)
+    {
+        if(
+           (Flags.flag_PWMFLTorIBUS==1)//||
+           //((ActualSpeed<=MIN_RPM*7)&&(TIME_Origin_mode_join==0)&&(Flags.Direction == Flags.flag_CW))
+           )        
+        {
+               Flags.flag_open=0;
+               Flags.flag_stop=1;
+               Flags.flag_close=0;   
+               StopMotor();
+               lockApply;
+               
+               Flags.flag_origin=1;
+               TIME_Origin_mode_step=300;
+        }
+    }
+    else if((Origin_mode_step==2)&&(TIME_Origin_mode_step==0))
+    {
+        if((Motor_place==0)&&(Flags.flag_close==0))
+        {
+               Flags.flag_open=0;
+               Flags.flag_stop=0;
+               Flags.flag_close=1;  
+        }
+        else if((Motor_place>=60)&&(Flags.RunMotor==1))
+        {
+               Flags.flag_open=0;
+               Flags.flag_stop=1;
+               Flags.flag_close=0;   
+               TIME_Origin_mode_step=500;            
+        }
+        else if((Motor_place>=60)&&(Flags.RunMotor==0))Flags.flag_origin=1;
+    }
+    
+    
 }
 /*********************************************************************
   Function:        void VBUS_PowerOFF_fun(void)

@@ -192,18 +192,18 @@ void UART_Handler(void)
                         break;                        
                         
              case 0xEE01:     //test PI
-                       /* Uart_PI_Speed_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
+                        Uart_PI_Speed_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
                         Uart_PI_Speed_I=UART1_DATA[11]+(UART1_DATA[10]<<8);
                         Uart_PI_Speed_D=UART1_DATA[13]+(UART1_DATA[12]<<8);
                         Uart_PI_DCInjection_P=UART1_DATA[15]+(UART1_DATA[14]<<8);
                         Uart_PI_DCInjection_I=UART1_DATA[17]+(UART1_DATA[16]<<8);
-                        Uart_PI_DCInjection_D=UART1_DATA[19]+(UART1_DATA[18]<<8);   */   
+                        Uart_PI_DCInjection_D=UART1_DATA[19]+(UART1_DATA[18]<<8);   
 
-                        Uart_PI_DCInjection_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
-                        Uart_PI_DCInjection_I=UART1_DATA[11]+(UART1_DATA[10]<<8);
-                        Uart_PI_DCInjection_D=UART1_DATA[13]+(UART1_DATA[12]<<8);
-                        Uart_PI_DCInjection_MAX=UART1_DATA[15]+(UART1_DATA[14]<<8);
-                        Uart_PI_DCInjection_MIN=UART1_DATA[17]+(UART1_DATA[16]<<8);
+//                        Uart_PI_DCInjection_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
+//                        Uart_PI_DCInjection_I=UART1_DATA[11]+(UART1_DATA[10]<<8);
+//                        Uart_PI_DCInjection_D=UART1_DATA[13]+(UART1_DATA[12]<<8);
+//                        Uart_PI_DCInjection_MAX=UART1_DATA[15]+(UART1_DATA[14]<<8);
+//                        Uart_PI_DCInjection_MIN=UART1_DATA[17]+(UART1_DATA[16]<<8);
                         //=UART1_DATA[19]+(UART1_DATA[18]<<8);                
                         break;
               default:
@@ -258,6 +258,7 @@ void TEST_uart_speed_pi(void)
     //UINT8 d_xx[4];
     //uni_l d_num;    
     UINT16 DATA_TEST=0;
+    int DATA_TEST1=0;
 
     if(test_SPEED_PI_FLAG>=2){
         test_SPEED_PI_FLAG=0;
@@ -268,10 +269,13 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
-        DATA_TEST=PI_DCInjection.Out;//SPEED_PDC;
-        char_data=DATA_TEST>>8;
+        //if(PI_DCInjection.Out<0)
+        //  DATA_TEST1=-PI_DCInjection.Out;//SPEED_PDC;
+        //else DATA_TEST1=PI_DCInjection.Out;
+        DATA_TEST1=SPEED_PDC;
+        char_data=DATA_TEST1>>8;
         Send_char(char_data);
-        char_data=DATA_TEST%256;
+        char_data=DATA_TEST1%256;
         Send_char(char_data);        
         DATA_TEST=SPEED_PDC_out;
         char_data=DATA_TEST>>8;
@@ -280,12 +284,12 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);   
         char_data=Flag_DCInjection*3;
         Send_char(char_data);
-        DATA_TEST=VBUS_value;
+        DATA_TEST=SET_SPEED;//VBUS_value;
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
-        DATA_TEST=avg_VBUS_value;//avg_VBUS_value;//IBUS_value;
+        DATA_TEST=avg_IBUS_value;//avg_VBUS_value;//avg_VBUS_value;//IBUS_value;
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;
