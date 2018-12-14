@@ -61,13 +61,13 @@
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
 
-           #define SPEED_PI_P  8000//5000 6000
-           #define SPEED_PI_I  5 //5
+           #define SPEED_PI_P  5000//5000 6000
+           #define SPEED_PI_I  0 //5
            #define SPEED_PI_C  0
            //since stack shuts down after 95% of PWM duty therefore limit PI max output to 90%
            #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 #ifdef CLOSEDLOOP
-           #define SET_SPEED_ref   2900 //1000//2000//2900
+           #define SET_SPEED_ref   2900
 #else
             #define SET_SPEED_ref   5000          //open loop
 #endif
@@ -256,9 +256,8 @@ extern int ActualSpeed;
 extern unsigned int SET_SPEED;
 extern int refSpeed;
 extern unsigned int SPEED_open_loop_PDC;
-extern unsigned char flag_open_loop;
-extern unsigned char open_loop_inc;
-extern unsigned int open_loop_inc_inc;
+extern unsigned int open_loop_time;
+extern unsigned char flag_open_loop_time;
 extern int SPEED_PDC;
 extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;

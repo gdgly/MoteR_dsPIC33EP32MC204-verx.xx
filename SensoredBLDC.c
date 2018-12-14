@@ -112,14 +112,10 @@ void RunMotor(void)
 	IEC5bits.PWM1IE = 1;	// Enable PWM interrupts
 
         Flags.RunMotor = 1;		// set flag
-        refSpeed=600;                  //给定启动转速
-        SPEED_PDC=150;                 //给定启动PWM占空比5%
+        refSpeed=400;                  //给定启动转速
+        SPEED_PDC=100;                 //给定启动PWM占空比5%
 
-        flag_open_loop=0;
-        if(SET_SPEED<=1000){open_loop_inc=1;open_loop_inc_inc=600;}
-        else if(SET_SPEED<=2000) {open_loop_inc=1;open_loop_inc_inc=500;}
-        else {open_loop_inc=2;open_loop_inc_inc=400;}
-
+        flag_open_loop_time=0;
 
         ActualSpeed=0;
         timer3value=MAX_PERIOD;

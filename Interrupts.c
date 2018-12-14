@@ -175,31 +175,30 @@ Overview:		This interrupt a 1ms interrupt and outputs a square
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {
     static unsigned int cnt100ms = 0;
-    unsigned int speed_start_error;
 
-    if(++cnt100ms >= 40)
+    open_loop_time++;
+    if(open_loop_time>100)open_loop_time=100;
+
+    if(++cnt100ms >= open_loop_time)
     {
         cnt100ms = 0;
         Out_LED_PGD=!Out_LED_PGD;
-
-
-       if(SET_SPEED >= 200)
+       if(SET_SPEED >= 100)
         {
-            if((ActualSpeed < SET_SPEED)&&(flag_open_loop==0))
+            if(refSpeed < SET_SPEED)
             {
-                speed_start_error=(SET_SPEED-ActualSpeed)/open_loop_inc_inc;
-                refSpeed = refSpeed+open_loop_inc+speed_start_error;
+                /***********************************************************/
+                //说明：电机启动时，SET_SPEED转速的90%以下为开环，90%以上为闭环，开环时速度步进为150RPM，闭环时为20RPM，通过修改上面参数来完成加速时间。
+                       /*SET_SPEED=2900时，各参数如下：90%=300，速度步进为150RPM、20RPM*/
+                if(flag_open_loop_time==1)refSpeed += 150;
+                else refSpeed += 20;
+                flag_open_loop_time=1;
+                if(ActualSpeed>SET_SPEED-300)flag_open_loop_time=0;
+                /**********************************************************/
             }
-            else flag_open_loop=1;
+            else refSpeed = SET_SPEED;
         }
-        else
-        {
-            if(refSpeed > 200)
-            {
-                refSpeed -= 200;
-            }
-        }
-
+        else if(refSpeed > 200) refSpeed -= 200;
     }
 
     Motor_SPEED_Compute();
@@ -211,23 +210,22 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 	PDC3 = PDC1;    
 #endif
 #ifdef CLOSEDLOOP
-         if(flag_open_loop==0)
-            SPEED_PDC=refSpeed/3;   //5
+        if(ActualSpeed<200)
+          speed_PIparms.qInRef = ActualSpeed;
         else
-        {
-            speed_PIparms.qInRef = SET_SPEED;
-            speed_PIparms.qInMeas = ActualSpeed;
+          speed_PIparms.qInRef = refSpeed;
+        speed_PIparms.qInMeas = ActualSpeed;
 
-            CalcPI(&speed_PIparms);
-            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
+        CalcPI(&speed_PIparms);
+        SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
 
-            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
-            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
-        }
-
-
-        if(SPEED_PDC<150)SPEED_PDC=150;
-        else if(SPEED_PDC>1300)SPEED_PDC=1300;
+        SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
+        if(ActualSpeed<200)
+           SPEED_PDC=refSpeed/5;
+        else if((flag_open_loop_time==1)&&(SPEED_PDC_offset<0));
+        else   SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+        if(SPEED_PDC<130)SPEED_PDC=130;
+        else if(SPEED_PDC>1500)SPEED_PDC=1500;
         PDC1 = SPEED_PDC;
         PDC2 = PDC1;
         PDC3 = PDC1;
