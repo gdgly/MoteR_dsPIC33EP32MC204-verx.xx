@@ -333,20 +333,6 @@ void runTestCode(void)
 //  else if((Motor_place<Motor_Origin_data_u32[2])||(Motor_place>Motor_Origin_data_u32[1]))Flags.flag_limit=0;
 
 
-if(Flags.flag_power_on==0)
-{
-    if((Flags.flag_down_limit==1)&&(test_TIME_down==0)){
-                           Flags.flag_open=1;
-                           Flags.flag_stop=0;
-                           Flags.flag_close=0;
-    }
-    else if((Flags.flag_up_limit==1)&&(test_TIME_up==0)){
-                           Flags.flag_open=0;
-                           Flags.flag_stop=0;
-                           Flags.flag_close=1;
-    }
-}
-
 if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
 {
     if(Flags.flag_down_limit==0){
@@ -359,8 +345,6 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             StopMotor();
             DelayNmSec(20);
             lockApply;
-
-            test_TIME_down=200;
         }
         //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
         else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
@@ -385,8 +369,6 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             StopMotor();
             DelayNmSec(20);
             lockApply;
-
-            test_TIME_up=200;
         }
         //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
         else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
@@ -489,7 +471,7 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
                  if(refSpeed<=200){
                      //DelayNmSec(100);
                      StopMotor();
-                     DelayNmSec(50);
+                     DelayNmSec(20);
                      lockApply;
                  }
              }
@@ -524,7 +506,11 @@ void adc_IBUS(void)
     }
 #endif
 #if defined(__SOFT_Ver2__)
-    if(avg_IBUS_value>SET_IBUS_Vavg_AD)   // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
+   // if(avg_IBUS_value>SET_IBUS_Vavg_AD)   // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
+   if(
+      ((avg_IBUS_value>SET_IBUS_Vavg_AD)&&(Origin_mode_step==0))||
+      ((((Origin_mode_step==0)&&(Flags.flag_power_on==1))||Origin_mode_step!=0)&&(((ActualSpeed<=SET_SPEED/2)&&(SET_SPEED==500)&&(flag_open_loop==1))||(avg_IBUS_value>SET_IBUS_Vavg_AD/4)))           
+      )
     {
         StopMotor();
         SET_SPEED=0;

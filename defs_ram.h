@@ -39,8 +39,6 @@
 
             #define T1PR1 ((FCY/1000)/64)
 
-            #define T5PR1 ((FCY/100)/256)     //10ms
-
             /* Based on using the internal Fcy and Timer 3 prescaler of 256
              * Fcy/256 = 70M/256 = 273437.5 ticks/sec
              * or, 16406250 ticks = 1RPM
@@ -319,5 +317,3 @@ extern UINT8 KEY_wired_value_last;
 
 
 extern UINT8 test_SPEED_PI_FLAG;
-extern UINT16 test_TIME_up;
-extern UINT16 test_TIME_down;

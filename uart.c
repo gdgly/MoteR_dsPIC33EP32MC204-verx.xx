@@ -176,7 +176,7 @@ void UART_Handler(void)
                             Motor_Origin_data_u32[uart_i]=uart_l.ul;
                         }
                         Flags.flag_EEPROM_LOAD_OK=1;
-                        if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
+                        //if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
                         break;
               default:
                         break;

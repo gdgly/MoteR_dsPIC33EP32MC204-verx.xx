@@ -95,21 +95,6 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt (void)
     IFS0bits.T3IF = 0;
     timer3value = PR3;
 }
-
-/*********************************************************************
-Function:		void __attribute__((interrupt, no_auto_psv)) _T5Interrupt (void)
-
-PreCondition:
-Overview:		This interrupt TIMER5.   10ms
-
-********************************************************************/
-void __attribute__((interrupt, no_auto_psv)) _T5Interrupt (void)
-{
-    if(test_TIME_up)test_TIME_up--;
-    if(test_TIME_down)test_TIME_down--;
-
-    IFS1bits.T5IF = 0;
-}
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt (void)
 

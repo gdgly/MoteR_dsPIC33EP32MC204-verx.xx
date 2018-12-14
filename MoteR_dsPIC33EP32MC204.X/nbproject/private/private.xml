@@ -4,11 +4,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20auto/main.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20auto/Init.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20auto/SensoredBLDC.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20auto/Interrupts.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20auto/defs_ram.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20Origin/main.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20Origin/SensoredBLDC.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20Origin/Interrupts.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6.1%20Origin/uart.c</file>
         </group>
     </open-files>
 </project-private>

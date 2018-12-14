@@ -96,8 +96,6 @@ UINT8 KEY_wired_value_last;
 
 
 UINT8 test_SPEED_PI_FLAG;
-UINT16 test_TIME_up;
-UINT16 test_TIME_down;
 
 
 

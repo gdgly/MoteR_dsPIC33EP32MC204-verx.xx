@@ -47,7 +47,6 @@ int main(void)
 	InitMCPWM();
 	InitIC();
         InitUART1();
-        InitTMR5();
         BOOT_DELAY();
         Flags.flag_EEPROM_LOAD_OK=0;
 
