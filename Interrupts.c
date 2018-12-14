@@ -220,21 +220,23 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 //            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*PWM_PTPER,MAX_SPEED_PI);
 //            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
              
-             
-	         PI_SPL.Ref = SET_SPEED; //
-	         PI_SPL.Fdb = ActualSpeed;             
+                                   
+	         PI_SPL.Ref = __builtin_divsd(((int64_t)SET_SPEED*(int64_t)32768),6000);     //º∆À„≥…Q15£¨º¥Ref°¡32768/6000RPM; 
+	         PI_SPL.Fdb = __builtin_divsd(((int64_t)ActualSpeed*(int64_t)32768),6000);          
              PICal(&PI_SPL);
              SPEED_PDC =PI_SPL.Out;
         }
     
+    
+    
         if(Flag_DCInjection==1)//&&(SPEED_PDC<0))
         {               
             if(ActualSpeed>SET_SPEED+20)
-                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*0.18;          
+                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*0.3;   //0.18       
             if(PDC_DCInjection<=-PWM_DutyCycle_MAX)PDC_DCInjection=-PWM_DutyCycle_MAX;
             SPEED_PDC_out=PWM_DutyCycle_MAX+PDC_DCInjection;
         }
-        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED+50))  
+        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED+50)&&(Flags.Direction == Flags.flag_CW))  
         {
             TIME_DCInjection++;           
             if((Flag_DCInjection==0)&&(TIME_DCInjection>30))
@@ -249,13 +251,12 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                
             }
         }
-//        else if((Flag_DCInjection==1)&&(SPEED_PDC>0)&&(ActualSpeed<SET_SPEED-200))
-//        {
-//                SPEED_PDC_out=0;
-//                Flag_DCInjection=0;
-//                PI_SPL.OutMin =0;
-//                Out_LED_PGD=0;
-//        }
+        else if((Flag_DCInjection==1)&&(ActualSpeed<SET_SPEED-200))
+        {
+                SPEED_PDC_out=0;
+                Flag_DCInjection=0;
+                Out_LED_PGD=0;
+        }
         else if(Flag_DCInjection==0){SPEED_PDC_out=SPEED_PDC; TIME_DCInjection=0;}
             
         if(SPEED_PDC_out>PWM_DutyCycle_MAX)SPEED_PDC_out=PWM_DutyCycle_MAX;

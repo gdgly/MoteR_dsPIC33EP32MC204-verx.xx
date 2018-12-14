@@ -50,10 +50,9 @@ int main(void)
 	InitIC();   
         InitUART1();
         BOOT_DELAY();
-       // Flags.flag_EEPROM_LOAD_OK=0;
-        Flags.flag_EEPROM_LOAD_OK=1;    //PID TEST
+        Flags.flag_EEPROM_LOAD_OK=0;
 
-        Flags.flag_power_on=1;
+        //Flags.flag_power_on=1;
 #if defined(__Motor_debug__)
         SET_SPEED=2600;
 #endif
@@ -66,7 +65,7 @@ int main(void)
            SET_origin_mode();
            Key_scan();
 
-           //TEST_uart_speed_pi();
+           TEST_uart_speed_pi();
 	}
 }
 

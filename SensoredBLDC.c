@@ -278,7 +278,6 @@ void APP_Motor_MODE_B_data (void)
                 default:
                        break ;
            }
-           SET_UP_SPEED_form_Uart=2900;   //PID TEST
 #ifdef CLOSEDLOOP
            SET_SPEED=SET_UP_SPEED_form_Uart;           
 #else
@@ -311,7 +310,6 @@ void APP_Motor_MODE_B_data (void)
                 default:
                        break ;
            }
-           SET_DOWN_SPEED_form_Uart=2900;    //PID TEST
 #ifdef CLOSEDLOOP
            SET_SPEED=SET_DOWN_SPEED_form_Uart;           
 #else
@@ -361,55 +359,55 @@ void runTestCode(void)
 
     
     
-//if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
-//{
-//    if(Flags.flag_down_limit==0){
-//        if(Motor_place>=Motor_Origin_data_u32[2]){
-//                           Flags.flag_open=0;
-//                           Flags.flag_stop=0;
-//                           Flags.flag_close=0;
-//            SET_SPEED=0;
-//            Flags.flag_down_limit=1;
-//            StopMotor();
-//            DelayNmSec(20);
-//            lockApply;
-//        }
-//        //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
-//        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
-//            if(TIME_down_limit==0){
-//                TIME_down_limit=100;
-//                SET_SPEED=SET_SPEED-200;
-//                //if(SET_SPEED<500)SET_SPEED=500;
-//                if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
-//            }
-//       }
-//
-//    }
-//    else if(Motor_place<Motor_Origin_data_u32[2])Flags.flag_down_limit=0;
-//
-//    if(Flags.flag_up_limit==0){
-//        if((Motor_place<=Motor_Origin_data_u32[1])&&(Flags.flag_power_on==0)){
-//                           Flags.flag_open=0;
-//                           Flags.flag_stop=0;
-//                           Flags.flag_close=0;
-//            SET_SPEED=0;
-//            Flags.flag_up_limit=1;
-//            StopMotor();
-//            DelayNmSec(20);
-//            lockApply;
-//        }
-//        //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
-//        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
-//            if(TIME_up_limit==0){
-//                TIME_up_limit=100;
-//                SET_SPEED=SET_SPEED-200;
-//                //if(SET_SPEED<500)SET_SPEED=500;
-//                if(SET_SPEED<Motor_MODE_B_data[29]*100)SET_SPEED=Motor_MODE_B_data[29]*100;
-//            }
-//        }
-//    }
-//    else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
-//}
+if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
+{
+    if(Flags.flag_down_limit==0){
+        if(Motor_place>=Motor_Origin_data_u32[2]){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+            SET_SPEED=0;
+            Flags.flag_down_limit=1;
+            StopMotor();
+            DelayNmSec(20);
+            lockApply;
+        }
+        //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
+        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
+            if(TIME_down_limit==0){
+                TIME_down_limit=100;
+                SET_SPEED=SET_SPEED-200;
+                //if(SET_SPEED<500)SET_SPEED=500;
+                if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
+            }
+       }
+
+    }
+    else if(Motor_place<Motor_Origin_data_u32[2])Flags.flag_down_limit=0;
+
+    if(Flags.flag_up_limit==0){
+        if((Motor_place<=Motor_Origin_data_u32[1])&&(Flags.flag_power_on==0)){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+            SET_SPEED=0;
+            Flags.flag_up_limit=1;
+            StopMotor();
+            //DelayNmSec(20);
+            lockApply;
+        }
+        //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
+        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
+            if(TIME_up_limit==0){
+                TIME_up_limit=100;
+                SET_SPEED=SET_SPEED-200;
+                //if(SET_SPEED<500)SET_SPEED=500;
+                if(SET_SPEED<Motor_MODE_B_data[29]*100)SET_SPEED=Motor_MODE_B_data[29]*100;
+            }
+        }
+    }
+    else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
+}
 
 
 
@@ -540,7 +538,7 @@ void adc_IBUS(void)
         SET_SPEED=0;
         lockApply;
         avg_IBUS_value=0;
-        Flags.flag_power_on=0;
+        //Flags.flag_power_on=0;
                            Flags.flag_open=0;
                            Flags.flag_stop=0;
                            Flags.flag_close=0;   
@@ -562,8 +560,7 @@ void Motor_Start_OpenLoop(void)
     static unsigned int cnt100ms = 0; 
     unsigned int speed_start_error;
     
-    Motor_MODE_B_data[27]=1;   //PID TEST
-    if(((++cnt100ms >= Motor_MODE_B_data[27]*8)&&(ActualSpeed<800))||(ActualSpeed>=800))    //PID TEST 10
+    if(((++cnt100ms >= Motor_MODE_B_data[27]*8)&&(ActualSpeed<800))||(ActualSpeed>=800))   
     {
         cnt100ms = 0;
         //Out_LED_PGD=!Out_LED_PGD;
@@ -571,7 +568,7 @@ void Motor_Start_OpenLoop(void)
 
        if(SET_SPEED >= 200)
         {
-            if((ActualSpeed < SET_SPEED)&&(Flag_Motor_CloseLOOP==0))   //PID TEST   /2
+            if((ActualSpeed < SET_SPEED)&&(Flag_Motor_CloseLOOP==0))   
             {
                 speed_start_error=(SET_SPEED-ActualSpeed)/open_loop_inc_inc;
                 refSpeed = refSpeed+open_loop_inc+speed_start_error;

@@ -23,9 +23,9 @@
 #define KIL_Speed_PI Q15(0.012)   //Q15(0.01)//Q15(0.0185)  //(0.02)   //(0.0395)//	//值大积分时间短//0.05
 #define KDL_Speed_PI Q15(0.009)   //(0.06)  
 
-int Uart_KPL_Speed_PI=32700;
-int Uart_KIL_Speed_PI=3300;
-int Uart_KDL_Speed_PI=100;
+int Uart_KPL_Speed_PI=0;//32700;
+int Uart_KIL_Speed_PI=0;//3300;
+int Uart_KDL_Speed_PI=0;//100;
 int Uart_KPL_Ibus_PI=0;
 int Uart_KIL_Ibus_PI=0;
 int Uart_KDL_Ibus_PI=0;
@@ -92,7 +92,19 @@ void PID_init(void)
 //	PI_SPL.Kp  = KPL_Speed_PI;
 //	PI_SPL.Kix = KIL_Speed_PI;
 //	PI_SPL.Kc  = KDL_Speed_PI;
-    
+
+    if(SET_SPEED>=2000) 
+    {
+        Uart_KPL_Speed_PI=9000;
+        Uart_KIL_Speed_PI=1500;
+        Uart_KDL_Speed_PI=300;
+    }
+    else 
+    {
+        Uart_KPL_Speed_PI=5000;
+        Uart_KIL_Speed_PI=1300;
+        Uart_KDL_Speed_PI=200;
+    }        
 	PI_SPL.Kp  = Uart_KPL_Speed_PI;
 	PI_SPL.Kix = Uart_KIL_Speed_PI;
 	PI_SPL.Kc  = Uart_KDL_Speed_PI;    
@@ -180,7 +192,7 @@ void PIRESet(PIDCTRL32 *v)
 ** 日　     期:  2015
 **********************************************************************************************************/
 void PICal(PIDCTRL32 *v)
-{
+{    
     // 计算误差
     v->Err = v->Ref - v->Fdb;
     if(v->Err>15000)
