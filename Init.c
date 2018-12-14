@@ -437,9 +437,9 @@ asm volatile ("mov #OSCCON,w1 \n"
 
 void BOOT_DELAY(void )
 {
-    for(BOOT_time=0;BOOT_time<10;BOOT_time++){
-        DelayNmSec(800);
+    for(BOOT_time=0;BOOT_time<6;BOOT_time++){
+        DelayNmSec(1000);
         Out_LED_PGD=!Out_LED_PGD;
     }
-    Out_LED_PGD=1;
+    Out_LED_PGD=0;
 }

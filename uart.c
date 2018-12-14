@@ -71,7 +71,7 @@ void UART_RX_decode(void)
 void UART_Handler(void)
 {
     uni_i uart_x;
-    UINT8 uart_num;
+    UINT8 uart_num,uart_i;
 
   if(FLAG_UART_R!=0){
     if(UART1_DATA[4]==2){         //电机mcu（设备addr:2）收到其它设备的呼叫
@@ -79,7 +79,7 @@ void UART_Handler(void)
          UART_ack(0);
          uart_x.uc[0]=UART1_DATA[2];       //指令
          uart_x.uc[1]=UART1_DATA[3];
-         switch(uart_x.ui){
+         switch(uart_x.ui){             //接收数据
             case 0x0101:
                         uart_num=UART1_DATA[8];
                         if(uart_num==0x01){
@@ -98,7 +98,28 @@ void UART_Handler(void)
                            Flags.flag_close=1;
                         }
                         break;
-           default:
+             case 0x0102:
+                        if((Flags.flag_open)||(Flags.flag_close)){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=1;
+                           Flags.flag_close=0;
+                        }
+                        break;
+             case 0x0103:
+                        uart_num=UART1_DATA[8];
+                        if((uart_num==0)||(uart_num==3)){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=1;
+                           Flags.flag_close=0;
+                        }
+                        else if(uart_num==1){Flags.flag_CW=0;Flags.flag_CCW=1;}
+                        else if(uart_num==2){Flags.flag_CW=1;Flags.flag_CCW=0;}
+                        break;
+             case 0x0201:
+                        for(uart_i=0;uart_i<50;uart_i++)
+                            Motor_MODE_B_data[uart_i]=UART1_DATA[uart_i+8];
+                        break;
+              default:
                         break;
          }
       }

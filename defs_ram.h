@@ -230,9 +230,11 @@ unsigned RunMotor 	:1;
 unsigned Direction	:1;
 unsigned StartStop      :1;
 unsigned flag_open      :1;
-unsigned flag_close      :1;
+unsigned flag_close     :1;
 unsigned flag_stop      :1;
-unsigned unused		:10;
+unsigned flag_CW        :1;
+unsigned flag_CCW       :1;
+unsigned unused		:8;
 };
 
 
@@ -243,8 +245,8 @@ extern unsigned int StateTableRevPwm1[];
 extern unsigned int StateTableRevPwm2[];
 extern unsigned int StateTableRevPwm3[];
 
-extern struct MotorFlags Flags;
 
+extern struct MotorFlags Flags;
 extern unsigned int HallValue;
 extern unsigned int HallValue_Last;
 extern unsigned int timer3value;
@@ -257,6 +259,9 @@ extern unsigned int SET_SPEED;
 extern int refSpeed;
 extern unsigned int SPEED_open_loop_PDC;
 extern unsigned int open_loop_time;
+extern UINT8 start_open_loop_step;
+extern UINT8 start_close_loop_step;
+extern UINT16 start_open_close_loop;
 extern unsigned char flag_open_loop_time;
 extern int SPEED_PDC;
 extern int SPEED_PDC_offset;
@@ -276,8 +281,10 @@ extern UINT8 UART_RX_Size;
 extern UINT8 FLAG_UART_R;
 extern UINT16 UART_RX_check_SUM;
 extern UINT16 BOOT_time;
-
-
+#define def_MODE_B  50
+extern UINT8 Motor_MODE_B_data[def_MODE_B];
+extern UINT16 SET_UP_SPEED_form_Uart;
+extern UINT16 SET_DOWN_SPEED_form_Uart;
 
 
 

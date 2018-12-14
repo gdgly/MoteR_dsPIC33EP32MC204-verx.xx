@@ -154,7 +154,81 @@ void StopMotor(void)
 	Flags.RunMotor = 0;			// reset run flag
         SET_SPEED=0;
 }
+/*********************************************************************
+  Function:        void APP_Motor_MODE_B_data (void)
 
+  Overview:
+
+  Note:            None.
+********************************************************************/
+void APP_Motor_MODE_B_data (void)
+{
+    if(Flags.flag_open==1)
+    {
+           switch	( Motor_MODE_B_data[25] )
+           {
+                 case 1 :       //上升等速
+                       SET_UP_SPEED_form_Uart=1000;
+                       start_open_loop_step=50;
+                       start_close_loop_step=7;
+                       start_open_close_loop=100;
+                       break ;
+                 case 2 :       //上升2倍速
+                       SET_UP_SPEED_form_Uart=2000;
+                       start_open_loop_step=100;
+                       start_close_loop_step=14;
+                       start_open_close_loop=200;
+                       break ;
+                 case 3 :       //上升3倍速
+                       SET_UP_SPEED_form_Uart=2900;
+                       start_open_loop_step=150;
+                       start_close_loop_step=20;
+                       start_open_close_loop=300;
+                       break ;
+                default:
+                       break ;
+           }
+           SET_SPEED=SET_UP_SPEED_form_Uart;
+    }
+    else {
+           switch	( Motor_MODE_B_data[26] )
+           {
+                 case 1 :       //下降0.5倍速
+                       SET_DOWN_SPEED_form_Uart=500;
+                       start_open_loop_step=25;
+                       start_close_loop_step=4;
+                       start_open_close_loop=50;
+                       break ;
+                 case 2 :       //下降0.75倍速
+                       SET_DOWN_SPEED_form_Uart=750;
+                       start_open_loop_step=38;
+                       start_close_loop_step=5;
+                       start_open_close_loop=75;
+                       break ;
+                 case 3 :       //下降等速
+                       SET_DOWN_SPEED_form_Uart=1000;
+                       start_open_loop_step=50;
+                       start_close_loop_step=7;
+                       start_open_close_loop=100;
+                       break ;
+                 case 4 :       //下降2倍速
+                       SET_DOWN_SPEED_form_Uart=2000;
+                       start_open_loop_step=100;
+                       start_close_loop_step=14;
+                       start_open_close_loop=200;
+                       break ;
+                 case 5 :       //下降3倍速
+                       SET_DOWN_SPEED_form_Uart=2900;
+                       start_open_loop_step=150;
+                       start_close_loop_step=20;
+                       start_open_close_loop=300;
+                       break ;
+                default:
+                       break ;
+           }
+           SET_SPEED=SET_DOWN_SPEED_form_Uart;
+    }
+}
 /*********************************************************************
   Function:        void runTestCode(void)
 
@@ -195,26 +269,29 @@ void runTestCode(void)
             }
 
 
-#else  
+#else
+                       
+                        
+
              if(Flags.flag_open==1)
              {
                  if(!Flags.RunMotor)
                  {
-                    SET_SPEED=SET_SPEED_ref;
                     lockRelease;
                     DelayNmSec(100);
-                    Flags.Direction = 0;
+                    Flags.Direction = Flags.flag_CW;
+                    APP_Motor_MODE_B_data();
                     RunMotor();
                  }
                  else
                  {
-                     if(Flags.Direction==0);
+                     if(Flags.Direction==Flags.flag_CW);
                      else {
                          SET_SPEED=0;
                          if(refSpeed<=200){
                              DelayNmSec(100);
-                             SET_SPEED=SET_SPEED_ref;
-                             Flags.Direction = 0;
+                             Flags.Direction = Flags.flag_CW;
+                             APP_Motor_MODE_B_data();
                              RunMotor();
                          }
                      }
@@ -225,21 +302,21 @@ void runTestCode(void)
              {
                  if(!Flags.RunMotor)
                  {
-                    SET_SPEED=SET_SPEED_ref;
                     lockRelease;
                     DelayNmSec(100);
-                    Flags.Direction = 1;
+                    Flags.Direction = Flags.flag_CCW;
+                    APP_Motor_MODE_B_data();
                     RunMotor();
                  }
                  else
                  {
-                     if(Flags.Direction==1);
+                     if(Flags.Direction==Flags.flag_CCW);
                      else {
                          SET_SPEED=0;
                          if(refSpeed<=200){
                              DelayNmSec(100);
-                             SET_SPEED=SET_SPEED_ref;
-                             Flags.Direction = 1;
+                             Flags.Direction = Flags.flag_CCW;
+                             APP_Motor_MODE_B_data();
                              RunMotor();
                          }
                      }

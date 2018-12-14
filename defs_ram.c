@@ -39,10 +39,8 @@ unsigned int StateTableRevPwm3[] =
 
 
 struct MotorFlags Flags;
-
 unsigned int HallValue;
 unsigned int HallValue_Last;
-
 unsigned int timer3value;
 unsigned long timer3avg;
 unsigned int timer3value_Last;
@@ -53,6 +51,9 @@ unsigned int SET_SPEED;
 int refSpeed;
 unsigned int SPEED_open_loop_PDC;
 unsigned int open_loop_time;
+UINT8 start_open_loop_step;
+UINT8 start_close_loop_step;
+UINT16 start_open_close_loop;
 unsigned char flag_open_loop_time;
 int SPEED_PDC;
 int SPEED_PDC_offset;
@@ -72,9 +73,9 @@ UINT8 UART_RX_Size;
 UINT8 FLAG_UART_R;
 UINT16 UART_RX_check_SUM;
 UINT16 BOOT_time;
-
-
-
+UINT8 Motor_MODE_B_data[def_MODE_B];
+UINT16 SET_UP_SPEED_form_Uart;
+UINT16 SET_DOWN_SPEED_form_Uart;
 
 
 

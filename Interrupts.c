@@ -190,11 +190,15 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                 /***********************************************************/
                 //说明：电机启动时，SET_SPEED转速的90%以下为开环，90%以上为闭环，开环时速度步进为150RPM，闭环时为20RPM，通过修改上面参数来完成加速时间。
                        /*SET_SPEED=2900时，各参数如下：90%=300，速度步进为150RPM、20RPM*/
-                if(flag_open_loop_time==1)refSpeed += 150;
-                else refSpeed += 20;
-                flag_open_loop_time=1;
-                if(ActualSpeed>SET_SPEED-300)flag_open_loop_time=0;
+//                if(flag_open_loop_time==1)refSpeed += 150;
+//                else refSpeed += 20;
+//                flag_open_loop_time=1;
+//                if(ActualSpeed>SET_SPEED-300)flag_open_loop_time=0;
                 /**********************************************************/
+                if(flag_open_loop_time==1)refSpeed += start_open_loop_step;
+                else refSpeed += start_close_loop_step;
+                flag_open_loop_time=1;
+                if(ActualSpeed>SET_SPEED-start_open_close_loop)flag_open_loop_time=0;
             }
             else refSpeed = SET_SPEED;
         }

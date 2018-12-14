@@ -55,7 +55,7 @@ int main(void)
            runTestCode();  /* Run test code */
            adc_IBUS();
            UART_Handler();
-           TEST_uart_speed_pi();
+           //TEST_uart_speed_pi();
 	}
 }
 
