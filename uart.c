@@ -269,10 +269,9 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
-        //if(PI_DCInjection.Out<0)
-        //  DATA_TEST1=-PI_DCInjection.Out;//SPEED_PDC;
-        //else DATA_TEST1=PI_DCInjection.Out;
-        DATA_TEST1=SPEED_PDC;
+        if(PI_DCInjection.Out<0)
+          DATA_TEST1=-PI_DCInjection.Out;//SPEED_PDC;
+        else DATA_TEST1=PI_DCInjection.Out;
         char_data=DATA_TEST1>>8;
         Send_char(char_data);
         char_data=DATA_TEST1%256;
@@ -284,12 +283,12 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);   
         char_data=Flag_DCInjection*3;
         Send_char(char_data);
-        DATA_TEST=SET_SPEED;//VBUS_value;
+        DATA_TEST=VBUS_value;
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
-        DATA_TEST=avg_IBUS_value;//avg_VBUS_value;//avg_VBUS_value;//IBUS_value;
+        DATA_TEST=avg_VBUS_value;//avg_VBUS_value;//IBUS_value;
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;

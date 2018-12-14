@@ -88,8 +88,7 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 	}
 #if Phase_ICXorPWMInterrupt==0
     HallValue = Read_Hall();	// Read halls
-    Time_chargeBootstraps--;
-	if((HallValue!=HallValue_Last)||(Time_chargeBootstraps!=0))Motor_Change_Phase();  
+	if(HallValue!=HallValue_Last)Motor_Change_Phase();    
     //Motor_SPEED_Compute();
 #endif
 
@@ -106,8 +105,6 @@ void __attribute__((interrupt, no_auto_psv)) _T2Interrupt (void)
 {
     if(TIME_Key_scan)TIME_Key_scan--;
     if(TIME_Origin_mode_learning)TIME_Origin_mode_learning--;
-    if(TIME_Origin_mode_step)TIME_Origin_mode_step--;
-    if(TIME_Origin_mode_down)TIME_Origin_mode_down--;
     //test_SPEED_PI_FLAG++;
     
     IFS0bits.T2IF = 0;
@@ -123,7 +120,6 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt (void)
 {
     IFS0bits.T3IF = 0;
     timer3value = PR3;
-    FLAG_read_HALL_time=1;
 }
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt (void)
@@ -220,7 +216,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     
     if(TIME_up_limit)TIME_up_limit--;
     if(TIME_down_limit)TIME_down_limit--;
-    if(TIME_Origin_mode_join)TIME_Origin_mode_join--;
     test_SPEED_PI_FLAG++;
   
     Motor_Start_OpenLoop();
@@ -233,32 +228,61 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 	PDC3 = PDC1;
 #endif
 #ifdef CLOSEDLOOP
+             
          if(Flag_Motor_CloseLOOP==0)
          {
-            SPEED_PDC=refSpeed/2;   //3 //5
+            SPEED_PDC=refSpeed/3;   //5
             if(SPEED_PDC>PWM_DutyCycle_MAX)SPEED_PDC=PWM_DutyCycle_MAX;
          }
         else
-        {                                   
+        {
+             
+//            speed_PIparms.qInRef = SET_SPEED;
+//            speed_PIparms.qInMeas = ActualSpeed;
+//            
+//            CalcPI(&speed_PIparms);
+//            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output          
+//
+//            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*PWM_PTPER,MAX_SPEED_PI);
+//            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+             
 	         PI_Speed.Ref = __builtin_divsd(((int64_t)SET_SPEED*(int64_t)32768),6000);     //计算成Q15，即Ref×32768/6000RPM; 
 	         PI_Speed.Fdb = __builtin_divsd(((int64_t)ActualSpeed*(int64_t)32768),6000);          
-             PICal(&PI_Speed);
+             PICal(&PI_Speed);                                
              SPEED_PDC =PI_Speed.Out;
         }
-        
+    
+    
+    
         if(Flag_DCInjection==1)//&&(SPEED_PDC<0))
         {       
-            Out_LED_PGD=1;            
+            Out_LED_PGD=1;
+//            if(ActualSpeed>SET_SPEED+20)
+//                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*1.8;  //1.5       
+//            SPEED_PDC_out=PWM_DutyCycle_MAX+PDC_DCInjection;
+//            if(SPEED_PDC_out<=0)SPEED_PDC_out=PWM_DutyCycle_MAX*0.12; //0.15 //0.12
+            
 	         PI_DCInjection.Ref = __builtin_divsd(((int64_t)SET_SPEED*(int64_t)32768),6000);     //计算成Q15，即Ref×32768/6000RPM; 
 	         PI_DCInjection.Fdb = __builtin_divsd(((int64_t)ActualSpeed*(int64_t)32768),6000);          
-             PICal(&PI_DCInjection);  
+             PICal(&PI_DCInjection);
+             //SPEED_PDC_out =PI_DCInjection.Out;  
              num_data1=PWM_DutyCycle_MAX;
              num_data=num_data1 +PI_DCInjection.Out;
-             SPEED_PDC_out=num_data;
+//             if(num_data>Uart_PI_DCInjection_MAX) 
+//             {
+//                 //if(Motor_place<Motor_Origin_data_u32[2]*0.15) SPEED_PDC_out=Uart_PI_DCInjection_MAX/2;
+//                 if(Motor_place<Motor_Origin_data_u32[2]*0.10) SPEED_PDC_out=Uart_PI_DCInjection_MAX/4;///10;    //4
+//                 else if(Motor_place<Motor_Origin_data_u32[2]*0.15) SPEED_PDC_out=Uart_PI_DCInjection_MAX/3;///8;  //3
+//                 else if(Motor_place<Motor_Origin_data_u32[2]*0.25) SPEED_PDC_out=Uart_PI_DCInjection_MAX/2;///6;  //2
+//                 else SPEED_PDC_out=Uart_PI_DCInjection_MAX;
+//             }
+//             else if(num_data<Uart_PI_DCInjection_MIN) SPEED_PDC_out=Uart_PI_DCInjection_MIN;
+//             else 
+                 SPEED_PDC_out=num_data;
         }
-        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED*1.2)&&(Flags.Direction == Flags.flag_CW)&&(Motor_place<Motor_Origin_data_u32[2]/2))  
+        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED*1.1)&&(Flags.Direction == Flags.flag_CW)&&(Motor_place<Motor_Origin_data_u32[2]/2))  
         {
-            //TIME_DCInjection++;           
+            TIME_DCInjection++;           
             if(Flag_DCInjection!=1)//&&(TIME_DCInjection>2))
             {
                SPEED_PDC_out=0; 
@@ -275,24 +299,25 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
                 SPEED_PDC=0;
                 Flag_DCInjection=2;
                 TIME_DCInjectionTOwork=0;
-                //Speed_PID_init();
+                Speed_PID_init();
         }
         else if(Flag_DCInjection==2)
         {
             TIME_DCInjectionTOwork++;
-            if(ActualSpeed<SET_SPEED*0.7)   //0.6
+            if(ActualSpeed<SET_SPEED*1.2)
             {
-                if(TIME_DCInjectionTOwork>2)  //10
+                if(TIME_DCInjectionTOwork>10)  //100
                 {
+                    SPEED_PDC_out=0;
+                    SPEED_PDC=0;
                     Flag_DCInjection=0;
                     TIME_DCInjectionTOwork=0;
-                    Time_chargeBootstraps=200;
-                    //Speed_PID_init();                
+                    Speed_PID_init();
+                    
+                    RunMotor();                    
                 }
             }
             else TIME_DCInjectionTOwork=0;
-            
-            if(ActualSpeed>SET_SPEED*1.2)Flag_DCInjection=1;  //1.2
         }
         else if(Flag_DCInjection==0)
         {

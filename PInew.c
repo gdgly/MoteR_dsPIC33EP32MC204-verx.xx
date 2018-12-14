@@ -169,9 +169,9 @@ void PID_init(void)
    PIDCTRL32 PI_Speed;
    PIDCTRL32 PI_DCInjection;
    
-int Uart_PI_Speed_P=5000;
-int Uart_PI_Speed_I=1300;
-int Uart_PI_Speed_D=200;
+int Uart_PI_Speed_P=3500;//5000;
+int Uart_PI_Speed_I=1000;//1300;
+int Uart_PI_Speed_D=1000;//200;
 int Uart_PI_DCInjection_P=900;
 int Uart_PI_DCInjection_I=300;
 int Uart_PI_DCInjection_D=100;

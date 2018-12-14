@@ -244,7 +244,7 @@ void InitADC1(void)
         AD1CHS123bits.CH123SA= 1;   //AN3-->ch1    AN0-->ch2   AN6-->ch3
 #endif
         AD1CON1bits.DONE = 0;	//Making sure that there is not any conversion in progress
-	IPC3bits.AD1IP = 5;		//Assigning ADC ISR priority
+	IPC3bits.AD1IP = 4;		//Assigning ADC ISR priority
 	IFS0bits.AD1IF = 0;           
 	IEC0bits.AD1IE = 1;       
 	AD1CON1bits.ADON = 1;      
@@ -310,15 +310,15 @@ void InitMCPWM(void)
 
 	TRIG1 = 600;
 
-	IPC23bits.PWM1IP = 4;
+	IPC23bits.PWM1IP = 7;
 	IFS5bits.PWM1IF = 0;
 	IEC5bits.PWM1IE = 0;
 
-	IPC23bits.PWM2IP = 4;					// PWM Interrupt Priority 4
+	IPC23bits.PWM2IP = 7;					// PWM Interrupt Priority 4
 	IFS5bits.PWM2IF = 0;
 	IEC5bits.PWM2IE = 0;
 
-	IPC24bits.PWM3IP = 4;					// PWM Interrupt Priority 4
+	IPC24bits.PWM3IP = 7;					// PWM Interrupt Priority 4
 	IFS6bits.PWM3IF = 0;
 	IEC6bits.PWM3IE = 0;
 
@@ -343,9 +343,9 @@ void InitIC(void)
 	IC2CON1 = 1;			// Timer 3, every capture event, rise & fall edges
 	IC3CON1 = 1;
 
-        IPC0bits.IC1IP = 1;
-        IPC1bits.IC2IP = 1;
-        IPC9bits.IC3IP = 1;
+        IPC0bits.IC1IP = 6;
+        IPC1bits.IC2IP = 6;
+        IPC9bits.IC3IP = 6;
 
 	IFS0bits.IC1IF = 0;	// Clear interrupt flag
 	IFS0bits.IC2IF = 0;
@@ -380,7 +380,7 @@ void InitTMR2(void)
 	PR2 = T2PR1;
     IFS0bits.T2IF = 0;		// Clear timer 2 flag
     IEC0bits.T2IE = 1;		// Enable interrupts for timer 2
-    IPC1bits.T2IP = 4;
+    IPC1bits.T2IP = 1;
     T2CONbits.TON = 1;       // start tmr2
 }
 /************************************************************************
@@ -397,7 +397,7 @@ void InitTMR1(void)
 	TMR1 = 0;
 	PR1 = T1PR1;	
 	T1CONbits.TON = 0;		// turn on timer 1
-        IPC0bits.T1IP = 3;      // Set Timer 1 Interrupt Priority Level
+        IPC0bits.T1IP = 5;      // Set Timer 1 Interrupt Priority Level
 	IFS0bits.T1IF = 0;
 	IEC0bits.T1IE = 0;
 	return;
