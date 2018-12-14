@@ -15,13 +15,11 @@
     #define     NOP()           asm ("nop")
  //--------------------------------------------
 
-//#define __Fin8MHz_Fosc20MHz__
-#define __Fin16MHz_Fosc140MHz__
 
 #define __RPI32_AD_SELCET__
 //#define __RPI32_UART_SELCET__
 
-#if defined(__Fin16MHz_Fosc140MHz__)
+            //********************Fin16MHz_Fosc140MHz****************************************
             /*
             Using the Fosc = Fin * (M/(N1*N2)) =140M
                       Fcy  =	140M/2 = 70MIP
@@ -57,41 +55,8 @@
 
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
-#endif
+           //*********************************************************************************
 
-#if defined(__Fin8MHz_Fosc20MHz__)
-            /*
-            Using the Fosc = Fin * (M/(N1*N2)) =20M
-                      Fcy  =	20M/2 = 10MIP
-            */
-
-            #define CLOSEDLOOP
-            #define FOSC  20000000			// xtal = 8.0Mhz, 20.0Mhz after PLL
-            #define FCY  FOSC/2
-            #define MILLISEC FCY/20000		// 1 mSec delay constant
-            #define FPWM 39000
-
-            #define POLEPAIRS		5		// number of pole pairs
-            #define HALL_INDEX_R	4		// Hall sensor position index
-            #define HALL_INDEX_F	5		// Hall sensor position index
-
-            #define S2	PORTAbits.RA8
-            #define S3	PORTBbits.RB4
-
-            #define T1PR1 ((FCY/1000)/64)
-
-            /* Based on using the internal Fcy and Timer 3 prescaler of 256
-             * Fcy/256 = 10M/256 = 39062.5 ticks/sec
-             * or, 2343750 ticks = 1RPM
-             * => RPM would be 2343750/T3ticks
-             */
-            #define SPEEDMULT	2343750
-            #define OFFSET 8
-            #define POTMULT 4				// pot to speed ratio
-
-            //#define Kps	50					// Kp and Ks terms need to be adjusted
-            //#define Kis	1					// as per the motor and load
-#endif
 
 
 //========================================================================

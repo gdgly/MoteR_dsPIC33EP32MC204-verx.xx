@@ -24,7 +24,6 @@ void System_Clock_Init(void)
 	// Configure Oscillator to operate the device at **Mhz
 	// Fosc= Fin*M/(N1*N2), Fcy=Fosc/2
 
-#if defined(__Fin16MHz_Fosc140MHz__)
         /****************************************************/
         PLLFBD =  68;    // M=70    Fosc= 16*70/(2*4)= 140Mhz for 16M input clock
 	CLKDIVbits.PLLPOST = 0;		// N2=2
@@ -37,22 +36,6 @@ void System_Clock_Init(void)
 	while(OSCCONbits.COSC != 0b011);
 	// Wait for PLL to lock
 	while(OSCCONbits.LOCK != 1);
-#endif
-
-#if defined(__Fin8MHz_Fosc20MHz__)
-        /****************************************************/
-         PLLFBD =  8;    // M=10   Fosc= 8*10/(2*2)= 20Mhz for 8M input clock
-         CLKDIVbits.PLLPOST = 0;	// N2=2
-         CLKDIVbits.PLLPRE = 0;		// N1=2
-        /***************************************************/
-
-	__builtin_write_OSCCONH(0x03);
-	__builtin_write_OSCCONL(0x01);
-
-	while(OSCCONbits.COSC != 0b011);
-	// Wait for PLL to lock
-	while(OSCCONbits.LOCK != 1);
-#endif
 }
 
 
