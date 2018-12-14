@@ -15,27 +15,74 @@
 	and the StateLoTableAntiClk tables, the Low side driver is
 	PWM while the high side driver is either on or off.
 *************************************************************/
+//// ????????
+//unsigned int StateTableFwdPwm1[] =
+//{0xc301, 0xc301, 0xc341, 0xc341,0xc101, 0xc101, 0xc301, 0xc301};//a??U?
+//
+//unsigned int StateTableFwdPwm2[] =
+//{0xc301, 0xc341, 0xc101, 0xc301,0xc301, 0xc341, 0xc101, 0xc301};//b??V?
+//
+//unsigned int StateTableFwdPwm3[] =
+//{0xc301, 0xc101, 0xc301, 0xc101,0xc341, 0xc301, 0xc341, 0xc301};//C??W?
+////       3H_2L   2H_1L   3H_1L  1H_3L   1H_2L   2H_3L
+//
+//// ????????
+//unsigned int StateTableRevPwm1[] =
+//{0xc301, 0xc301, 0xc101, 0xc101,0xc341, 0xc341, 0xc301, 0xc301};//a??U?
+//
+//unsigned int StateTableRevPwm2[] =
+//{0xc301, 0xc101, 0xc341, 0xc301,0xc301, 0xc101, 0xc341, 0xc301};//b??V?
+//
+//unsigned int StateTableRevPwm3[] =
+//{0xc301, 0xc341, 0xc301, 0xc341,0xc101, 0xc301, 0xc101, 0xc301};//C??W?
+////       2H_3L   1H_2L   1H_3L  3H_1L   2H_1L   3H_2L
+
+
+////反向换相表 互补模式 
+//#define off 0xc300 
+//#define pwm 0xc100 
+//#define UpoffDnon 0xc340 
+//unsigned int StateTableRevPwm1[] = 
+//{off, UpoffDnon, pwm      , off     , off      , UpoffDnon, pwm      , off};//a相即U相 
+//
+//unsigned int StateTableRevPwm2[] = 
+//{off, off     , UpoffDnon ,UpoffDnon,pwm       , pwm      , off      , off};//b相即V相 
+//
+//unsigned int StateTableRevPwm3[] = 
+//{off, pwm     , off       , pwm     , UpoffDnon, off      , UpoffDnon, off};//C相即W相
+////    3H_1L     1H_2L       3H_2L     2H_3L      2H_1L      1H_3L
+
+////以下为上桥PWM
+//#define off 0xc301 
+//#define pwm 0xc101 
+//#define UpoffDnon 0xc341
+
+//以下为下桥PWM
+#define off 0xc301 
+#define pwm 0xc201 
+#define UpoffDnon 0xc381
 // ????????
 unsigned int StateTableFwdPwm1[] =
-{0xc301, 0xc301, 0xc341, 0xc341,0xc101, 0xc101, 0xc301, 0xc301};//a??U?
+{off, off, UpoffDnon, UpoffDnon,pwm, pwm, off, off};//a??U?
 
 unsigned int StateTableFwdPwm2[] =
-{0xc301, 0xc341, 0xc101, 0xc301,0xc301, 0xc341, 0xc101, 0xc301};//b??V?
+{off, UpoffDnon, pwm, off,off, UpoffDnon, pwm, off};//b??V?
 
 unsigned int StateTableFwdPwm3[] =
-{0xc301, 0xc101, 0xc301, 0xc101,0xc341, 0xc301, 0xc341, 0xc301};//C??W?
+{off, pwm, off, pwm,UpoffDnon, off, UpoffDnon, off};//C??W?
 //       3H_2L   2H_1L   3H_1L  1H_3L   1H_2L   2H_3L
 
 // ????????
 unsigned int StateTableRevPwm1[] =
-{0xc301, 0xc301, 0xc101, 0xc101,0xc341, 0xc341, 0xc301, 0xc301};//a??U?
+{off, off, pwm, pwm,UpoffDnon, UpoffDnon, off, off};//a??U?
 
 unsigned int StateTableRevPwm2[] =
-{0xc301, 0xc101, 0xc341, 0xc301,0xc301, 0xc101, 0xc341, 0xc301};//b??V?
+{off, pwm, UpoffDnon, off,off, pwm, UpoffDnon, off};//b??V?
 
 unsigned int StateTableRevPwm3[] =
-{0xc301, 0xc341, 0xc301, 0xc341,0xc101, 0xc301, 0xc101, 0xc301};//C??W?
+{off, UpoffDnon, off, UpoffDnon,pwm, off, pwm, off};//C??W?
 //       2H_3L   1H_2L   1H_3L  3H_1L   2H_1L   3H_2L
+
 
 
 struct MotorFlags Flags;
@@ -64,6 +111,7 @@ unsigned int Flag_CompareSpeed = 0;
 
 int SPEED_PDC;
 int SPEED_PDC_out;
+int SPEED_PDC_out_uart;
 int SPEED_PDC_offset;
 int SPEED_PI_qOut;
 
@@ -105,5 +153,5 @@ UINT8 Flag_DCInjection=0;
 UINT16 TIME_Key_scan=0;
 
 unsigned int avg_VBUS_value;
-
+UINT8 TIME_chargeBootstraps=0;
 

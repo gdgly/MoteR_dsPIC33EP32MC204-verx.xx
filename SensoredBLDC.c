@@ -38,8 +38,8 @@ unsigned int Read_Hall(void)
 ********************************************************************/
 void Motor_Change_Phase(void)
 {
-    if(Flag_DCInjection!=1)
-    {
+//    if(Flag_DCInjection!=1)
+//    {
         if (Flags.Direction)
         {
                 IOCON1 = StateTableFwdPwm1[HallValue];
@@ -52,9 +52,9 @@ void Motor_Change_Phase(void)
             IOCON2 = StateTableRevPwm2[HallValue];
             IOCON3 = StateTableRevPwm3[HallValue];
             }
-    }
-    else 
-        DCInjectionON();
+//    }
+//    else 
+//        DCInjectionON();
     HallValue_Last = HallValue;
 }
 /*********************************************************************
@@ -67,33 +67,15 @@ void Motor_Change_Phase(void)
 void Motor_SPEED_Compute(void)
 {
     unsigned int period;
-    static UINT16 timer3value_data[SPEED_avg_pcs]={0,0,0,0,0,0,0,0};
-    static UINT8  timer3value_count=0;
-    static UINT32 sum_timer3value=0;
- 
+
     if(FLAG_read_HALL_time)
     {
-//        period = timer3value;
-//        //timer3value = 0;
-//        FLAG_read_HALL_time = 0;
-//
-//        timer3avg=(timer3avg + timer3value_Last + period*2)>>2;
-//        timer3value_Last=period;
-//        
-//        //timer3avg=period;
-        
-        
-        
+        period = timer3value;
+        timer3value = 0;
         FLAG_read_HALL_time = 0;
-        timer3value_data[timer3value_count] = timer3value;
-        sum_timer3value += timer3value_data[timer3value_count];
-        if(timer3value_count==SPEED_avg_pcs-1) sum_timer3value -= timer3value_data[0];
-        else sum_timer3value -= timer3value_data[timer3value_count+1];
-        timer3avg= sum_timer3value/SPEED_avg_pcs;
-        timer3value_count++;
-        if(timer3value_count>=SPEED_avg_pcs)timer3value_count= 0;
-        
-        
+
+        timer3avg=(timer3avg + timer3value_Last + period*2)>>2;
+        timer3value_Last=period;
 	if (timer3avg < MIN_PERIOD)
 		timer3avg = MIN_PERIOD;
 	else if (timer3avg > MAX_PERIOD)
@@ -102,6 +84,33 @@ void Motor_SPEED_Compute(void)
 	ActualSpeed = __builtin_divud(SPEED_RPM_CALC,timer3avg);
     }
 
+}
+/******************************************************************************
+ * chargeBootstraps
+ *
+ *  This function charges the bootstrap caps each time the motor is energized for the
+ *  first time after an undetermined amount of time. ChargeBootstraps subroutine turns
+ *  ON the lower transistors for 10 ms to ensure voltage on these caps, and then it
+ *  transfers the control of the outputs to the PWM module.
+ *
+ * PARAMETER REQ: none
+ *
+ * RETURNS: none
+ *
+ * ERRNO: none
+ ********************************************************************************/
+void chargeBootstraps(void)
+{
+    IOCON1 = 0xc341;
+	IOCON2 = 0xc341;
+	IOCON3 = 0xc341;
+    PTCONbits.PTEN = 1;
+    TIME_chargeBootstraps=100;
+	while(TIME_chargeBootstraps);
+    IOCON1 = 0xc301;
+    IOCON2 = 0xc301;
+    IOCON3 = 0xc301;
+    PTCONbits.PTEN = 0;
 }
 /*********************************************************************
   Function:        void RunMotor(void)
@@ -115,6 +124,7 @@ void Motor_SPEED_Compute(void)
 ********************************************************************/
 void RunMotor(void)
 {
+    chargeBootstraps();
         PTCONbits.PTEN = 1;			// Enabling the PWM
 	HallValue = Read_Hall();	// Read halls
         Motor_Change_Phase();
@@ -591,7 +601,7 @@ static UINT8 FLAG_powerOFF=0;
                            Flags.flag_stop=0;
                            Flags.flag_close=0;   
         
-        //Out_LED_PGD=1;
+        Out_LED_PGD=1;
     }
     if((avg_VBUS_value<SET_VBUS_PowerOFF)&&(Flags.flag_EEPROM_LOAD_OK==1)&&(FLAG_powerOFF==0))    // 断电时保存位置数据
     {
@@ -604,7 +614,7 @@ static UINT8 FLAG_powerOFF=0;
                            Flags.flag_stop=0;
                            Flags.flag_close=0;   
         
-        //Out_LED_PGD=1;
+        Out_LED_PGD=1;
         VBUS_PowerOFF_fun();
     }
 #endif
@@ -630,7 +640,7 @@ void Motor_Start_OpenLoop(void)
 
        if(SET_SPEED >= 200)
         {
-            if((ActualSpeed < 200)&&(Flag_Motor_CloseLOOP==0))   //SET_SPEED
+            if((ActualSpeed < SET_SPEED)&&(Flag_Motor_CloseLOOP==0))   
             {
                 speed_start_error=(SET_SPEED-ActualSpeed)/open_loop_inc_inc;
                 refSpeed = refSpeed+open_loop_inc+speed_start_error;

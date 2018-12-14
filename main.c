@@ -49,6 +49,7 @@ int main(void)
 	timer3avg = 0;
 	InitMCPWM();
 	InitIC();   
+    chargeBootstraps();
         InitUART1();
         BOOT_DELAY();
         Flags.flag_EEPROM_LOAD_OK=0;

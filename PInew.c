@@ -169,14 +169,14 @@ void PID_init(void)
    PIDCTRL32 PI_Speed;
    PIDCTRL32 PI_DCInjection;
    
-int Uart_PI_Speed_P=5000;
-int Uart_PI_Speed_I=1300;
-int Uart_PI_Speed_D=200;
+int Uart_PI_Speed_P=0;
+int Uart_PI_Speed_I=0;
+int Uart_PI_Speed_D=0;
 int Uart_PI_DCInjection_P=900;
 int Uart_PI_DCInjection_I=300;
 int Uart_PI_DCInjection_D=100;
-int Uart_PI_DCInjection_MAX=1;//1250;
-int Uart_PI_DCInjection_MIN=2000;//230;
+int Uart_PI_DCInjection_MAX=1250;
+int Uart_PI_DCInjection_MIN=230;
 /*********************************************************************************************************
 ** 函数名称: void Speed_PID_init(void)
 ** 功能描述:
@@ -195,9 +195,9 @@ void Speed_PID_init(void)
 //    }
 //    else 
 //    {
-//        Uart_PI_Speed_P=5000;
-//        Uart_PI_Speed_I=1300;
-//        Uart_PI_Speed_D=200;
+        Uart_PI_Speed_P=5000;
+        Uart_PI_Speed_I=1300;
+        Uart_PI_Speed_D=200;
 //    }        
 	PI_Speed.Kp  = Uart_PI_Speed_P;
 	PI_Speed.Kix = Uart_PI_Speed_I;
@@ -210,15 +210,15 @@ void Speed_PID_init(void)
 void DCInjection_PID_init(void)
 {  
 	PIRESet(&PI_DCInjection);
-//        Uart_PI_DCInjection_P=900;
-//        Uart_PI_DCInjection_I=300;
-//        Uart_PI_DCInjection_D=100;      
+        //Uart_PI_DCInjection_P=0;
+        //Uart_PI_DCInjection_I=0;
+        //Uart_PI_DCInjection_D=0;      
 	PI_DCInjection.Kp  = Uart_PI_DCInjection_P;
 	PI_DCInjection.Kix = Uart_PI_DCInjection_I;
 	PI_DCInjection.Kc  = Uart_PI_DCInjection_D;    
 	
-	PI_DCInjection.OutMax = -Uart_PI_DCInjection_MAX;//0;//PWM_DutyCycle_MAX;//Uart_PI_DCInjection_MAX;//PWM_DutyCycle_MAX*0.3;
-	PI_DCInjection.OutMin = -Uart_PI_DCInjection_MIN;//-2000;//PWM_DutyCycle_MAX;//0;//Uart_PI_DCInjection_MIN;//PWM_DutyCycle_MAX*0.1;
+	PI_DCInjection.OutMax = PWM_DutyCycle_MAX;//Uart_PI_DCInjection_MAX;//PWM_DutyCycle_MAX*0.3;
+	PI_DCInjection.OutMin = 0;//Uart_PI_DCInjection_MIN;//PWM_DutyCycle_MAX*0.1;
 }
 #endif
 /*********************************************************************************************************

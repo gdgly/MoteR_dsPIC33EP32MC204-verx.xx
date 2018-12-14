@@ -44,7 +44,7 @@
 
             #define MILLISEC FCY/140000		// 1 mSec delay constant
 
-            #define T1PR1 ((FCY/1000)/64)    //((FCY/1000)/64)
+            #define T1PR1 ((FCY/1000)/64)
 
             /* Based on using the internal Fcy and Timer 3 prescaler of 256
              * Fcy/256 = 70M/256 = 273437.5 ticks/sec
@@ -67,10 +67,8 @@
 
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
-           #define SPEED_avg_pcs    8
 
-
-           #define SPEED_PI_P  8000//8000//5000 6000
+           #define SPEED_PI_P  4000//8000//8000//5000 6000
            #define SPEED_PI_I  5
            #define SPEED_PI_C  0
 
@@ -384,6 +382,7 @@ extern unsigned int Flag_CompareSpeed;
 
 extern int SPEED_PDC;
 extern int SPEED_PDC_out;
+extern int SPEED_PDC_out_uart;
 extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
 
@@ -426,3 +425,4 @@ extern UINT8 Flag_DCInjection;
 extern UINT16 TIME_Key_scan;
 
 extern unsigned int avg_VBUS_value;
+extern UINT8 TIME_chargeBootstraps;

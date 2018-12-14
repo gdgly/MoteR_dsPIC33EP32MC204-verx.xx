@@ -4,14 +4,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/SensoredBLDC.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/Interrupts.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/defs_ram.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/main.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/defs_ram.h</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/Init.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/uart.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/PInew.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/main.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/uart.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/SensoredBLDC.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/APP_BX.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/Interrupts.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/Init.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/defs_ram.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/defs_ram.h</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.1/PInew.c</file>
         </group>
     </open-files>
 </project-private>
