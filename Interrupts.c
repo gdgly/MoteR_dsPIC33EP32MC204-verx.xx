@@ -221,47 +221,51 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 //            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
              
                                    
-	         PI_SPL.Ref = __builtin_divsd(((int64_t)SET_SPEED*(int64_t)32768),6000);     //计算成Q15，即Ref×32768/6000RPM; 
-	         PI_SPL.Fdb = __builtin_divsd(((int64_t)ActualSpeed*(int64_t)32768),6000);          
-             PICal(&PI_SPL);
-             SPEED_PDC =PI_SPL.Out;
+	         PI_Speed.Ref = __builtin_divsd(((int64_t)SET_SPEED*(int64_t)32768),6000);     //计算成Q15，即Ref×32768/6000RPM; 
+	         PI_Speed.Fdb = __builtin_divsd(((int64_t)ActualSpeed*(int64_t)32768),6000);          
+             PICal(&PI_Speed);
+             SPEED_PDC =PI_Speed.Out;
         }
     
     
     
         if(Flag_DCInjection==1)//&&(SPEED_PDC<0))
-        {               
+        {       
+            Out_LED_PGD=1;
             if(ActualSpeed>SET_SPEED+20)
-                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*0.3;   //0.18       
-            if(PDC_DCInjection<=-PWM_DutyCycle_MAX)PDC_DCInjection=-PWM_DutyCycle_MAX;
+                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*1.8;  //1.5       
             SPEED_PDC_out=PWM_DutyCycle_MAX+PDC_DCInjection;
+            if(SPEED_PDC_out<=0)SPEED_PDC_out=PWM_DutyCycle_MAX*0.12; //0.15 //0.12
         }
-        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED+50)&&(Flags.Direction == Flags.flag_CW))  
+        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED+50)&&(Flags.Direction == Flags.flag_CW)&&(Motor_place<Motor_Origin_data_u32[2]/2))  
         {
             TIME_DCInjection++;           
-            if((Flag_DCInjection==0)&&(TIME_DCInjection>30))
+            if(Flag_DCInjection==0)//&&(TIME_DCInjection>2))
             {
-                Out_LED_PGD=1;
                SPEED_PDC_out=0; 
                SPEED_PDC=0;
                Flag_DCInjection=1;
                PDC_DCInjection=0;
-               Time_PDC_DCInjection=0;
-               //PI_SPL.OutMin = -PWM_DutyCycle_MAX*0.13;
-               
+               Time_PDC_DCInjection=0;   
             }
         }
-        else if((Flag_DCInjection==1)&&(ActualSpeed<SET_SPEED-200))
+        else if(Flag_DCInjection==1)//&&(ActualSpeed<SET_SPEED-200))
         {
                 SPEED_PDC_out=0;
                 Flag_DCInjection=0;
-                Out_LED_PGD=0;
+                Speed_PID_init();
+                //Flag_Motor_CloseLOOP=0;
         }
-        else if(Flag_DCInjection==0){SPEED_PDC_out=SPEED_PDC; TIME_DCInjection=0;}
+        else if(Flag_DCInjection==0)
+        {
+            Out_LED_PGD=0;
+            SPEED_PDC_out=SPEED_PDC; 
+            TIME_DCInjection=0;
+        }
             
         if(SPEED_PDC_out>PWM_DutyCycle_MAX)SPEED_PDC_out=PWM_DutyCycle_MAX;
     
-        //PDC1 = SPEED_PDC;
+        //PDC1 = SPEED_PDC; 
         PDC1 = SPEED_PDC_out;
         PDC2 = PDC1;
         PDC3 = PDC1;    

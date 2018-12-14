@@ -138,7 +138,7 @@ void RunMotor(void)
         timer3avg=MAX_PERIOD;
 
         //InitPI(&speed_PIparms,SPEED_PI_P,SPEED_PI_I,SPEED_PI_C,MAX_SPEED_PI,(-MAX_SPEED_PI),0);
-        PID_init();
+        Speed_PID_init();
 }
 
 /*********************************************************************
@@ -376,7 +376,7 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
         else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
             if(TIME_down_limit==0){
                 TIME_down_limit=100;
-                SET_SPEED=SET_SPEED-200;
+                SET_SPEED=SET_SPEED-100;
                 //if(SET_SPEED<500)SET_SPEED=500;
                 if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
             }

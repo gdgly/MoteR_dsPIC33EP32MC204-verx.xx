@@ -12,6 +12,7 @@
 
 #include "stdint.h"
 
+
 typedef struct {
 	int32_t  Ref;
 	int32_t  Fdb;
@@ -29,6 +30,7 @@ typedef struct {
 	uint8_t  State;
 }PIDCTRL32;
 
+#if 0
 extern PIDCTRL32 PI_SPL;
 extern PIDCTRL32 PI_IDL;
 extern PIDCTRL32 PI_IPL;
@@ -43,11 +45,21 @@ extern int Uart_KDL_Speed_PI;
 extern int Uart_KPL_Ibus_PI;
 extern int Uart_KIL_Ibus_PI;
 extern int Uart_KDL_Ibus_PI;
-
-
+void PID_init(void);
+#else
+extern  PIDCTRL32 PI_Speed;
+   
+extern int Uart_PI_Speed_P;
+extern int Uart_PI_Speed_I;
+extern int Uart_PI_Speed_D;
+extern int Uart_PI_DCInjection_P;
+extern int Uart_PI_DCInjection_I;
+extern int Uart_PI_DCInjection_D;
+  void Speed_PID_init(void);  
+#endif
 
 void PICal(PIDCTRL32 *v);
 void PIRESet(PIDCTRL32 *v);
-void PID_init(void);
+
 
 #endif

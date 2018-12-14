@@ -17,6 +17,8 @@
         ((Float_Value < 0.0) ? (int)(32768 * (Float_Value) - 0.5) \
         : (int)(32767 * (Float_Value) + 0.5))
 
+
+#ifdef Burnon_ChenPX
 //
 //线性方程式KPx=150+转差/2
 #define KPL_Speed_PI Q15(0.033)   //(0.0299)//(0.0141) //	
@@ -64,7 +66,6 @@ PIDCTRL32 PI_SPR;
 PIDCTRL32 PI_IDR;
 PIDCTRL32 PI_IPR;
 
-
 unsigned int STATE;
 /*********************************************************************************************************
 ** 函数名称: void PIInit(void)
@@ -93,18 +94,18 @@ void PID_init(void)
 //	PI_SPL.Kix = KIL_Speed_PI;
 //	PI_SPL.Kc  = KDL_Speed_PI;
 
-    if(SET_SPEED>=2000) 
-    {
-        Uart_KPL_Speed_PI=9000;
-        Uart_KIL_Speed_PI=1500;
-        Uart_KDL_Speed_PI=300;
-    }
-    else 
-    {
+//    if(SET_SPEED>=2000) 
+//    {
+//        Uart_KPL_Speed_PI=9000;
+//        Uart_KIL_Speed_PI=1500;
+//        Uart_KDL_Speed_PI=300;
+//    }
+//    else 
+//    {
         Uart_KPL_Speed_PI=5000;
         Uart_KIL_Speed_PI=1300;
         Uart_KDL_Speed_PI=200;
-    }        
+//    }        
 	PI_SPL.Kp  = Uart_KPL_Speed_PI;
 	PI_SPL.Kix = Uart_KIL_Speed_PI;
 	PI_SPL.Kc  = Uart_KDL_Speed_PI;    
@@ -160,6 +161,50 @@ void PID_init(void)
 	PI_SPR.OutMax = 1200;
 	PI_SPR.OutMin = 0;
 } 
+
+#else
+
+
+
+   PIDCTRL32 PI_Speed;
+   
+int Uart_PI_Speed_P=0;
+int Uart_PI_Speed_I=0;
+int Uart_PI_Speed_D=0;
+int Uart_PI_DCInjection_P=0;
+int Uart_PI_DCInjection_I=0;
+int Uart_PI_DCInjection_D=0;
+/*********************************************************************************************************
+** 函数名称: void PIInit(void)
+** 功能描述:
+**
+** 作　     者:  ChenPX
+** 日　     期:  2015
+**********************************************************************************************************/
+void Speed_PID_init(void)
+{  
+	PIRESet(&PI_Speed);
+//    if(SET_SPEED>=2000) 
+//    {
+//        Uart_PI_Speed_P=9000;
+//        Uart_PI_Speed_I=1500;
+//        Uart_PI_Speed_D=300;
+//    }
+//    else 
+//    {
+        Uart_PI_Speed_P=5000;
+        Uart_PI_Speed_I=1300;
+        Uart_PI_Speed_D=200;
+//    }        
+	PI_Speed.Kp  = Uart_PI_Speed_P;
+	PI_Speed.Kix = Uart_PI_Speed_I;
+	PI_Speed.Kc  = Uart_PI_Speed_D;    
+	
+	PI_Speed.OutMax = PWM_DutyCycle_MAX;//1200;
+	PI_Speed.OutMin = 0;//-PWM_DutyCycle_MAX;//0;
+} 
+
+#endif
 /*********************************************************************************************************
 ** 函数名称: static void PIRESet(PIDCTRL32 *v)
 ** 功能描述: 初始化PI结构体

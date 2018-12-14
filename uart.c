@@ -180,12 +180,12 @@ void UART_Handler(void)
                         //if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
                         break;
              case 0xEE01:     //test PI
-                        Uart_KPL_Speed_PI=UART1_DATA[9]+(UART1_DATA[8]<<8);
-                        Uart_KIL_Speed_PI=UART1_DATA[11]+(UART1_DATA[10]<<8);
-                        Uart_KDL_Speed_PI=UART1_DATA[13]+(UART1_DATA[12]<<8);
-                        Uart_KPL_Ibus_PI=UART1_DATA[15]+(UART1_DATA[14]<<8);
-                        Uart_KIL_Ibus_PI=UART1_DATA[17]+(UART1_DATA[16]<<8);
-                        Uart_KDL_Ibus_PI=UART1_DATA[19]+(UART1_DATA[18]<<8);                       
+                        Uart_PI_Speed_P=UART1_DATA[9]+(UART1_DATA[8]<<8);
+                        Uart_PI_Speed_I=UART1_DATA[11]+(UART1_DATA[10]<<8);
+                        Uart_PI_Speed_D=UART1_DATA[13]+(UART1_DATA[12]<<8);
+                        Uart_PI_DCInjection_P=UART1_DATA[15]+(UART1_DATA[14]<<8);
+                        Uart_PI_DCInjection_I=UART1_DATA[17]+(UART1_DATA[16]<<8);
+                        Uart_PI_DCInjection_D=UART1_DATA[19]+(UART1_DATA[18]<<8);                       
                         break;
               default:
                         break;
@@ -233,118 +233,15 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
+        DATA_TEST=SPEED_PDC_out;
+        char_data=DATA_TEST>>8;
+        Send_char(char_data);
+        char_data=DATA_TEST%256;
+        Send_char(char_data);   
+        char_data=Flag_DCInjection*3;
+        Send_char(char_data);
         Send_char(0xAA);
-  
-//        Send_char(0xA6);
-//        DATA_TEST=Uart_KPL_Speed_PI;
-//        char_data=DATA_TEST>>8;
-//        Send_char(char_data);
-//        char_data=DATA_TEST%256;
-//        Send_char(char_data);
-//        DATA_TEST=Uart_KIL_Speed_PI;
-//        char_data=DATA_TEST>>8;
-//        Send_char(char_data);
-//        char_data=DATA_TEST%256;
-//        Send_char(char_data); 
-//        DATA_TEST=Uart_KDL_Speed_PI;
-//        char_data=DATA_TEST>>8;
-//        Send_char(char_data);
-//        char_data=DATA_TEST%256;
-//        Send_char(char_data);      
-//        Send_char(0xAB);
-        
-//
-//        char_data=refSpeed>>8;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=refSpeed%256;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        Send_char(' ');
-////
-////        char_data=ActualSpeed>>8;
-////        char0=hex_asc(char_data/16);
-////        Send_char(char0);
-////        char0=hex_asc(char_data%16);
-////        Send_char(char0);
-////        char_data=ActualSpeed%256;
-////        char0=hex_asc(char_data/16);
-////        Send_char(char0);
-////        char0=hex_asc(char_data%16);
-////        Send_char(char0);
-////        Send_char(' ');
-////
-////        char_data=SPEED_PI_qOut>>8;
-////        char0=hex_asc(char_data/16);
-////        Send_char(char0);
-////        char0=hex_asc(char_data%16);
-////        Send_char(char0);
-////        char_data=SPEED_PI_qOut%256;
-////        char0=hex_asc(char_data/16);
-////        Send_char(char0);
-////        char0=hex_asc(char_data%16);
-////        Send_char(char0);
-////        Send_char(' ');
-////
-////        char_data=SPEED_PDC_offset>>8;
-////        char0=hex_asc(char_data/16);
-////        Send_char(char0);
-////        char0=hex_asc(char_data%16);
-////        Send_char(char0);
-////        char_data=SPEED_PDC_offset%256;
-////        char0=hex_asc(char_data/16);
-////        Send_char(char0);
-////        char0=hex_asc(char_data%16);
-////        Send_char(char0);
-////        Send_char(' ');
-////
-//        char_data=SET_SPEED>>8;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=SET_SPEED%256;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        Send_char(' ');
-//
-//
-//
-//            d_num.ul=Motor_place;
-//            d_xx[0]=d_num.u_char[0];
-//            d_xx[1]=d_num.u_char[1];
-//            d_xx[2]=d_num.u_char[2];
-//            d_xx[3]=d_num.u_char[3];
-//
-//        char_data=d_xx[0];
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=d_xx[1];
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=d_xx[2];
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=d_xx[3];
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        Send_char(' ');
-//
-//        Send_char(13);
-//        Send_char(10);
+          
+
     }
 }
