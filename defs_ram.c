@@ -47,6 +47,7 @@ unsigned int timer3value_Last;
 unsigned char FLAG_read_HALL_time;
 int ActualSpeed;
 
+UINT32 Motor_place;
 unsigned int SET_SPEED;
 int refSpeed;
 unsigned int SPEED_open_loop_PDC;
@@ -76,8 +77,14 @@ UINT16 BOOT_time;
 UINT8 Motor_MODE_B_data[def_MODE_B];
 UINT16 SET_UP_SPEED_form_Uart;
 UINT16 SET_DOWN_SPEED_form_Uart;
+UINT16 UART_send_CMD;
+UINT8 Motor_Origin_data[12];
+UINT32 Motor_Origin_data_u32[3];
 
+UINT8 Origin_mode_step;
 
+UINT8 KEY_wired_value;
+UINT8 KEY_wired_value_last;
 
 
 UINT8 test_SPEED_PI_FLAG;

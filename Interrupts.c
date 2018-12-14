@@ -159,7 +159,13 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
 {	
 	IFS2bits.IC3IF = 0;	// Clear interrupt flag
 	HallValue = Read_Hall();	// Read halls
-        if(HallValue!=HallValue_Last)Motor_Change_Phase();
+        if(HallValue!=HallValue_Last){
+            Motor_Change_Phase();
+            if(Flags.Direction == Flags.flag_CW){
+                if(Motor_place>1)Motor_place--;
+            }
+            else Motor_place++;
+        }
 }
 
 /*********************************************************************

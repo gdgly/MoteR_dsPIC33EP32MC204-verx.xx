@@ -79,7 +79,7 @@
            #define SET_IBUS_sample_R  30   //µ¥Î»m¦¸
            #define SET_IBUS_gain   6
            #define SET_IBUS_Vpp_AD   1010 //((1650+SET_IBUS_Vpp_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
-           #define SET_IBUS_Vavg_AD   850 //((1650+SET_IBUS_Vavg_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
+           #define SET_IBUS_Vavg_AD   750//850 //((1650+SET_IBUS_Vavg_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
 #endif
 
 
@@ -224,6 +224,11 @@
 	UINT8	uc[2] ;
   }uni_i;
 
+  typedef union {
+        UINT32	ul ;
+	UINT8	u_char[4] ;
+  }uni_l;
+
 struct MotorFlags
 {
 unsigned RunMotor 	:1;
@@ -234,7 +239,12 @@ unsigned flag_close     :1;
 unsigned flag_stop      :1;
 unsigned flag_CW        :1;
 unsigned flag_CCW       :1;
-unsigned unused		:8;
+unsigned flag_origin    :1;
+unsigned flag_power_on    :1;
+unsigned flag_up_limit     :1;
+unsigned flag_down_limit     :1;
+unsigned flag_EEPROM_LOAD_OK     :1;
+unsigned unused		:4;
 };
 
 
@@ -255,6 +265,7 @@ extern unsigned long timer3avg;
 extern unsigned char FLAG_read_HALL_time;
 extern int ActualSpeed;
 
+extern UINT32 Motor_place;
 extern unsigned int SET_SPEED;
 extern int refSpeed;
 extern unsigned int SPEED_open_loop_PDC;
@@ -285,7 +296,13 @@ extern UINT16 BOOT_time;
 extern UINT8 Motor_MODE_B_data[def_MODE_B];
 extern UINT16 SET_UP_SPEED_form_Uart;
 extern UINT16 SET_DOWN_SPEED_form_Uart;
+extern UINT16 UART_send_CMD;
+extern UINT8 Motor_Origin_data[12];
+extern UINT32 Motor_Origin_data_u32[3];
 
+extern UINT8 Origin_mode_step;
+extern UINT8 KEY_wired_value;
+extern UINT8 KEY_wired_value_last;
 
 
 

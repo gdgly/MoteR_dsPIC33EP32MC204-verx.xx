@@ -12,6 +12,7 @@
 #include "SensoredBLDC.h"
 #include "uart.h"
 #include "pi.h"
+#include "APP_BX.h"
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
@@ -47,14 +48,20 @@ int main(void)
 	InitIC();
         InitUART1();
         BOOT_DELAY();
+        Flags.flag_EEPROM_LOAD_OK=0;
+
+        Flags.flag_power_on=1;
 #if defined(__Motor_debug__)
         SET_SPEED=2600;
 #endif
 	while(1)
 	{
-           runTestCode();  /* Run test code */
+           if(Flags.flag_EEPROM_LOAD_OK==1)runTestCode();  /* Run test code */
            adc_IBUS();
            UART_Handler();
+           SET_origin_mode();
+           Key_scan();
+
            //TEST_uart_speed_pi();
 	}
 }

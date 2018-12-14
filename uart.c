@@ -37,6 +37,42 @@ void UART_ack(unsigned char ch)
         Send_char(sum/256);        //sum_H
 }
 
+
+void UART_send_Motor(UINT16 d_COM,UINT8 d_addr,UINT8 d_length,UINT8 *d_data)
+{
+  UINT16  sum;
+  UINT8 i,d_num;
+
+	Send_char(0xbb);   //0xbb
+        sum=0xbb;
+	Send_char(0x00);   //0x00
+        d_num=d_COM%256;
+        Send_char(d_num);   //命令低字节
+        sum= sum+d_num;
+        d_num=d_COM/256;
+        Send_char(d_num);  //命令高字节
+        sum= sum+d_num;
+        Send_char(d_addr);  //设备地址
+        sum= sum+d_addr;
+        Send_char(0x00);             //返信情报
+        d_num=d_length%256;
+        Send_char(d_num);           //数据长度低字节
+        sum= sum+d_num;
+        d_num=d_length/256;
+        Send_char(d_num);           //数据长度高字节
+        sum= sum+d_num;
+        for(i=0;i<d_length;i++)
+        {
+          d_num=d_data[i];
+          Send_char(d_num);   //数据 DATA
+          sum= sum+d_num;
+          //ClearWDT(); // Service the WDT
+        }
+        Send_char(sum%256);        //sum_L
+        Send_char(sum/256);        //sum_H
+}
+
+
 void UART_RX_decode(void)
 {
     unsigned char UART_DATA_j;
@@ -71,7 +107,8 @@ void UART_RX_decode(void)
 void UART_Handler(void)
 {
     uni_i uart_x;
-    UINT8 uart_num,uart_i;
+    uni_l uart_l;
+    UINT8 uart_num,uart_i,d_x;
 
   if(FLAG_UART_R!=0){
     if(UART1_DATA[4]==2){         //电机mcu（设备addr:2）收到其它设备的呼叫
@@ -97,6 +134,12 @@ void UART_Handler(void)
                            Flags.flag_stop=0;
                            Flags.flag_close=1;
                         }
+                        else if(uart_num==0x07){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+                           Flags.flag_origin=1;
+                        }
                         break;
              case 0x0102:
                         if((Flags.flag_open)||(Flags.flag_close)){
@@ -118,6 +161,21 @@ void UART_Handler(void)
              case 0x0201:
                         for(uart_i=0;uart_i<50;uart_i++)
                             Motor_MODE_B_data[uart_i]=UART1_DATA[uart_i+8];
+                        break;
+             case 0x0202:
+                        for(uart_i=0;uart_i<12;uart_i++)
+                            Motor_Origin_data[uart_i]=UART1_DATA[uart_i+8];
+                        for(uart_i=0;uart_i<3;uart_i++)
+                        {
+                            d_x=uart_i*4;
+                            uart_l.u_char[0]=Motor_Origin_data[d_x];
+                            uart_l.u_char[1]=Motor_Origin_data[d_x+1];
+                            uart_l.u_char[2]=Motor_Origin_data[d_x+2];
+                            uart_l.u_char[3]=Motor_Origin_data[d_x+3];
+                            Motor_Origin_data_u32[uart_i]=uart_l.ul;
+                        }
+                        Flags.flag_EEPROM_LOAD_OK=1;
+                        if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
                         break;
               default:
                         break;
@@ -151,6 +209,8 @@ unsigned char hex_asc(unsigned char hex)
 void TEST_uart_speed_pi(void)
 {
     unsigned char  char_data,char0;
+    UINT8 d_xx[4];
+     uni_l d_num;
 
     if(test_SPEED_PI_FLAG>=2){
         test_SPEED_PI_FLAG=0;
@@ -166,53 +226,84 @@ void TEST_uart_speed_pi(void)
         char0=hex_asc(char_data%16);
         Send_char(char0);
         Send_char(' ');
+//
+//        char_data=ActualSpeed>>8;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=ActualSpeed%256;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        Send_char(' ');
+//
+//        char_data=SPEED_PI_qOut>>8;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=SPEED_PI_qOut%256;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        Send_char(' ');
+//
+//        char_data=SPEED_PDC_offset>>8;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=SPEED_PDC_offset%256;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        Send_char(' ');
+//
+//        char_data=SPEED_PDC>>8;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
+//        char_data=SPEED_PDC%256;
+//        char0=hex_asc(char_data/16);
+//        Send_char(char0);
+//        char0=hex_asc(char_data%16);
+//        Send_char(char0);
 
-        char_data=ActualSpeed>>8;
+
+
+
+            d_num.ul=Motor_place;
+            d_xx[0]=d_num.u_char[0];
+            d_xx[1]=d_num.u_char[1];
+            d_xx[2]=d_num.u_char[2];
+            d_xx[3]=d_num.u_char[3];
+
+        char_data=d_xx[0];
         char0=hex_asc(char_data/16);
         Send_char(char0);
         char0=hex_asc(char_data%16);
         Send_char(char0);
-        char_data=ActualSpeed%256;
+        char_data=d_xx[1];
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=d_xx[2];
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=d_xx[3];
         char0=hex_asc(char_data/16);
         Send_char(char0);
         char0=hex_asc(char_data%16);
         Send_char(char0);
         Send_char(' ');
-
-        char_data=SPEED_PI_qOut>>8;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=SPEED_PI_qOut%256;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        Send_char(' ');
-
-        char_data=SPEED_PDC_offset>>8;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=SPEED_PDC_offset%256;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        Send_char(' ');
-
-        char_data=SPEED_PDC>>8;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
-        char_data=SPEED_PDC%256;
-        char0=hex_asc(char_data/16);
-        Send_char(char0);
-        char0=hex_asc(char_data%16);
-        Send_char(char0);
 
         Send_char(13);
         Send_char(10);

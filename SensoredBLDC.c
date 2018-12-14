@@ -228,6 +228,15 @@ void APP_Motor_MODE_B_data (void)
            }
            SET_SPEED=SET_DOWN_SPEED_form_Uart;
     }
+
+    if(Origin_mode_step!=0)   //在设置原点、上限、下限时的转速
+    {
+         //0.5倍速
+                       start_open_loop_step=100;
+                       start_close_loop_step=14;
+                       start_open_close_loop=200;
+                       SET_SPEED=2000;
+    }
 }
 /*********************************************************************
   Function:        void runTestCode(void)
@@ -243,6 +252,52 @@ void APP_Motor_MODE_B_data (void)
 ********************************************************************/
 void runTestCode(void)
 {
+//    if(Flags.flag_limit==0){
+//        if(((Motor_place<=Motor_Origin_data_u32[1])&&(Flags.flag_power_on==0))||(Motor_place>=Motor_Origin_data_u32[2])){
+//            Flags.flag_stop=1;
+//            SET_SPEED=0;
+//            Flags.flag_limit=1;
+//            StopMotor();
+//            DelayNmSec(20);
+//            lockApply;
+//        }
+//    }
+//  else if((Motor_place<Motor_Origin_data_u32[2])||(Motor_place>Motor_Origin_data_u32[1]))Flags.flag_limit=0;
+
+
+if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
+{
+    if(Flags.flag_down_limit==0){
+        if(Motor_place>=Motor_Origin_data_u32[2]){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+            SET_SPEED=0;
+            Flags.flag_down_limit=1;
+            StopMotor();
+            DelayNmSec(20);
+            lockApply;
+        }
+    }
+    else if(Motor_place<Motor_Origin_data_u32[2])Flags.flag_down_limit=0;
+
+    if(Flags.flag_up_limit==0){
+        if((Motor_place<=Motor_Origin_data_u32[1])&&(Flags.flag_power_on==0)){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+            SET_SPEED=0;
+            Flags.flag_up_limit=1;
+            StopMotor();
+            DelayNmSec(20);
+            lockApply;
+        }
+    }
+    else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
+}
+
+
+
 #if defined(__Motor_debug__)
             if(SET_SPEED >= 500)
             {
@@ -273,12 +328,12 @@ void runTestCode(void)
                        
                         
 
-             if(Flags.flag_open==1)
+             if((Flags.flag_open==1)&&(Flags.flag_up_limit==0))
              {
                  if(!Flags.RunMotor)
                  {
                     lockRelease;
-                    DelayNmSec(100);
+                    DelayNmSec(20);
                     Flags.Direction = Flags.flag_CW;
                     APP_Motor_MODE_B_data();
                     RunMotor();
@@ -289,7 +344,7 @@ void runTestCode(void)
                      else {
                          SET_SPEED=0;
                          if(refSpeed<=200){
-                             DelayNmSec(100);
+                             DelayNmSec(20);
                              Flags.Direction = Flags.flag_CW;
                              APP_Motor_MODE_B_data();
                              RunMotor();
@@ -298,12 +353,12 @@ void runTestCode(void)
                  }
              }
 
-             if(Flags.flag_close==1)
+             if((Flags.flag_close==1)&&(Flags.flag_down_limit==0))
              {
                  if(!Flags.RunMotor)
                  {
                     lockRelease;
-                    DelayNmSec(100);
+                    DelayNmSec(20);
                     Flags.Direction = Flags.flag_CCW;
                     APP_Motor_MODE_B_data();
                     RunMotor();
@@ -314,7 +369,7 @@ void runTestCode(void)
                      else {
                          SET_SPEED=0;
                          if(refSpeed<=200){
-                             DelayNmSec(100);
+                             DelayNmSec(20);
                              Flags.Direction = Flags.flag_CCW;
                              APP_Motor_MODE_B_data();
                              RunMotor();
@@ -327,9 +382,9 @@ void runTestCode(void)
              {
                  SET_SPEED=0;
                  if(refSpeed<=200){
-                     DelayNmSec(100);
+                     //DelayNmSec(100);
                      StopMotor();
-                     DelayNmSec(100);
+                     DelayNmSec(20);
                      lockApply;
                  }
              }
@@ -367,6 +422,15 @@ void adc_IBUS(void)
     if(avg_IBUS_value>SET_IBUS_Vavg_AD)   // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
     {
         StopMotor();
+        SET_SPEED=0;
+        lockApply;
+        avg_IBUS_value=0;
+        Flags.flag_power_on=0;
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
     }
 #endif
 }
+
+
