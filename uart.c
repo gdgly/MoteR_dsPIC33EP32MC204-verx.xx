@@ -269,9 +269,10 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
-        if(PI_DCInjection.Out<0)
-          DATA_TEST1=-PI_DCInjection.Out;//SPEED_PDC;
-        else DATA_TEST1=PI_DCInjection.Out;
+//        if(PI_DCInjection.Out<0)
+//          DATA_TEST1=-PI_DCInjection.Out;//SPEED_PDC;
+//        else DATA_TEST1=PI_DCInjection.Out;
+        DATA_TEST1=timer3value;
         char_data=DATA_TEST1>>8;
         Send_char(char_data);
         char_data=DATA_TEST1%256;

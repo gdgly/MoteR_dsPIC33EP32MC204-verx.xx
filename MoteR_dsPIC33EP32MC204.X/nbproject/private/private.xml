@@ -4,13 +4,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/SensoredBLDC.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/main.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/defs_ram.h</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/Interrupts.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/Init.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/PInew.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1%20-XXX/uart.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/SensoredBLDC.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/Interrupts.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/defs_ram.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/main.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/defs_ram.h</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/Init.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/uart.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver3.0.1-CPX/PInew.c</file>
         </group>
     </open-files>
 </project-private>

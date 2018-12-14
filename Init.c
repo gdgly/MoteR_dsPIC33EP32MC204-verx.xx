@@ -310,15 +310,15 @@ void InitMCPWM(void)
 
 	TRIG1 = 600;
 
-	IPC23bits.PWM1IP = 7;
+	IPC23bits.PWM1IP = 6;
 	IFS5bits.PWM1IF = 0;
 	IEC5bits.PWM1IE = 0;
 
-	IPC23bits.PWM2IP = 7;					// PWM Interrupt Priority 4
+	IPC23bits.PWM2IP = 6;					// PWM Interrupt Priority 4
 	IFS5bits.PWM2IF = 0;
 	IEC5bits.PWM2IE = 0;
 
-	IPC24bits.PWM3IP = 7;					// PWM Interrupt Priority 4
+	IPC24bits.PWM3IP = 6;					// PWM Interrupt Priority 4
 	IFS6bits.PWM3IF = 0;
 	IEC6bits.PWM3IE = 0;
 
@@ -343,9 +343,9 @@ void InitIC(void)
 	IC2CON1 = 1;			// Timer 3, every capture event, rise & fall edges
 	IC3CON1 = 1;
 
-        IPC0bits.IC1IP = 6;
-        IPC1bits.IC2IP = 6;
-        IPC9bits.IC3IP = 6;
+        IPC0bits.IC1IP = 1;
+        IPC1bits.IC2IP = 7;
+        IPC9bits.IC3IP = 1;
 
 	IFS0bits.IC1IF = 0;	// Clear interrupt flag
 	IFS0bits.IC2IF = 0;

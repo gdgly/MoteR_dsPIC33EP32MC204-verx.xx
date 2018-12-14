@@ -44,7 +44,7 @@
 
             #define MILLISEC FCY/140000		// 1 mSec delay constant
 
-            #define T1PR1 ((FCY/1000)/64)
+            #define T1PR1 ((FCY/1000)/64)    //((FCY/1000)/64)
 
             /* Based on using the internal Fcy and Timer 3 prescaler of 256
              * Fcy/256 = 70M/256 = 273437.5 ticks/sec
@@ -67,7 +67,7 @@
 
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
-           #define SPEED_avg_pcs 4
+           #define SPEED_avg_pcs    8
 
 
            #define SPEED_PI_P  8000//8000//5000 6000

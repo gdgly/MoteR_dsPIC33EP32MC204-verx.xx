@@ -89,7 +89,7 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 #if Phase_ICXorPWMInterrupt==0
     HallValue = Read_Hall();	// Read halls
 	if(HallValue!=HallValue_Last)Motor_Change_Phase();    
-    //Motor_SPEED_Compute();
+    Motor_SPEED_Compute();
 #endif
 
 }
@@ -163,6 +163,7 @@ void __attribute__((interrupt, no_auto_psv)) _IC2Interrupt (void)
         if(HallValue!=HallValue_Last){    
             Motor_Change_Phase();            
 #endif    
+           Out_LED_PGD=!Out_LED_PGD; 
            T3CONbits.TON = 0;
            timer3value = TMR3;
            TMR3 = 0;
@@ -219,7 +220,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     test_SPEED_PI_FLAG++;
   
     Motor_Start_OpenLoop();
-    Motor_SPEED_Compute();
+    //Motor_SPEED_Compute();
 
 #ifndef CLOSEDLOOP
         SPEED_open_loop_PDC=refSpeed>>2;
@@ -228,7 +229,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 	PDC3 = PDC1;
 #endif
 #ifdef CLOSEDLOOP
-             
          if(Flag_Motor_CloseLOOP==0)
          {
             SPEED_PDC=refSpeed/3;   //5
@@ -236,7 +236,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
          }
         else
         {
-             
 //            speed_PIparms.qInRef = SET_SPEED;
 //            speed_PIparms.qInMeas = ActualSpeed;
 //            
@@ -246,9 +245,10 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 //            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*PWM_PTPER,MAX_SPEED_PI);
 //            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
              
+                                   
 	         PI_Speed.Ref = __builtin_divsd(((int64_t)SET_SPEED*(int64_t)32768),6000);     //º∆À„≥…Q15£¨º¥Ref°¡32768/6000RPM; 
 	         PI_Speed.Fdb = __builtin_divsd(((int64_t)ActualSpeed*(int64_t)32768),6000);          
-             PICal(&PI_Speed);                                
+             PICal(&PI_Speed);
              SPEED_PDC =PI_Speed.Out;
         }
     
@@ -256,7 +256,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     
         if(Flag_DCInjection==1)//&&(SPEED_PDC<0))
         {       
-            Out_LED_PGD=1;
+            //Out_LED_PGD=1;
 //            if(ActualSpeed>SET_SPEED+20)
 //                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*1.8;  //1.5       
 //            SPEED_PDC_out=PWM_DutyCycle_MAX+PDC_DCInjection;
@@ -321,7 +321,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         }
         else if(Flag_DCInjection==0)
         {
-            Out_LED_PGD=0;
+            //Out_LED_PGD=0;
             SPEED_PDC_out=SPEED_PDC; 
             TIME_DCInjection=0;
         }
