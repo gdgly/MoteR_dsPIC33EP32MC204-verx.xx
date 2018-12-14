@@ -1,25 +1,18 @@
-/*********************************************************************************
+/***************************************************************************************************
 * FileName: DCInection.c
 * Description:
 * This source file contains the definition of all the functions for DC Injection for motor holding.
 * It implements all the functions required by DC Injection.
-**********************************************************************************/
+**************************************************************************************************/
 
 /****************************************************************************
- * Copyright 2014 Bunka Shutters.
+ * Copyright 2017 Bunka MoteR.
  * This program is the property of the Bunka Shutters
  * Company, Inc.and it shall not be reproduced, distributed or used
  * without permission of an authorized company official.This is an
- * unpublished work subject to Trade Secret and Copyright
- * protection.
+ * unpublished work subject to Trade Secret and Copyright protection.
 *****************************************************************************/
 
-/****************************************************************************
- *  Modification History
- *  
- *  Date                  Name          Comments 
- *  09/05/2014            iGate          Initial Creation                                                               
-*****************************************************************************/
 #include <p33Exxxx.h>
 #include "./MotorControl/Braking/DCInjection.h"
 #include "./MotorControl/PIController/pi.h"

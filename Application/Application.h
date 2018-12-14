@@ -8,19 +8,11 @@
 *********************************************************************************/
 
 /****************************************************************************
- * Copyright 2014 Bunka Shutters.
+ * Copyright 2017 Bunka MoteR.
  * This program is the property of the Bunka Shutters
  * Company, Inc.and it shall not be reproduced, distributed or used
  * without permission of an authorized company official.This is an
- * unpublished work subject to Trade Secret and Copyright
- * protection.
-*****************************************************************************/
-
-/****************************************************************************
- *  Modification History
- *  
- *  Date                  Name          Comments 
- *  22/04/2014            iGate          Initial Creation                                                               
+ * unpublished work subject to Trade Secret and Copyright protection.
 *****************************************************************************/
 #ifndef APPLICATION_H
 #define APPLICATION_H
