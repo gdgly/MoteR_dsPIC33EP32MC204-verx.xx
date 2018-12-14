@@ -12,3 +12,5 @@ extern void RunMotor(void);
 extern void StopMotor(void);
 extern void runTestCode(void);
 extern void adc_IBUS(void);
+
+extern void APP_Motor_MODE_B_data (void);

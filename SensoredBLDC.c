@@ -116,6 +116,7 @@ void RunMotor(void)
         SPEED_PDC=100;                 //给定启动PWM占空比5%
 
         flag_open_loop_time=0;
+        flag_open_loop=0;
 
         ActualSpeed=0;
         timer3value=MAX_PERIOD;
@@ -161,6 +162,7 @@ void StopMotor(void)
 
   Note:            None.
 ********************************************************************/
+/*
 void APP_Motor_MODE_B_data (void)
 {
     if(Flags.flag_open==1)
@@ -238,6 +240,72 @@ void APP_Motor_MODE_B_data (void)
                        SET_SPEED=2000;
     }
 }
+ */
+
+void APP_Motor_MODE_B_data (void)
+{
+    if(Flags.flag_open==1)
+    {
+           switch	( Motor_MODE_B_data[25] )
+           {
+                 case 1 :       //上升等速
+                       SET_UP_SPEED_form_Uart=1000;
+
+                       break ;
+                 case 2 :       //上升2倍速
+                       SET_UP_SPEED_form_Uart=2000;
+
+                       break ;
+                 case 3 :       //上升3倍速
+                       SET_UP_SPEED_form_Uart=2900;
+
+                       break ;
+                default:
+                       break ;
+           }
+           SET_SPEED=SET_UP_SPEED_form_Uart;
+    }
+    else {
+           switch	( Motor_MODE_B_data[26] )
+           {
+                 case 1 :       //下降0.5倍速
+                       SET_DOWN_SPEED_form_Uart=500;
+
+                       break ;
+                 case 2 :       //下降0.75倍速
+                       SET_DOWN_SPEED_form_Uart=750;
+
+                       break ;
+                 case 3 :       //下降等速
+                       SET_DOWN_SPEED_form_Uart=1000;
+
+                       break ;
+                 case 4 :       //下降2倍速
+                       SET_DOWN_SPEED_form_Uart=2000;
+
+                       break ;
+                 case 5 :       //下降3倍速
+                       SET_DOWN_SPEED_form_Uart=2900;
+
+                       break ;
+                default:
+                       break ;
+           }
+           SET_SPEED=SET_DOWN_SPEED_form_Uart;
+    }
+
+
+    if(Origin_mode_step!=0)   //在设置原点、上限、下限时的转速
+    {
+         //0.5倍速
+                       SET_SPEED=500;
+    }
+
+        if(SET_SPEED<=1000){open_loop_inc=1;open_loop_inc_inc=600;}
+        else if(SET_SPEED<=2000) {open_loop_inc=1;open_loop_inc_inc=500;}
+        else {open_loop_inc=2;open_loop_inc_inc=400;}
+}
+
 /*********************************************************************
   Function:        void runTestCode(void)
 
@@ -278,6 +346,14 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             DelayNmSec(20);
             lockApply;
         }
+        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
+            if(TIME_down_limit==0){
+                TIME_down_limit=100;
+                SET_SPEED=SET_SPEED-200;
+                if(SET_SPEED<500)SET_SPEED=500;
+            }
+       }
+
     }
     else if(Motor_place<Motor_Origin_data_u32[2])Flags.flag_down_limit=0;
 
@@ -291,6 +367,13 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
             StopMotor();
             DelayNmSec(20);
             lockApply;
+        }
+        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
+            if(TIME_up_limit==0){
+                TIME_up_limit=100;
+                SET_SPEED=SET_SPEED-200;
+                if(SET_SPEED<500)SET_SPEED=500;
+            }
         }
     }
     else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;

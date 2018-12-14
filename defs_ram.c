@@ -51,11 +51,17 @@ UINT32 Motor_place;
 unsigned int SET_SPEED;
 int refSpeed;
 unsigned int SPEED_open_loop_PDC;
+  /********************************************/
 unsigned int open_loop_time;
 UINT8 start_open_loop_step;
 UINT8 start_close_loop_step;
 UINT16 start_open_close_loop;
 unsigned char flag_open_loop_time;
+  /*******************************************/
+unsigned char flag_open_loop;
+unsigned char open_loop_inc;
+unsigned int open_loop_inc_inc;
+
 int SPEED_PDC;
 int SPEED_PDC_offset;
 int SPEED_PI_qOut;
@@ -81,8 +87,10 @@ UINT16 UART_send_CMD;
 UINT8 Motor_Origin_data[12];
 UINT32 Motor_Origin_data_u32[3];
 
-UINT8 Origin_mode_step;
+UINT8 TIME_down_limit;
+UINT8 TIME_up_limit;
 
+UINT8 Origin_mode_step;
 UINT8 KEY_wired_value;
 UINT8 KEY_wired_value_last;
 

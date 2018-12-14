@@ -56,7 +56,8 @@ int main(void)
 #endif
 	while(1)
 	{
-           if(Flags.flag_EEPROM_LOAD_OK==1)runTestCode();  /* Run test code */
+           if(Flags.flag_EEPROM_LOAD_OK==1)
+               runTestCode();  /* Run test code */
            adc_IBUS();
            UART_Handler();
            SET_origin_mode();

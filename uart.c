@@ -9,6 +9,7 @@
 #include <p33Exxxx.h>
 #include "defs_ram.h"
 #include "Init.h"
+#include "SensoredBLDC.h"
 
 void Send_char(unsigned char ch){			// ·¢ËÍ×Ö·û
         while(U1STAbits.UTXBF);
@@ -263,17 +264,17 @@ void TEST_uart_speed_pi(void)
 //        Send_char(char0);
 //        Send_char(' ');
 //
-//        char_data=SPEED_PDC>>8;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-//        char_data=SPEED_PDC%256;
-//        char0=hex_asc(char_data/16);
-//        Send_char(char0);
-//        char0=hex_asc(char_data%16);
-//        Send_char(char0);
-
+        char_data=SET_SPEED>>8;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        char_data=SET_SPEED%256;
+        char0=hex_asc(char_data/16);
+        Send_char(char0);
+        char0=hex_asc(char_data%16);
+        Send_char(char0);
+        Send_char(' ');
 
 
 

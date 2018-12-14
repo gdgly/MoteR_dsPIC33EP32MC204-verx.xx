@@ -178,7 +178,8 @@ Overview:		This interrupt a 1ms interrupt and outputs a square
    					
 ********************************************************************/
 
-void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
+/*
+ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {
     static unsigned int cnt100ms = 0;
 
@@ -193,14 +194,14 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         {
             if(refSpeed < SET_SPEED)
             {
-                /***********************************************************/
+                //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                 //说明：电机启动时，SET_SPEED转速的90%以下为开环，90%以上为闭环，开环时速度步进为150RPM，闭环时为20RPM，通过修改上面参数来完成加速时间。
-                       /*SET_SPEED=2900时，各参数如下：90%=300，速度步进为150RPM、20RPM*/
+                       //SET_SPEED=2900时，各参数如下：90%=300，速度步进为150RPM、20RPM
 //                if(flag_open_loop_time==1)refSpeed += 150;
 //                else refSpeed += 20;
 //                flag_open_loop_time=1;
 //                if(ActualSpeed>SET_SPEED-300)flag_open_loop_time=0;
-                /**********************************************************/
+                //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                 if(flag_open_loop_time==1)refSpeed += start_open_loop_step;
                 else refSpeed += start_close_loop_step;
                 flag_open_loop_time=1;
@@ -234,6 +235,8 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
            SPEED_PDC=refSpeed/5;
         else if((flag_open_loop_time==1)&&(SPEED_PDC_offset<0));
         else   SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+
+
         if(SPEED_PDC<130)SPEED_PDC=130;
         else if(SPEED_PDC>1500)SPEED_PDC=1500;
         PDC1 = SPEED_PDC;
@@ -245,4 +248,73 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 
 	IFS0bits.T1IF = 0;
 }
+*/
 
+
+
+void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
+{
+    static unsigned int cnt100ms = 0;
+    unsigned int speed_start_error;
+
+    if(TIME_up_limit)TIME_up_limit--;
+    if(TIME_down_limit)TIME_down_limit--;
+
+    if(++cnt100ms >= 200)
+    {
+        cnt100ms = 0;
+        Out_LED_PGD=!Out_LED_PGD;
+    }
+
+       if(SET_SPEED >= 200)
+        {
+            if((ActualSpeed < SET_SPEED)&&(flag_open_loop==0))
+            {
+                speed_start_error=(SET_SPEED-ActualSpeed)/open_loop_inc_inc;
+                refSpeed = refSpeed+open_loop_inc+speed_start_error;
+            }
+            else flag_open_loop=1;
+        }
+        else
+        {
+            if(refSpeed > 200)
+            {
+                refSpeed -= 200;
+            }
+        }
+
+    Motor_SPEED_Compute();
+
+#ifndef CLOSEDLOOP
+        SPEED_open_loop_PDC=refSpeed>>2;
+        PDC1 = SPEED_open_loop_PDC;
+	PDC2 = PDC1;
+	PDC3 = PDC1;
+#endif
+#ifdef CLOSEDLOOP
+         if(flag_open_loop==0)
+            SPEED_PDC=refSpeed/5;   //5
+        else
+        {
+            speed_PIparms.qInRef = SET_SPEED;
+            speed_PIparms.qInMeas = ActualSpeed;
+
+            CalcPI(&speed_PIparms);
+            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
+
+            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
+            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+        }
+
+
+        if(SPEED_PDC<130)SPEED_PDC=130;
+        else if(SPEED_PDC>1500)SPEED_PDC=1500;
+        PDC1 = SPEED_PDC;
+        PDC2 = PDC1;
+        PDC3 = PDC1;
+
+    test_SPEED_PI_FLAG++;
+#endif								// in closed loop algorithm
+
+	IFS0bits.T1IF = 0;
+}

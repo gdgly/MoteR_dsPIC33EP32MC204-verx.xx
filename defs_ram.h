@@ -61,8 +61,8 @@
            /* for speed rpm calculation */
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
 
-           #define SPEED_PI_P  5000//5000 6000
-           #define SPEED_PI_I  0 //5
+           #define SPEED_PI_P  8000//5000 6000
+           #define SPEED_PI_I  5 //5
            #define SPEED_PI_C  0
            //since stack shuts down after 95% of PWM duty therefore limit PI max output to 90%
            #define MAX_SPEED_PI    31128   //95% of max value ie 32767
@@ -244,7 +244,7 @@ unsigned flag_power_on    :1;
 unsigned flag_up_limit     :1;
 unsigned flag_down_limit     :1;
 unsigned flag_EEPROM_LOAD_OK     :1;
-unsigned unused		:4;
+unsigned unused		:3;
 };
 
 
@@ -269,11 +269,18 @@ extern UINT32 Motor_place;
 extern unsigned int SET_SPEED;
 extern int refSpeed;
 extern unsigned int SPEED_open_loop_PDC;
+      /*************************************/
 extern unsigned int open_loop_time;
 extern UINT8 start_open_loop_step;
 extern UINT8 start_close_loop_step;
 extern UINT16 start_open_close_loop;
 extern unsigned char flag_open_loop_time;
+    /****************************************/
+
+extern unsigned char flag_open_loop;
+extern unsigned char open_loop_inc;
+extern unsigned int open_loop_inc_inc;
+
 extern int SPEED_PDC;
 extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
@@ -299,6 +306,9 @@ extern UINT16 SET_DOWN_SPEED_form_Uart;
 extern UINT16 UART_send_CMD;
 extern UINT8 Motor_Origin_data[12];
 extern UINT32 Motor_Origin_data_u32[3];
+
+extern UINT8 TIME_down_limit;
+extern UINT8 TIME_up_limit;
 
 extern UINT8 Origin_mode_step;
 extern UINT8 KEY_wired_value;
