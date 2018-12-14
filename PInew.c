@@ -195,9 +195,9 @@ void Speed_PID_init(void)
 //    }
 //    else 
 //    {
-        Uart_PI_Speed_P=5000;
-        Uart_PI_Speed_I=1300;
-        Uart_PI_Speed_D=200;
+        Uart_PI_Speed_P=5000;                                         //5000;
+        Uart_PI_Speed_I=1300;                                         //1300;
+        Uart_PI_Speed_D=1500;                                         //200;
 //    }        
 	PI_Speed.Kp  = Uart_PI_Speed_P;
 	PI_Speed.Kix = Uart_PI_Speed_I;

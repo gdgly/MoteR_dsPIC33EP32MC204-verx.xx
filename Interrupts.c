@@ -45,20 +45,26 @@ Overview:		For Open loop, the ADC interrupt loads the PDCx
 
 void __attribute__((interrupt, no_auto_psv)) _AD1Interrupt (void)
 {
-
-	//AD_SET_SPEED = ADC1BUF0 * POTMULT;	// value for speed control
-        //if(AD_SET_SPEED<500)AD_SET_SPEED=500;
+static unsigned int VBUS_value_Last;
 
         IBUS_value_Last=IBUS_value;
+        VBUS_value_Last=VBUS_value;
 #if defined(__SOFT_Ver1__)
         IBUS_value=ADC1BUF1;
         if((IBUS_value_Last>=1000)&&(IBUS_value>=1000))    // 取样电阻30m欧，放大倍数20，运放零点0.45V
             StopMotor();
 #endif
-#if defined(__SOFT_Ver2__)
+#if defined(__SOFT_Ver2__) || defined(__SOFT_Ver3__)
         IBUS_value=ADC1BUF0;
+        VBUS_value=ADC1BUF3;
         //if((IBUS_value_Last>SET_IBUS_Vpp_AD)&&(IBUS_value>SET_IBUS_Vpp_AD))    // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
         //    StopMotor();
+        
+        if((VBUS_value>MAXIMUM_WORKING_VOLTAGE)&&(VBUS_value_Last>MAXIMUM_WORKING_VOLTAGE))
+        {
+            Out_DBR_CTRL=1;
+        }
+        else Out_DBR_CTRL=0;        
 #endif
         FLAG_read_IBUS=1;
 	// reset ADC interrupt flag
@@ -87,6 +93,21 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 
 }
 
+/*********************************************************************
+Function:		void __attribute__((interrupt, no_auto_psv)) _T2Interrupt (void)
+
+PreCondition:
+Overview:		This interrupt TIMER2.
+
+********************************************************************/
+void __attribute__((interrupt, no_auto_psv)) _T2Interrupt (void)
+{
+    if(TIME_Key_scan)TIME_Key_scan--;
+    if(TIME_Origin_mode_learning)TIME_Origin_mode_learning--;
+    test_SPEED_PI_FLAG++;
+    
+    IFS0bits.T2IF = 0;
+}
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _T3Interrupt (void)
 
@@ -194,7 +215,6 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     
     if(TIME_up_limit)TIME_up_limit--;
     if(TIME_down_limit)TIME_down_limit--;
-    test_SPEED_PI_FLAG++;
 
     Motor_Start_OpenLoop();
     Motor_SPEED_Compute();
@@ -247,9 +267,9 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
              if(num_data>Uart_PI_DCInjection_MAX) 
              {
                  //if(Motor_place<Motor_Origin_data_u32[2]*0.15) SPEED_PDC_out=Uart_PI_DCInjection_MAX/2;
-                 if(Motor_place<Motor_Origin_data_u32[2]*0.10) SPEED_PDC_out=Uart_PI_DCInjection_MAX/4;
-                 else if(Motor_place<Motor_Origin_data_u32[2]*0.15) SPEED_PDC_out=Uart_PI_DCInjection_MAX/3;
-                 else if(Motor_place<Motor_Origin_data_u32[2]*0.25) SPEED_PDC_out=Uart_PI_DCInjection_MAX/2;
+                 if(Motor_place<Motor_Origin_data_u32[2]*0.10) SPEED_PDC_out=Uart_PI_DCInjection_MAX/4;///10;    //4
+                 else if(Motor_place<Motor_Origin_data_u32[2]*0.15) SPEED_PDC_out=Uart_PI_DCInjection_MAX/3;///8;  //3
+                 else if(Motor_place<Motor_Origin_data_u32[2]*0.25) SPEED_PDC_out=Uart_PI_DCInjection_MAX/2;///6;  //2
                  else SPEED_PDC_out=Uart_PI_DCInjection_MAX;
              }
              else if(num_data<Uart_PI_DCInjection_MIN) SPEED_PDC_out=Uart_PI_DCInjection_MIN;
@@ -281,13 +301,15 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
             TIME_DCInjectionTOwork++;
             if(ActualSpeed<SET_SPEED*1.2)
             {
-                if(TIME_DCInjectionTOwork>100)
+                if(TIME_DCInjectionTOwork>10)  //100
                 {
                     SPEED_PDC_out=0;
                     SPEED_PDC=0;
                     Flag_DCInjection=0;
                     TIME_DCInjectionTOwork=0;
-                    Speed_PID_init();                    
+                    Speed_PID_init();
+                    
+                    RunMotor();                    
                 }
             }
             else TIME_DCInjectionTOwork=0;

@@ -35,6 +35,7 @@ void SET_origin_mode(void)
             Flags.flag_down_limit=0;
         if((Origin_mode_step>1)&&(Origin_mode_step<5))
         {
+            if(Origin_mode_step==2)Motor_place=0;           
             Motor_Origin_data_u32[Origin_mode_step-2]=Motor_place;
             origin_l.ul=Motor_Origin_data_u32[Origin_mode_step-2];
             d_number[1]=origin_l.u_char[0];
@@ -42,9 +43,42 @@ void SET_origin_mode(void)
             d_number[3]=origin_l.u_char[2];
             d_number[4]=origin_l.u_char[3];
         }
-        UART_send_Motor(UART_send_CMD,0x01,0x05,d_number);
-
+        UART_send_Motor(UART_send_CMD,0x01,0x05,d_number); 
+        if(Origin_mode_step==4)
+            TIME_Origin_mode_learning=3200;
+//            if(Origin_mode_step==4)
+//            {
+//                Flags.flag_EEPROM_LOAD_OK=1;
+//                Origin_mode_step=0;  //退出原点设置模式
+//                Flags.flag_open=1;  
+//            }                      
     }
+}
+/*********************************************************************
+  Function:        void VBUS_PowerOFF_fun(void)
+
+  Overview:
+
+  Note:            None.
+********************************************************************/
+void VBUS_PowerOFF_fun(void)
+{
+    UINT8 d_number[6];
+    uni_l origin_l;
+    UINT16 num_data;
+    
+    UART_send_CMD=0x8002;
+    origin_l.ul=Motor_place;
+    d_number[0]=origin_l.u_char[0];
+    d_number[1]=origin_l.u_char[1];
+    d_number[2]=origin_l.u_char[2];
+    d_number[3]=origin_l.u_char[3];
+    
+    num_data=0;//Flags;
+    d_number[4]=num_data%256;
+    d_number[5]=num_data>>8;
+    
+    UART_send_Motor(UART_send_CMD,0x01,0x06,d_number); 
 }
 
 /*********************************************************************
@@ -56,46 +90,57 @@ void SET_origin_mode(void)
 ********************************************************************/
 void Key_scan(void)
 {
+    static UINT8 KEY_wired_value_old=0;
+    
       if(In_OPEN==0)KEY_wired_value=KEY_wired_value|0x01;
       else KEY_wired_value=KEY_wired_value&0xfe;
       if(In_STOP==1)KEY_wired_value=KEY_wired_value|0x02;
       else KEY_wired_value=KEY_wired_value&0xfd;
       if(In_CLOSE==0)KEY_wired_value=KEY_wired_value|0x04;
       else KEY_wired_value=KEY_wired_value&0xfb;
-      if(KEY_wired_value_last!=KEY_wired_value){
-        KEY_wired_value_last=KEY_wired_value;
-        switch(KEY_wired_value){             //接收数据
-            case 0x00:
-                           if(Origin_mode_step!=0)
-                           {
+      if(KEY_wired_value_last!=KEY_wired_value)
+      {     
+            KEY_wired_value_last=KEY_wired_value;
+            if(KEY_wired_value==0x07)TIME_Key_scan=1000;
+            else TIME_Key_scan=50;
+            return;
+      }
+      if(TIME_Key_scan) return;
+      if((KEY_wired_value!=0x00)&&(KEY_wired_value_old!=KEY_wired_value))
+      {
+          KEY_wired_value_old=KEY_wired_value;
+            switch(KEY_wired_value){             //接收数据
+                case 0x00:
+    //                           if(Origin_mode_step!=0)   //在设置原点时，需要一直按着OPEN/CLOSE
+    //                           {
+    //                               Flags.flag_open=0;
+    //                               Flags.flag_stop=1;
+    //                               Flags.flag_close=0;
+    //                           }
+                           break;
+                case 0x01:
+                               Flags.flag_open=1;
+                               Flags.flag_stop=0;
+                               Flags.flag_close=0;
+                           break;
+                case 0x02:
                                Flags.flag_open=0;
                                Flags.flag_stop=1;
                                Flags.flag_close=0;
-                           }
-                       break;
-            case 0x01:
-                           Flags.flag_open=1;
-                           Flags.flag_stop=0;
-                           Flags.flag_close=0;
-                       break;
-            case 0x02:
-                           Flags.flag_open=0;
-                           Flags.flag_stop=1;
-                           Flags.flag_close=0;
-                       break;
-            case 0x04:
-                           Flags.flag_open=0;
-                           Flags.flag_stop=0;
-                           Flags.flag_close=1;
-                       break;
-            case 0x07:
-                           Flags.flag_open=0;
-                           Flags.flag_stop=0;
-                           Flags.flag_close=0;
-                           Flags.flag_origin=1;
-                       break;
-              default:
-                        break;
-        }
+                           break;
+                case 0x04:
+                               Flags.flag_open=0;
+                               Flags.flag_stop=0;
+                               Flags.flag_close=1;
+                           break;
+                case 0x07:
+                               Flags.flag_open=0;
+                               Flags.flag_stop=0;
+                               Flags.flag_close=0;
+                               Flags.flag_origin=1;
+                           break;
+                  default:
+                            break;
+            }
       }
 }

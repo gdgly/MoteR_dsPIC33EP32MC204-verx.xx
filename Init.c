@@ -7,6 +7,7 @@
 //#include <p33Fxxxx.h>
 #include <p33Exxxx.h>
 #include "defs_ram.h"
+#include "SensoredBLDC.h"
 
 void lockIO(void);
 void unlockIO(void);
@@ -108,6 +109,7 @@ void GPIO_Init(void)
 
         In_ADC_IBUS_dir=1;
         In_ADC_TMEP_dir=1;
+        In_ADC_VBUS_dir=1;
         In_HALL_U_dir=1;
         In_HALL_V_dir=1;
         In_HALL_W_dir=1;
@@ -123,15 +125,19 @@ void GPIO_Init(void)
         In_STOP_dir=1;
         In_OPEN_dir=1;
         In_CLOSE_dir=1;
-        In_PHOTO_LED2_dir=1;
-        In_PHOTO_LED1_dir=1;
-        In_SENSOR_dir=1;
+//        In_PHOTO_LED2_dir=1;
+//        In_PHOTO_LED1_dir=1;
+//        In_SENSOR_dir=1;
         In_MSS1_dir=1;
         In_MSS2_dir=1;
         In_COLUMN_dir=1;
-        In_SCREEN_dir=1;
+//        In_SCREEN_dir=1;
         In_TEMP_PROTECT_dir=1;
-
+        
+#if defined(__SOFT_Ver3__)
+        Out_DBR_CTRL_dir=0;
+        Out_DBR_CTRL=0;
+#endif        
         Out_ENABLE_BRAKE_dir=0;
         Out_ENABLE_BRAKE=0;
         Out_RELAY_DOWN_dir=0;
@@ -174,7 +180,7 @@ void InitUART1(void)
     U1STAbits.UTXEN= 1;
 }
 /*******************************************************************
-		Below is the code required to setup the ADC registers for :
+		Below is the code required to setup the ADC1 registers for :
 		1. 1 channel conversion (in this case AN8)
 		2. PWM trigger starts conversion
 		3. Pot is connected to CH0 and AN8
@@ -182,27 +188,33 @@ void InitUART1(void)
 		5. Manual check of Conversion complete 
 																
 *********************************************************************/
-void InitADC10(void)
+void InitADC1(void)
 {
 #if defined(__SOFT_Ver1__)
         ANSELAbits.ANSA0 = 1;		// AN0 for ibus
         //ANSELBbits.ANSB0 = 1;		// AN2 For ZB_AD
         CNPUAbits.CNPUA0=0;
 #endif
-#if defined(__SOFT_Ver2__)
+#if defined(__SOFT_Ver2__) ||  defined(__SOFT_Ver3__)
         ANSELAbits.ANSA0 = 1;		// AN0 for 电机线圈温度
         ANSELAbits.ANSA1 = 1;		// AN1 For ibus
+        ANSELCbits.ANSC0 = 1;		// AN6 For vbus
         CNPUAbits.CNPUA0=0;
         CNPUAbits.CNPUA1=0;
+        CNPUCbits.CNPUC0=0;
 #endif
  	/* set channel scanning here, auto sampling and convert, 
  	   with default read-format mode */
-	AD1CON1 = 0x006C;
+	//AD1CON1 = 0x006C;
 	/* select 10-bit, 1 channel ADC operation */
-        AD1CON1bits.SSRC = 0;//3;
-	AD1CON1bits.SSRCG = 1;
+//        AD1CON1bits.SSRC = 0;//3;
+//	AD1CON1bits.SSRCG = 1;
+        AD1CON1bits.SSRC = 7;
+	AD1CON1bits.SSRCG = 0;    
+    
 	AD1CON1bits.AD12B = 0;
         AD1CON1bits.FORM = 0;
+        AD1CON1bits.ASAM =1;
         AD1CON1bits.SIMSAM = 1 ;       //Samples CH0, CH1 simultaneously
 
         AD1CON4 = 0x0000;	//no dma usage
@@ -211,8 +223,9 @@ void InitADC10(void)
 	AD1CON2 = 0x0000;
 	
 	/* Set Samples and bit conversion time */
-	//AD1CON3 = 0x032F;
-        AD1CON3 = 0x0005;
+    //AD1CON3 = 0x0005;
+	AD1CON3 = 0x032F;
+
 
 	AD1CSSL = 0x0000;
 #if defined(__SOFT_Ver1__)
@@ -222,12 +235,13 @@ void InitADC10(void)
         AD1CON2bits.CHPS=1;   //convert ch0,ch1
         AD1CHS123bits.CH123SA= 0;   //AN0-->ch1
 #endif
-#if defined(__SOFT_Ver2__)
+#if defined(__SOFT_Ver2__) || defined(__SOFT_Ver3__)
 	/* channel select AN1 */
 	AD1CHS0 = 0x0001;     //AN1-->ch0
 
-        AD1CON2bits.CHPS=1;   //convert ch0,ch1
-        AD1CHS123bits.CH123SA= 0;   //AN0-->ch1
+        AD1CON2bits.CHPS=2;//1;   //convert ch0,ch1
+                           //2;   //convert ch0,ch1,CH2,CH3
+        AD1CHS123bits.CH123SA= 1;   //AN3-->ch1    AN0-->ch2   AN6-->ch3
 #endif
         AD1CON1bits.DONE = 0;	//Making sure that there is not any conversion in progress
 	IPC3bits.AD1IP = 5;		//Assigning ADC ISR priority
@@ -354,7 +368,21 @@ void InitTMR3(void)
 	PR3 = 0xFFFF;
         IPC2bits.T3IP = 2;
 }
+/************************************************************************
+Tmr2 is used to ?? using Tcy/256    1ms timer base
 
+*************************************************************************/
+
+void InitTMR2(void)
+{
+	T2CON = 0x0030;			// internal Tcy/256 clock
+	TMR2 = 0;
+	PR2 = T2PR1;
+    IFS0bits.T2IF = 0;		// Clear timer 2 flag
+    IEC0bits.T2IE = 1;		// Enable interrupts for timer 2
+    IPC1bits.T2IP = 4;
+    T2CONbits.TON = 1;       // start tmr2
+}
 /************************************************************************
 Initialize the UART2 for BAUD = 9600, no parity, 1 stop
 
@@ -440,6 +468,7 @@ void BOOT_DELAY(void )
     for(BOOT_time=0;BOOT_time<6;BOOT_time++){
         DelayNmSec(1000);
         Out_LED_PGD=!Out_LED_PGD;
+        adc_IBUSandVBUS();
     }
     Out_LED_PGD=0;
 }

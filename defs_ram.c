@@ -68,11 +68,10 @@ int SPEED_PDC_offset;
 int SPEED_PI_qOut;
 
 unsigned int IBUS_value;
+unsigned int VBUS_value;
 unsigned int IBUS_value_Last;
 unsigned char FLAG_read_IBUS;
-unsigned int  sum_IBUS_value;
-unsigned int  avg_IBUS_value;
-unsigned char IBUS_value_count;
+
 
 UINT8 UART_RX_RT[50];
 UINT8 UART1_DATA[50];
@@ -92,6 +91,7 @@ UINT8 TIME_down_limit;
 UINT8 TIME_up_limit;
 
 UINT8 Origin_mode_step;
+UINT16 TIME_Origin_mode_learning;
 UINT8 KEY_wired_value;
 UINT8 KEY_wired_value_last;
 
@@ -102,6 +102,8 @@ UINT8 TIME_SPEED_PDC_positive=0;
 UINT8 TIME_SPEED_PDC_negative=0;
 UINT8 Flag_DCInjection=0;
 
+UINT16 TIME_Key_scan=0;
 
+unsigned int avg_VBUS_value;
 
 

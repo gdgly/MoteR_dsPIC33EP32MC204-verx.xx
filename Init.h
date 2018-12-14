@@ -6,9 +6,10 @@
 /******************************************************************************************/
 
 extern void InitUART1(void);
-extern void InitADC10(void);
+extern void InitADC1(void);
 extern void DelayNmSec(unsigned int N);
 extern void InitMCPWM(void);
+extern void InitTMR2(void);
 extern void InitTMR3(void);
 extern void InitIC(void);
 extern void InitTMR1(void);

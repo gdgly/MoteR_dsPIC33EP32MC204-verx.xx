@@ -12,6 +12,7 @@
 #include "pi.h"
 #include "PInew.h"
 #include "DCInjection.h"
+#include "APP_BX.h"
 
 /*********************************************************************
   Function:        void Read_Hall(void)
@@ -257,6 +258,7 @@ void APP_Motor_MODE_B_data (void)
 }
  */
 
+
 void APP_Motor_MODE_B_data (void)
 {
     if(Flags.flag_open==1)
@@ -322,7 +324,7 @@ void APP_Motor_MODE_B_data (void)
     if(Origin_mode_step!=0)   //在设置原点、上限、下限时的转速
     {
          //0.5倍速
-                       SET_SPEED=500;
+                       SET_SPEED=1000;    //500
     }
 
         if(SET_SPEED<=1000){open_loop_inc=1;open_loop_inc_inc=600;}
@@ -407,6 +409,20 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
         }
     }
     else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
+}
+else 
+{
+    if((TIME_Origin_mode_learning==0)&&(Origin_mode_step==4))
+    {
+               Flags.flag_EEPROM_LOAD_OK=1;
+               Origin_mode_step=0;  //退出原点设置模式
+               Flags.flag_open=1;
+               Flags.flag_stop=0;
+               Flags.flag_close=0;
+               Flags.flag_origin=0;   
+               Flags.flag_up_limit=0;
+               Flags.flag_down_limit=1;
+    }
 }
 
 
@@ -511,8 +527,13 @@ if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
 
   Note:            None.
 ********************************************************************/
-void adc_IBUS(void)
+void adc_IBUSandVBUS(void)
 {
+static unsigned int  sum_IBUS_value=0,sum_VBUS_value=0;
+static unsigned int  avg_IBUS_value=0;//,avg_VBUS_value=0;
+static unsigned char IBUS_value_count=0,VBUS_value_count=0;
+static UINT8 FLAG_powerOFF=0;
+
     if(FLAG_read_IBUS==1)
     {
         FLAG_read_IBUS=0;
@@ -524,6 +545,15 @@ void adc_IBUS(void)
             sum_IBUS_value=0;
             IBUS_value_count=0;
         }
+        
+        sum_VBUS_value+=VBUS_value;
+        VBUS_value_count++;
+        if(VBUS_value_count>=16)
+        {
+            avg_VBUS_value=sum_VBUS_value>>4;
+            sum_VBUS_value=0;
+            VBUS_value_count=0;
+        }        
     }
 #if defined(__SOFT_Ver1__)
     if(avg_IBUS_value>=500)   // 取样电阻30m欧，放大倍数20，运放零点0.45V
@@ -531,7 +561,7 @@ void adc_IBUS(void)
         StopMotor();
     }
 #endif
-#if defined(__SOFT_Ver2__)
+#if defined(__SOFT_Ver2__) || defined(__SOFT_Ver3__)
     if(avg_IBUS_value>SET_IBUS_Vavg_AD)   // 取样电阻30m欧，放大倍数6,运放零点1.65V，反电动势正偏，负载电流反偏
     {
         StopMotor();
@@ -544,6 +574,20 @@ void adc_IBUS(void)
                            Flags.flag_close=0;   
         
         Out_LED_PGD=1;
+    }
+    if((avg_VBUS_value<SET_VBUS_PowerOFF)&&(Flags.flag_EEPROM_LOAD_OK==1)&&(FLAG_powerOFF==0))    // 断电时保存位置数据
+    {
+        FLAG_powerOFF=1;
+        StopMotor();
+        SET_SPEED=0;
+        lockApply;
+        avg_VBUS_value=0;
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;   
+        
+        Out_LED_PGD=1;
+        VBUS_PowerOFF_fun();
     }
 #endif
 }

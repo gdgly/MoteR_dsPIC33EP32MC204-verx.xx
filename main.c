@@ -42,8 +42,9 @@ int main(void)
         System_Clock_Init();
 
         GPIO_Init();
-	InitADC10();
+	InitADC1();
 	InitTMR1();
+    InitTMR2();
 	InitTMR3();
 	timer3avg = 0;
 	InitMCPWM();
@@ -60,12 +61,12 @@ int main(void)
 	{
            if(Flags.flag_EEPROM_LOAD_OK==1)
                runTestCode();  /* Run test code */
-           adc_IBUS();
+           adc_IBUSandVBUS();
            UART_Handler();
            SET_origin_mode();
            Key_scan();
 
-           TEST_uart_speed_pi();
+           //TEST_uart_speed_pi();
 	}
 }
 

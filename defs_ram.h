@@ -16,7 +16,8 @@
  //--------------------------------------------
 
 //#define __SOFT_Ver1__       //hardware：（PCB 3.4.3）   PCB初次作成
-#define __SOFT_Ver2__       //hardware：（CY-1601 OP-0401）   PCB重新垒板，部分I/O有变动
+//#define __SOFT_Ver2__       //hardware：（CY-1601 OP-0401）   PCB重新垒板，部分I/O有变动
+#define __SOFT_Ver3__       //hardware：（CY-1601 OP Ver1.1 CQ:2017.07.18）   PCB重新垒板，部分I/O有变动
 //#define __Motor_debug__     //电机上电后直接跑起，主要是测试电机部分电路是否正常
 #define CLOSEDLOOP
 #define Motor_Type   0       //电机制造商代码   1-->深圳东明电机     0-->文化BX提供
@@ -82,15 +83,26 @@
 #else
             #define SET_SPEED_ref   5000          //open loop
 #endif
+
+            #define T2PR1 ((FCY/1000)/256)
+
            //*********************************************************************************
 
-#if defined(__SOFT_Ver2__)      //电流采样设置参数
+#if defined(__SOFT_Ver2__) || defined(__SOFT_Ver3__)     //电流采样设置参数
            #define SET_IBUS_Vpp_protect  10    //单位A
            #define SET_IBUS_Vavg_protect  6    //单位A
            #define SET_IBUS_sample_R  30   //单位mΩ
            #define SET_IBUS_gain   6
            #define SET_IBUS_Vpp_AD   1010 //((1650+SET_IBUS_Vpp_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
            #define SET_IBUS_Vavg_AD   850//750//850 //((1650+SET_IBUS_Vavg_protect*SET_IBUS_sample_R*SET_IBUS_gain)*1024/3300)
+
+           #define SET_VBUS_PowerOFF_VAC  80   //单位VAC
+           #define SET_VBUS_PowerOFF_VDC 113      //SET_VBUS_PowerOFF_VAC*1.414    //单位VDC
+           #define SET_VBUS_PowerOFF     347      //(SET_VBUS_PowerOFF_VDC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
+
+           #define MAXIMUM_WORKING_VOLTAGE_ac   178  //单位VAC
+           #define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*4.414  //单位VDC
+           #define MAXIMUM_WORKING_VOLTAGE      774  //(MAXIMUM_WORKING_VOLTAGE_DC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
 #endif
 
 
@@ -235,6 +247,74 @@
 #endif
 //========================================================================
 
+//========================================================================
+#if defined(__SOFT_Ver3__)
+    #define In_ADC_TMEP_dir                   TRISAbits.TRISA0      //相同的
+    #define In_ADC_IBUS_dir                   TRISAbits.TRISA1
+    #define In_HALL_U_dir                 TRISBbits.TRISB1
+    #define In_HALL_V_dir                 TRISBbits.TRISB2
+    #define In_HALL_W_dir                 TRISBbits.TRISB3
+    #define In_FLT1_dir                   TRISBbits.TRISB8
+    #define Out_PWM3H_dir                 TRISBbits.TRISB10
+    #define Out_PWM3L_dir                 TRISBbits.TRISB11
+    #define Out_PWM2H_dir                 TRISBbits.TRISB12
+    #define Out_PWM2L_dir                 TRISBbits.TRISB13
+    #define Out_PWM1H_dir                 TRISBbits.TRISB14
+    #define Out_PWM1L_dir                 TRISBbits.TRISB15
+
+    #define In_ADC_VBUS_dir               TRISCbits.TRISC0
+    #define In_LOW_LIM_dir                TRISCbits.TRISC3       //不同的
+    #define In_STOP_dir                   TRISAbits.TRISA8
+    #define In_OPEN_dir                   TRISCbits.TRISC2
+    #define In_CLOSE_dir                  TRISCbits.TRISC1   
+//    #define In_PHOTO_LED2_dir             TRISCbits.TRISC3    // 该版本已经移到STM8L的显示上面去了
+//    #define In_PHOTO_LED1_dir             TRISCbits.TRISC4
+//    #define In_SENSOR_dir                 TRISCbits.TRISC5
+    #define In_MSS1_dir                   TRISAbits.TRISA9
+    #define In_MSS2_dir                   TRISAbits.TRISA4
+    #define In_COLUMN_dir                 TRISBbits.TRISB4
+//    #define In_SCREEN_dir                 TRISBbits.TRISB7  // 该版本已经删除了
+    #define In_TEMP_PROTECT_dir           TRISAbits.TRISA10
+
+    #define Out_DBR_CTRL_dir              TRISAbits.TRISA7
+    #define Out_ENABLE_BRAKE_dir          TRISCbits.TRISC9
+    #define Out_RELAY_DOWN_dir            TRISCbits.TRISC8
+    #define Out_RELAY_UP_dir              TRISBbits.TRISB7
+    #define Out_RELAY_DOWN_LIM_dir        TRISCbits.TRISC7
+    #define Out_RELAY_UP_LIM_dir          TRISBbits.TRISB9
+
+    #define Out_RELAY_LINKAGE_PGC_dir          TRISBbits.TRISB6
+    #define Out_LED_PGD_dir               TRISBbits.TRISB5
+    //========================================================
+    #define In_HALL_U                     PORTBbits.RB1      //相同的
+    #define In_HALL_V                     PORTBbits.RB2
+    #define In_HALL_W                     PORTBbits.RB3
+
+    #define In_LOW_LIM                    PORTCbits.RC3    //不同的
+    #define In_STOP                       PORTAbits.RA8
+    #define In_OPEN                       PORTCbits.RC2
+    #define In_CLOSE                      PORTCbits.RC1
+//    #define In_PHOTO_LED2                 PORTCbits.RC3
+//    #define In_PHOTO_LED1                 PORTCbits.RC4
+//    #define In_SENSOR                     PORTCbits.RC5
+    #define In_MSS1                       PORTAbits.RA9
+    #define In_MSS2                       PORTAbits.RA4
+    #define In_COLUMN                     PORTBbits.RB4
+//    #define In_SCREEN                     PORTBbits.RB7
+    #define In_TEMP_PROTECT               PORTAbits.RA10
+
+    #define Out_DBR_CTRL                  LATAbits.LATA7
+    #define Out_ENABLE_BRAKE              LATCbits.LATC9
+    #define Out_RELAY_DOWN                LATCbits.LATC8
+    #define Out_RELAY_UP                  LATBbits.LATB7
+    #define Out_RELAY_DOWN_LIM            LATCbits.LATC7
+    #define Out_RELAY_UP_LIM              LATBbits.LATB9
+
+    #define Out_RELAY_LINKAGE_PGC              LATBbits.LATB6
+    #define Out_LED_PGD                   LATBbits.LATB5
+#endif
+//========================================================================
+
 #define lockApply  (Out_ENABLE_BRAKE = 0 )
 #define lockRelease (Out_ENABLE_BRAKE = 1)
 
@@ -306,11 +386,9 @@ extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
 
 extern unsigned int IBUS_value;
+extern unsigned int VBUS_value;
 extern unsigned int IBUS_value_Last;
 extern unsigned char FLAG_read_IBUS;
-extern unsigned int  sum_IBUS_value;
-extern unsigned int  avg_IBUS_value;
-extern unsigned char IBUS_value_count;
 
 extern UINT8 UART_RX_RT[50];
 extern UINT8 UART1_DATA[50];
@@ -331,6 +409,7 @@ extern UINT8 TIME_down_limit;
 extern UINT8 TIME_up_limit;
 
 extern UINT8 Origin_mode_step;
+extern UINT16 TIME_Origin_mode_learning;
 extern UINT8 KEY_wired_value;
 extern UINT8 KEY_wired_value_last;
 
@@ -342,3 +421,6 @@ extern UINT8 TIME_SPEED_PDC_positive;
 extern UINT8 TIME_SPEED_PDC_negative;
 extern UINT8 Flag_DCInjection;
 
+extern UINT16 TIME_Key_scan;
+
+extern unsigned int avg_VBUS_value;
