@@ -177,11 +177,11 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     static unsigned int cnt100ms = 0;
     unsigned int speed_start_error;
 
-    if(++cnt100ms >= 200)
+    if(++cnt100ms >= 40)
     {
         cnt100ms = 0;
         Out_LED_PGD=!Out_LED_PGD;
-    }
+
 
        if(SET_SPEED >= 200)
         {
@@ -200,6 +200,8 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
             }
         }
 
+    }
+
     Motor_SPEED_Compute();
 
 #ifndef CLOSEDLOOP
@@ -210,7 +212,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 #endif
 #ifdef CLOSEDLOOP
          if(flag_open_loop==0)
-            SPEED_PDC=refSpeed/5;   //5
+            SPEED_PDC=refSpeed/3;   //5
         else
         {
             speed_PIparms.qInRef = SET_SPEED;
@@ -224,7 +226,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         }
 
 
-        if(SPEED_PDC<100)SPEED_PDC=100;
+        if(SPEED_PDC<150)SPEED_PDC=150;
         else if(SPEED_PDC>1300)SPEED_PDC=1300;
         PDC1 = SPEED_PDC;
         PDC2 = PDC1;

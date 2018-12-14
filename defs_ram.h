@@ -67,7 +67,7 @@
            //since stack shuts down after 95% of PWM duty therefore limit PI max output to 90%
            #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 #ifdef CLOSEDLOOP
-           #define SET_SPEED_ref   1000 //1000//2000//2900
+           #define SET_SPEED_ref   2900 //1000//2000//2900
 #else
             #define SET_SPEED_ref   5000          //open loop
 #endif
