@@ -1,11 +1,13 @@
-Debug/List
+BIN/
 
-Debug/Obj
+OBJ/
 
 Untitled Project.si4project/
 
-MoteR_dsPIC33EP32MC204.X/build/
+DriveBLDC750W.X/build/
 
-MoteR_dsPIC33EP32MC204.X/dist/
+DriveBLDC750W.X/dist/
+
+DriveBLDC750W.X/debug/
 
 .vscode
