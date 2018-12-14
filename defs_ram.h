@@ -20,6 +20,7 @@
 //#define __Motor_debug__     //电机上电后直接跑起，主要是测试电机部分电路是否正常
 #define CLOSEDLOOP
 #define Motor_Type   0       //电机制造商代码   1-->深圳东明电机     0-->文化BX提供
+#define Phase_ICXorPWMInterrupt  0  //电机换相   1--》ICx换相       0--》PWM中断换相
 
 //#define __RPI32_AD_SELCET__
 #define __RPI32_UART_SELCET__
@@ -32,7 +33,11 @@
 
             #define FOSC  140000000			// xtal = 16.0Mhz, 140.0Mhz after PLL
             #define FCY  FOSC/2
-            #define FPWM 20000
+            #define FPWM 16000        //20000--》20KHz    16000--》16KHz
+            #define PWM_ClockPrescaler   4    //PWM 4分频，如果需要改这个值的话，同时需要改 PTCON2
+            #define PWM_PTPER  ((FOSC/PWM_ClockPrescaler)/FPWM)-1     //   1750--》20KHz   2188--》16KHz 
+            #define PWM_DeadTime 56  //((FOSC/PWM_ClockPrescaler)*16)/10    //死区时间1.6us   ALTDTRx, DTRx = FOSC × Desired Dead TimePWM / Input Clock Prescaler
+            #define PWM_DutyCycle_MAX   ((UINT32)(PWM_PTPER)*95)/100   //PWM_PTPER*95/100   最大占空比95%    
 
             #define BaudRate 454//(unsigned int)((FCY/(16*9600))-1)      //波特率：9600
 
@@ -63,8 +68,13 @@
            #define SPEED_RPM_CALC      ((((unsigned long)FCY*60)/(TIMER3_DIV*2*POLEPAIRS)))
 
            #define SPEED_PI_P  8000//5000 6000
-           #define SPEED_PI_I  5 //5
+           #define SPEED_PI_I  5
            #define SPEED_PI_C  0
+
+//           #define SPEED_PI_P  10000//5000 6000
+//           #define SPEED_PI_I  0
+//           #define SPEED_PI_C  0
+
            //since stack shuts down after 95% of PWM duty therefore limit PI max output to 90%
            #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 #ifdef CLOSEDLOOP
@@ -292,6 +302,7 @@ extern unsigned int open_loop_inc_inc;
 extern unsigned int Flag_CompareSpeed;
 
 extern int SPEED_PDC;
+extern int SPEED_PDC_out;
 extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
 
@@ -327,3 +338,8 @@ extern UINT8 KEY_wired_value_last;
 
 
 extern UINT8 test_SPEED_PI_FLAG;
+
+extern UINT8 TIME_SPEED_PDC_positive;
+extern UINT8 TIME_SPEED_PDC_negative;
+extern UINT8 Flag_DCInjection;
+

@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../Init.c ../Interrupts.c ../defs_ram.c ../main.c ../SensoredBLDC.c ../uart.c ../pi.c ../APP_BX.c
+SOURCEFILES_QUOTED_IF_SPACED=../Init.c ../Interrupts.c ../defs_ram.c ../main.c ../SensoredBLDC.c ../uart.c ../pi.c ../APP_BX.c ../DCInjection.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/Init.o ${OBJECTDIR}/_ext/1472/Interrupts.o ${OBJECTDIR}/_ext/1472/defs_ram.o ${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/SensoredBLDC.o ${OBJECTDIR}/_ext/1472/uart.o ${OBJECTDIR}/_ext/1472/pi.o ${OBJECTDIR}/_ext/1472/APP_BX.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/Init.o.d ${OBJECTDIR}/_ext/1472/Interrupts.o.d ${OBJECTDIR}/_ext/1472/defs_ram.o.d ${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1472/SensoredBLDC.o.d ${OBJECTDIR}/_ext/1472/uart.o.d ${OBJECTDIR}/_ext/1472/pi.o.d ${OBJECTDIR}/_ext/1472/APP_BX.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/Init.o ${OBJECTDIR}/_ext/1472/Interrupts.o ${OBJECTDIR}/_ext/1472/defs_ram.o ${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/SensoredBLDC.o ${OBJECTDIR}/_ext/1472/uart.o ${OBJECTDIR}/_ext/1472/pi.o ${OBJECTDIR}/_ext/1472/APP_BX.o ${OBJECTDIR}/_ext/1472/DCInjection.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/Init.o.d ${OBJECTDIR}/_ext/1472/Interrupts.o.d ${OBJECTDIR}/_ext/1472/defs_ram.o.d ${OBJECTDIR}/_ext/1472/main.o.d ${OBJECTDIR}/_ext/1472/SensoredBLDC.o.d ${OBJECTDIR}/_ext/1472/uart.o.d ${OBJECTDIR}/_ext/1472/pi.o.d ${OBJECTDIR}/_ext/1472/APP_BX.o.d ${OBJECTDIR}/_ext/1472/DCInjection.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/1472/Init.o ${OBJECTDIR}/_ext/1472/Interrupts.o ${OBJECTDIR}/_ext/1472/defs_ram.o ${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/SensoredBLDC.o ${OBJECTDIR}/_ext/1472/uart.o ${OBJECTDIR}/_ext/1472/pi.o ${OBJECTDIR}/_ext/1472/APP_BX.o
+OBJECTFILES=${OBJECTDIR}/_ext/1472/Init.o ${OBJECTDIR}/_ext/1472/Interrupts.o ${OBJECTDIR}/_ext/1472/defs_ram.o ${OBJECTDIR}/_ext/1472/main.o ${OBJECTDIR}/_ext/1472/SensoredBLDC.o ${OBJECTDIR}/_ext/1472/uart.o ${OBJECTDIR}/_ext/1472/pi.o ${OBJECTDIR}/_ext/1472/APP_BX.o ${OBJECTDIR}/_ext/1472/DCInjection.o
 
 # Source Files
-SOURCEFILES=../Init.c ../Interrupts.c ../defs_ram.c ../main.c ../SensoredBLDC.c ../uart.c ../pi.c ../APP_BX.c
+SOURCEFILES=../Init.c ../Interrupts.c ../defs_ram.c ../main.c ../SensoredBLDC.c ../uart.c ../pi.c ../APP_BX.c ../DCInjection.c
 
 
 CFLAGS=
@@ -138,6 +138,13 @@ ${OBJECTDIR}/_ext/1472/APP_BX.o: ../APP_BX.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ../APP_BX.c  -o ${OBJECTDIR}/_ext/1472/APP_BX.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/APP_BX.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/APP_BX.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/_ext/1472/DCInjection.o: ../DCInjection.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${RM} ${OBJECTDIR}/_ext/1472/DCInjection.o.d 
+	@${RM} ${OBJECTDIR}/_ext/1472/DCInjection.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../DCInjection.c  -o ${OBJECTDIR}/_ext/1472/DCInjection.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/DCInjection.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/DCInjection.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 else
 ${OBJECTDIR}/_ext/1472/Init.o: ../Init.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
@@ -194,6 +201,13 @@ ${OBJECTDIR}/_ext/1472/APP_BX.o: ../APP_BX.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/_ext/1472/APP_BX.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ../APP_BX.c  -o ${OBJECTDIR}/_ext/1472/APP_BX.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/APP_BX.o.d"      -mno-eds-warn  -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/APP_BX.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/_ext/1472/DCInjection.o: ../DCInjection.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
+	@${RM} ${OBJECTDIR}/_ext/1472/DCInjection.o.d 
+	@${RM} ${OBJECTDIR}/_ext/1472/DCInjection.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../DCInjection.c  -o ${OBJECTDIR}/_ext/1472/DCInjection.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1472/DCInjection.o.d"      -mno-eds-warn  -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1472/DCInjection.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

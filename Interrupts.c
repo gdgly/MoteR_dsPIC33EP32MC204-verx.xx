@@ -11,6 +11,7 @@
 #include "SensoredBLDC.h"
 #include "uart.h"
 #include "pi.h"
+#include "DCInjection.h"
 
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt (void)
@@ -78,9 +79,11 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 	{
  		StopMotor();
 	}
+#if Phase_ICXorPWMInterrupt==0
+    HallValue = Read_Hall();	// Read halls
+	if(HallValue!=HallValue_Last)Motor_Change_Phase();    
+#endif
 
-//      HallValue = Read_Hall();	// Read halls
-//	if(HallValue!=HallValue_Last)Motor_Change_Phase();
 }
 
 /*********************************************************************
@@ -113,9 +116,8 @@ void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt (void)
 	
 	IFS0bits.IC1IF = 0;	// Clear interrupt flag
 	HallValue = Read_Hall();	// Read halls	
-        if(HallValue!=HallValue_Last)Motor_Change_Phase();
+        if(HallValue!=HallValue_Last)Motor_Change_Phase();       
 		
- 
 }
 
 /*********************************************************************
@@ -133,15 +135,25 @@ Overview:		This interrupt represents Hall B ISR.
 void __attribute__((interrupt, no_auto_psv)) _IC2Interrupt (void)
 {
 	IFS0bits.IC2IF = 0;	// Clear interrupt flag
+#if Phase_ICXorPWMInterrupt==1
 	HallValue = Read_Hall();	// Read halls
-        if(HallValue!=HallValue_Last){
-            Motor_Change_Phase();
+        if(HallValue!=HallValue_Last){    
+            Motor_Change_Phase();            
+#endif    
            T3CONbits.TON = 0;
            timer3value = TMR3;
            TMR3 = 0;
            T3CONbits.TON = 1;            
            FLAG_read_HALL_time=1;
+           
+            if(Flags.Direction == Flags.flag_CW){
+                if(Motor_place>1)Motor_place--;
+            }
+            else Motor_place++;
+           
+#if Phase_ICXorPWMInterrupt==1           
         }
+#endif    
 }
 
 /*********************************************************************
@@ -157,15 +169,9 @@ Overview:		This interrupt represents Hall C ISR.
 
 void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
 {	
-	IFS2bits.IC3IF = 0;	// Clear interrupt flag
+	IFS2bits.IC3IF = 0;	// Clear interrupt flag    
 	HallValue = Read_Hall();	// Read halls
-        if(HallValue!=HallValue_Last){
-            Motor_Change_Phase();
-            if(Flags.Direction == Flags.flag_CW){
-                if(Motor_place>1)Motor_place--;
-            }
-            else Motor_place++;
-        }
+        if(HallValue!=HallValue_Last)Motor_Change_Phase();
 }
 
 /*********************************************************************
@@ -264,7 +270,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     if(((++cnt100ms >= Motor_MODE_B_data[27]*10)&&(ActualSpeed<800))||(ActualSpeed>=800))
     {
         cnt100ms = 0;
-        Out_LED_PGD=!Out_LED_PGD;
+        //Out_LED_PGD=!Out_LED_PGD;
     
 
        if(SET_SPEED >= 200)
@@ -314,17 +320,29 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
              
             speed_PIparms.qInRef = SET_SPEED;
             speed_PIparms.qInMeas = ActualSpeed;
-
+            
             CalcPI(&speed_PIparms);
-            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output
+            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output          
 
-            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*1750,MAX_SPEED_PI);
+            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*PWM_DutyCycle_MAX,MAX_SPEED_PI);
             SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
         }
 
 
-        if(SPEED_PDC<130)SPEED_PDC=130;
-        else if(SPEED_PDC>1500)SPEED_PDC=1500;
+//        if(SPEED_PDC<130)SPEED_PDC=130;
+//        else if(SPEED_PDC>1500)SPEED_PDC=1500;      
+         
+        if(SPEED_PDC<0)  
+        {
+            SPEED_PDC=-SPEED_PDC;
+            if(Flag_DCInjection==0)
+            {
+               SPEED_PDC=0; 
+               Flag_DCInjection=1;
+            }
+        }
+        else if(SPEED_PDC>PWM_DutyCycle_MAX)SPEED_PDC=PWM_DutyCycle_MAX;
+    
         PDC1 = SPEED_PDC;
         PDC2 = PDC1;
         PDC3 = PDC1;

@@ -10,6 +10,7 @@
 #include "defs_ram.h"
 #include "Init.h"
 #include "pi.h"
+#include "DCInjection.h"
 
 /*********************************************************************
   Function:        void Read_Hall(void)
@@ -35,19 +36,24 @@ unsigned int Read_Hall(void)
 ********************************************************************/
 void Motor_Change_Phase(void)
 {
-	if (Flags.Direction)
-	{
-	        IOCON1 = StateTableFwdPwm1[HallValue];
-		IOCON2 = StateTableFwdPwm2[HallValue];
-		IOCON3 = StateTableFwdPwm3[HallValue];
-		}
-	else
-	{
-	        IOCON1 = StateTableRevPwm1[HallValue];
-		IOCON2 = StateTableRevPwm2[HallValue];
-		IOCON3 = StateTableRevPwm3[HallValue];
-		}
-        HallValue_Last = HallValue;
+    if(Flag_DCInjection==0)
+    {
+        if (Flags.Direction)
+        {
+                IOCON1 = StateTableFwdPwm1[HallValue];
+            IOCON2 = StateTableFwdPwm2[HallValue];
+            IOCON3 = StateTableFwdPwm3[HallValue];
+            }
+        else
+        {
+                IOCON1 = StateTableRevPwm1[HallValue];
+            IOCON2 = StateTableRevPwm2[HallValue];
+            IOCON3 = StateTableRevPwm3[HallValue];
+            }
+    }
+    else 
+        DCInjectionON();
+    HallValue_Last = HallValue;
 }
 /*********************************************************************
   Function:        void Motor_SPEED_Compute(void)
@@ -107,9 +113,15 @@ void RunMotor(void)
 
 	IEC0bits.T1IE = 1;		// Enable interrupts for timer 1
         IEC0bits.T3IE = 1;
+#if  Phase_ICXorPWMInterrupt==0
+	IEC0bits.IC1IE = 0;		// Enable interrupts on IC1
+	IEC0bits.IC2IE = 1;		// Enable interrupts on IC2
+	IEC2bits.IC3IE = 0;		// Enable interrupts on IC7        
+#else
 	IEC0bits.IC1IE = 1;		// Enable interrupts on IC1
 	IEC0bits.IC2IE = 1;		// Enable interrupts on IC2
-	IEC2bits.IC3IE = 1;		// Enable interrupts on IC7
+	IEC2bits.IC3IE = 1;		// Enable interrupts on IC7        
+#endif        
 	IEC5bits.PWM1IE = 1;	// Enable PWM interrupts
 
         Flags.RunMotor = 1;		// set flag
@@ -118,6 +130,7 @@ void RunMotor(void)
 
         flag_open_loop_time=0;
         flag_open_loop=0;
+        Flag_DCInjection=0;
 
         ActualSpeed=0;
         timer3value=MAX_PERIOD;
@@ -264,7 +277,11 @@ void APP_Motor_MODE_B_data (void)
                 default:
                        break ;
            }
-           SET_SPEED=SET_UP_SPEED_form_Uart;
+#ifdef CLOSEDLOOP
+           SET_SPEED=SET_UP_SPEED_form_Uart;           
+#else
+           SET_SPEED=SET_SPEED_ref;
+#endif       
     }
     else {
            switch	( Motor_MODE_B_data[26] )
@@ -292,7 +309,12 @@ void APP_Motor_MODE_B_data (void)
                 default:
                        break ;
            }
-           SET_SPEED=SET_DOWN_SPEED_form_Uart;
+#ifdef CLOSEDLOOP
+           SET_SPEED=SET_DOWN_SPEED_form_Uart;           
+#else
+           SET_SPEED=SET_SPEED_ref;
+#endif           
+
     }
 
 
@@ -336,55 +358,55 @@ void runTestCode(void)
 
     
     
-//if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
-//{
-//    if(Flags.flag_down_limit==0){
-//        if(Motor_place>=Motor_Origin_data_u32[2]){
-//                           Flags.flag_open=0;
-//                           Flags.flag_stop=0;
-//                           Flags.flag_close=0;
-//            SET_SPEED=0;
-//            Flags.flag_down_limit=1;
-//            StopMotor();
-//            DelayNmSec(20);
-//            lockApply;
-//        }
-//        //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
-//        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
-//            if(TIME_down_limit==0){
-//                TIME_down_limit=100;
-//                SET_SPEED=SET_SPEED-200;
-//                //if(SET_SPEED<500)SET_SPEED=500;
-//                if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
-//            }
-//       }
-//
-//    }
-//    else if(Motor_place<Motor_Origin_data_u32[2])Flags.flag_down_limit=0;
-//
-//    if(Flags.flag_up_limit==0){
-//        if((Motor_place<=Motor_Origin_data_u32[1])&&(Flags.flag_power_on==0)){
-//                           Flags.flag_open=0;
-//                           Flags.flag_stop=0;
-//                           Flags.flag_close=0;
-//            SET_SPEED=0;
-//            Flags.flag_up_limit=1;
-//            StopMotor();
-//            DelayNmSec(20);
-//            lockApply;
-//        }
-//        //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
-//        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
-//            if(TIME_up_limit==0){
-//                TIME_up_limit=100;
-//                SET_SPEED=SET_SPEED-200;
-//                //if(SET_SPEED<500)SET_SPEED=500;
-//                if(SET_SPEED<Motor_MODE_B_data[29]*100)SET_SPEED=Motor_MODE_B_data[29]*100;
-//            }
-//        }
-//    }
-//    else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
-//}
+if(Origin_mode_step==0)   //在设置原点、上限、下限时的转速
+{
+    if(Flags.flag_down_limit==0){
+        if(Motor_place>=Motor_Origin_data_u32[2]){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+            SET_SPEED=0;
+            Flags.flag_down_limit=1;
+            StopMotor();
+            if(Flag_DCInjection==0)DelayNmSec(20);
+            lockApply;
+        }
+        //else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]/5))&&(Flags.flag_close==1)){
+        else if((Motor_place>=(Motor_Origin_data_u32[2]-Motor_Origin_data_u32[2]*Motor_MODE_B_data[32]/100))&&(Flags.flag_close==1)){
+            if(TIME_down_limit==0){
+                TIME_down_limit=100;
+                SET_SPEED=SET_SPEED-200;
+                //if(SET_SPEED<500)SET_SPEED=500;
+                if(SET_SPEED<Motor_MODE_B_data[30]*100)SET_SPEED=Motor_MODE_B_data[30]*100;
+            }
+       }
+
+    }
+    else if(Motor_place<Motor_Origin_data_u32[2])Flags.flag_down_limit=0;
+
+    if(Flags.flag_up_limit==0){
+        if((Motor_place<=Motor_Origin_data_u32[1])&&(Flags.flag_power_on==0)){
+                           Flags.flag_open=0;
+                           Flags.flag_stop=0;
+                           Flags.flag_close=0;
+            SET_SPEED=0;
+            Flags.flag_up_limit=1;
+            StopMotor();
+            DelayNmSec(20);
+            lockApply;
+        }
+        //else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]/5))&&(Flags.flag_open==1)){
+        else if((Motor_place<=(Motor_Origin_data_u32[1]+Motor_Origin_data_u32[2]*Motor_MODE_B_data[31]/100))&&(Flags.flag_open==1)){
+            if(TIME_up_limit==0){
+                TIME_up_limit=100;
+                SET_SPEED=SET_SPEED-200;
+                //if(SET_SPEED<500)SET_SPEED=500;
+                if(SET_SPEED<Motor_MODE_B_data[29]*100)SET_SPEED=Motor_MODE_B_data[29]*100;
+            }
+        }
+    }
+    else if(Motor_place>Motor_Origin_data_u32[1])Flags.flag_up_limit=0;
+}
 
 
 
@@ -523,7 +545,9 @@ void adc_IBUS(void)
                            Flags.flag_open=0;
                            Flags.flag_stop=0;
                            Flags.flag_close=0;
-        Flag_CompareSpeed=0;                   
+        Flag_CompareSpeed=0;     
+        
+        Out_LED_PGD=1;
     }
 #endif
 }

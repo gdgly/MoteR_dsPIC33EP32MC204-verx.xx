@@ -64,6 +64,7 @@ unsigned int open_loop_inc_inc;
 unsigned int Flag_CompareSpeed = 0; 
 
 int SPEED_PDC;
+int SPEED_PDC_out;
 int SPEED_PDC_offset;
 int SPEED_PI_qOut;
 
@@ -97,6 +98,11 @@ UINT8 KEY_wired_value_last;
 
 
 UINT8 test_SPEED_PI_FLAG;
+
+UINT8 TIME_SPEED_PDC_positive=0;
+UINT8 TIME_SPEED_PDC_negative=0;
+UINT8 Flag_DCInjection=0;
+
 
 
 
