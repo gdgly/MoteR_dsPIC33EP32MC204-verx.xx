@@ -631,7 +631,7 @@ void Motor_Start_OpenLoop(void)
     static unsigned int cnt100ms = 0; 
     unsigned int speed_start_error;
     
-    if(((++cnt100ms >= Motor_MODE_B_data[27]*8)&&(ActualSpeed<800))||(ActualSpeed>=800))   
+    if(((++cnt100ms >= Motor_MODE_B_data[27]*6)&&(ActualSpeed<800))||(ActualSpeed>=800))   //8
     {
         cnt100ms = 0;
         //Out_LED_PGD=!Out_LED_PGD;

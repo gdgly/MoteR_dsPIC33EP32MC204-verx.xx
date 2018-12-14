@@ -62,7 +62,7 @@ void SET_origin_mode(void)
     {
         if(
            (Flags.flag_PWMFLTorIBUS==1)//||
-           //((ActualSpeed<=MIN_RPM*7)&&(TIME_Origin_mode_join==0)&&(Flags.Direction == Flags.flag_CW))
+           //((ActualSpeed<=80)&&(TIME_Origin_mode_join==0)&&(Flags.Direction == Flags.flag_CW))  //MIN_RPM*7
            )        
         {
                Flags.flag_open=0;
@@ -83,14 +83,14 @@ void SET_origin_mode(void)
                Flags.flag_stop=0;
                Flags.flag_close=1;  
         }
-        else if((Motor_place>=60)&&(Flags.RunMotor==1))
+        else if((Motor_place>=30)&&(Flags.RunMotor==1))   //100
         {
                Flags.flag_open=0;
                Flags.flag_stop=1;
                Flags.flag_close=0;   
                TIME_Origin_mode_step=500;            
         }
-        else if((Motor_place>=60)&&(Flags.RunMotor==0))Flags.flag_origin=1;
+        else if((Motor_place>=30)&&(Flags.RunMotor==0))Flags.flag_origin=1;
     }
     
     

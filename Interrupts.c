@@ -235,7 +235,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 #ifdef CLOSEDLOOP
          if(Flag_Motor_CloseLOOP==0)
          {
-            SPEED_PDC=refSpeed/3;   //5
+            SPEED_PDC=refSpeed/2;   //3 //5
             if(SPEED_PDC>PWM_DutyCycle_MAX)SPEED_PDC=PWM_DutyCycle_MAX;
          }
         else
@@ -280,7 +280,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         else if(Flag_DCInjection==2)
         {
             TIME_DCInjectionTOwork++;
-            if(ActualSpeed<SET_SPEED*0.6)   //0.5
+            if(ActualSpeed<SET_SPEED*0.7)   //0.6
             {
                 if(TIME_DCInjectionTOwork>2)  //10
                 {
