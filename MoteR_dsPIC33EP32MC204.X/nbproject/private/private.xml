@@ -4,10 +4,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6_PI/main.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6_PI/uart.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6_PI/SensoredBLDC.c</file>
-            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.6_PI/Interrupts.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/main.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/SensoredBLDC.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/defs_ram.h</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/Interrupts.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/defs_ram.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/Init.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/DCInjection.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/APP_BX.c</file>
+            <file>file:/F:/Source%20Code/bunka-s/MoteR_new%20Source/MoteR_dsPIC33EP32MC204%20ver2.7.1/uart.c</file>
         </group>
     </open-files>
 </project-private>

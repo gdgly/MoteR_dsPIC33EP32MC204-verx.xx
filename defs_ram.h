@@ -19,6 +19,7 @@
 #define __SOFT_Ver2__       //hardware：（CY-1601 OP-0401）   PCB重新垒板，部分I/O有变动
 //#define __Motor_debug__     //电机上电后直接跑起，主要是测试电机部分电路是否正常
 #define CLOSEDLOOP
+#define Motor_Type   0       //电机制造商代码   1-->深圳东明电机     0-->文化BX提供
 
 //#define __RPI32_AD_SELCET__
 #define __RPI32_UART_SELCET__
@@ -83,7 +84,15 @@
 #endif
 
 
-
+#if Motor_Type==0
+        #define HALLA_BIT	(PORTBbits.RB1) /* HALLA port pin - RB1 */
+        #define HALLB_BIT	(PORTBbits.RB2) /* HALLB port pin - RB2 */
+        #define HALLC_BIT	(PORTBbits.RB3) /* HALLC port pin - RB3 */
+#else
+        #define HALLA_BIT	(PORTBbits.RB3) /* HALLA port pin - */
+        #define HALLB_BIT	(PORTBbits.RB2) /* HALLB port pin - */
+        #define HALLC_BIT	(PORTBbits.RB1) /* HALLC port pin - */
+#endif
 
 
 //========================================================================
@@ -280,8 +289,10 @@ extern unsigned char flag_open_loop_time;
 extern unsigned char flag_open_loop;
 extern unsigned char open_loop_inc;
 extern unsigned int open_loop_inc_inc;
+extern unsigned int Flag_CompareSpeed;
 
 extern int SPEED_PDC;
+extern int SPEED_PDC_out;
 extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
 
@@ -317,3 +328,8 @@ extern UINT8 KEY_wired_value_last;
 
 
 extern UINT8 test_SPEED_PI_FLAG;
+
+extern UINT8 TIME_SPEED_PDC_positive;
+extern UINT8 TIME_SPEED_PDC_negative;
+extern UINT8 Flag_DCInjection;
+

@@ -11,6 +11,7 @@
 #include "SensoredBLDC.h"
 #include "uart.h"
 #include "pi.h"
+#include "DCInjection.h"
 
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt (void)
@@ -255,6 +256,7 @@ Overview:		This interrupt a 1ms interrupt and outputs a square
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {
     static unsigned int cnt100ms = 0;
+    static unsigned int CompareTime_ActualSpeed_SET_SPEED = 0;   
     unsigned int speed_start_error;
 
     if(TIME_up_limit)TIME_up_limit--;
@@ -263,7 +265,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     if(((++cnt100ms >= Motor_MODE_B_data[27]*10)&&(ActualSpeed<800))||(ActualSpeed>=800))
     {
         cnt100ms = 0;
-        Out_LED_PGD=!Out_LED_PGD;
+        //Out_LED_PGD=!Out_LED_PGD;
     
 
        if(SET_SPEED >= 200)
@@ -294,9 +296,23 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 #endif
 #ifdef CLOSEDLOOP
          if(flag_open_loop==0)
+         {
             SPEED_PDC=refSpeed/3;   //5
+            Flag_CompareSpeed=0;
+         }
         else
         {
+             if(ActualSpeed<SET_SPEED*4/5)
+             {
+                 CompareTime_ActualSpeed_SET_SPEED++;
+                 if(CompareTime_ActualSpeed_SET_SPEED>=85)Flag_CompareSpeed=1;
+             }
+             else 
+             {
+                 CompareTime_ActualSpeed_SET_SPEED=0;
+             }
+             
+             
             speed_PIparms.qInRef = SET_SPEED;
             speed_PIparms.qInMeas = ActualSpeed;
 
@@ -308,8 +324,20 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         }
 
 
-        if(SPEED_PDC<130)SPEED_PDC=130;
+//        if(SPEED_PDC<130)SPEED_PDC=130;
+//        else if(SPEED_PDC>1500)SPEED_PDC=1500;      
+         
+        if(SPEED_PDC<0)  
+        {
+            SPEED_PDC=-SPEED_PDC;
+            if(Flag_DCInjection==0)
+            {
+               SPEED_PDC=0; 
+               Flag_DCInjection=1;
+            }
+        }
         else if(SPEED_PDC>1500)SPEED_PDC=1500;
+    
         PDC1 = SPEED_PDC;
         PDC2 = PDC1;
         PDC3 = PDC1;
