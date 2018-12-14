@@ -11,7 +11,6 @@
 #include "SensoredBLDC.h"
 #include "uart.h"
 #include "pi.h"
-#include "DCInjection.h"
 
 /*********************************************************************
 Function:		void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt (void)
@@ -265,7 +264,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
     if(((++cnt100ms >= Motor_MODE_B_data[27]*10)&&(ActualSpeed<800))||(ActualSpeed>=800))
     {
         cnt100ms = 0;
-        //Out_LED_PGD=!Out_LED_PGD;
+        Out_LED_PGD=!Out_LED_PGD;
     
 
        if(SET_SPEED >= 200)
@@ -324,20 +323,8 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
         }
 
 
-//        if(SPEED_PDC<130)SPEED_PDC=130;
-//        else if(SPEED_PDC>1500)SPEED_PDC=1500;      
-         
-        if(SPEED_PDC<0)  
-        {
-            SPEED_PDC=-SPEED_PDC;
-            if(Flag_DCInjection==0)
-            {
-               SPEED_PDC=0; 
-               Flag_DCInjection=1;
-            }
-        }
+        if(SPEED_PDC<130)SPEED_PDC=130;
         else if(SPEED_PDC>1500)SPEED_PDC=1500;
-    
         PDC1 = SPEED_PDC;
         PDC2 = PDC1;
         PDC3 = PDC1;

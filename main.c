@@ -13,7 +13,6 @@
 #include "uart.h"
 #include "pi.h"
 #include "APP_BX.h"
-#include "DCInjection.h"
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
@@ -46,7 +45,7 @@ int main(void)
 	InitTMR3();
 	timer3avg = 0;
 	InitMCPWM();
-	InitIC();   
+	InitIC();
         InitUART1();
         BOOT_DELAY();
         Flags.flag_EEPROM_LOAD_OK=0;

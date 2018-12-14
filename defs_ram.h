@@ -292,7 +292,6 @@ extern unsigned int open_loop_inc_inc;
 extern unsigned int Flag_CompareSpeed;
 
 extern int SPEED_PDC;
-extern int SPEED_PDC_out;
 extern int SPEED_PDC_offset;
 extern int SPEED_PI_qOut;
 
@@ -328,8 +327,3 @@ extern UINT8 KEY_wired_value_last;
 
 
 extern UINT8 test_SPEED_PI_FLAG;
-
-extern UINT8 TIME_SPEED_PDC_positive;
-extern UINT8 TIME_SPEED_PDC_negative;
-extern UINT8 Flag_DCInjection;
-
