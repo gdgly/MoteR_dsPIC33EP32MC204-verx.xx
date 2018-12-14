@@ -11,6 +11,7 @@
 #include "SensoredBLDC.h"
 #include "uart.h"
 #include "pi.h"
+#include "PInew.h"
 #include "DCInjection.h"
 
 /*********************************************************************
@@ -187,6 +188,7 @@ Overview:		This interrupt a 1ms interrupt and outputs a square
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {
   static unsigned int TIME_DCInjection=0;   
+  static int PDC_DCInjection,Time_PDC_DCInjection;
     
     if(TIME_up_limit)TIME_up_limit--;
     if(TIME_down_limit)TIME_down_limit--;
@@ -205,49 +207,60 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
          if(Flag_Motor_CloseLOOP==0)
          {
             SPEED_PDC=refSpeed/3;   //5
+            if(SPEED_PDC>PWM_DutyCycle_MAX)SPEED_PDC=PWM_DutyCycle_MAX;
          }
         else
         {
-            speed_PIparms.qInRef = SET_SPEED;
-            speed_PIparms.qInMeas = ActualSpeed;
-            
-            CalcPI(&speed_PIparms);
-            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output          
-
-            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*PWM_PTPER,MAX_SPEED_PI);
-            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+//            speed_PIparms.qInRef = SET_SPEED;
+//            speed_PIparms.qInMeas = ActualSpeed;
+//            
+//            CalcPI(&speed_PIparms);
+//            SPEED_PI_qOut =  speed_PIparms.qOut;      //set PID output          
+//
+//            SPEED_PDC_offset =   __builtin_divsd((long)SPEED_PI_qOut*PWM_PTPER,MAX_SPEED_PI);
+//            SPEED_PDC=SPEED_PDC+SPEED_PDC_offset;
+             
+             
+	         PI_SPL.Ref = SET_SPEED; //
+	         PI_SPL.Fdb = ActualSpeed;             
+             PICal(&PI_SPL);
+             SPEED_PDC =PI_SPL.Out;
         }
-
-
-//        if(SPEED_PDC<130)SPEED_PDC=130;
-//        else if(SPEED_PDC>1500)SPEED_PDC=1500;               
-//        PDC1 = SPEED_PDC;
-//        PDC2 = PDC1;
-//        PDC3 = PDC1;
     
-    
-        if(SPEED_PDC<0)  
+        if(Flag_DCInjection==1)//&&(SPEED_PDC<0))
+        {               
+            if(ActualSpeed>SET_SPEED+20)
+                PDC_DCInjection=PDC_DCInjection-(ActualSpeed-SET_SPEED)*0.18;          
+            if(PDC_DCInjection<=-PWM_DutyCycle_MAX)PDC_DCInjection=-PWM_DutyCycle_MAX;
+            SPEED_PDC_out=PWM_DutyCycle_MAX+PDC_DCInjection;
+        }
+        if((SPEED_PDC<=0)&&(ActualSpeed>SET_SPEED+50))  
         {
-            TIME_DCInjection++;
-            if(TIME_DCInjection>1000)Out_LED_PGD=1;            
-            SPEED_PDC_out=-SPEED_PDC;
-            if(Flag_DCInjection==0)
+            TIME_DCInjection++;           
+            if((Flag_DCInjection==0)&&(TIME_DCInjection>30))
             {
-                
+                Out_LED_PGD=1;
                SPEED_PDC_out=0; 
                SPEED_PDC=0;
-               //Flag_DCInjection=1;
+               Flag_DCInjection=1;
+               PDC_DCInjection=0;
+               Time_PDC_DCInjection=0;
+               //PI_SPL.OutMin = -PWM_DutyCycle_MAX*0.13;
+               
             }
         }
-        else if(Flag_DCInjection==1)
-        {
-                SPEED_PDC_out=0;
-                Flag_DCInjection=0;
-        }
+//        else if((Flag_DCInjection==1)&&(SPEED_PDC>0)&&(ActualSpeed<SET_SPEED-200))
+//        {
+//                SPEED_PDC_out=0;
+//                Flag_DCInjection=0;
+//                PI_SPL.OutMin =0;
+//                Out_LED_PGD=0;
+//        }
         else if(Flag_DCInjection==0){SPEED_PDC_out=SPEED_PDC; TIME_DCInjection=0;}
             
         if(SPEED_PDC_out>PWM_DutyCycle_MAX)SPEED_PDC_out=PWM_DutyCycle_MAX;
     
+        //PDC1 = SPEED_PDC;
         PDC1 = SPEED_PDC_out;
         PDC2 = PDC1;
         PDC3 = PDC1;    

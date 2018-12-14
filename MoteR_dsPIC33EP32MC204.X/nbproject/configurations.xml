@@ -25,6 +25,7 @@
       <itemPath>../pi.c</itemPath>
       <itemPath>../APP_BX.c</itemPath>
       <itemPath>../DCInjection.c</itemPath>
+      <itemPath>../PInew.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

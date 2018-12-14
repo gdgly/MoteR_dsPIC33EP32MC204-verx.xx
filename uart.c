@@ -10,6 +10,7 @@
 #include "defs_ram.h"
 #include "Init.h"
 #include "SensoredBLDC.h"
+#include "PInew.H"
 
 void Send_char(unsigned char ch){			// ·¢ËÍ×Ö·û
         while(U1STAbits.UTXBF);
@@ -178,6 +179,14 @@ void UART_Handler(void)
                         Flags.flag_EEPROM_LOAD_OK=1;
                         //if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
                         break;
+             case 0xEE01:     //test PI
+                        Uart_KPL_Speed_PI=UART1_DATA[9]+(UART1_DATA[8]<<8);
+                        Uart_KIL_Speed_PI=UART1_DATA[11]+(UART1_DATA[10]<<8);
+                        Uart_KDL_Speed_PI=UART1_DATA[13]+(UART1_DATA[12]<<8);
+                        Uart_KPL_Ibus_PI=UART1_DATA[15]+(UART1_DATA[14]<<8);
+                        Uart_KIL_Ibus_PI=UART1_DATA[17]+(UART1_DATA[16]<<8);
+                        Uart_KDL_Ibus_PI=UART1_DATA[19]+(UART1_DATA[18]<<8);                       
+                        break;
               default:
                         break;
          }
@@ -209,10 +218,11 @@ unsigned char hex_asc(unsigned char hex)
 }
 void TEST_uart_speed_pi(void)
 {
-    unsigned char  char_data,char0;
-    UINT8 d_xx[4];
+    unsigned char  char_data;
+    //unsigned char char0;
+    //UINT8 d_xx[4];
+    //uni_l d_num;    
     UINT16 DATA_TEST=0;
-     uni_l d_num;
 
     if(test_SPEED_PI_FLAG>=2){
         test_SPEED_PI_FLAG=0;
@@ -224,7 +234,24 @@ void TEST_uart_speed_pi(void)
         char_data=DATA_TEST%256;
         Send_char(char_data);
         Send_char(0xAA);
-        
+  
+//        Send_char(0xA6);
+//        DATA_TEST=Uart_KPL_Speed_PI;
+//        char_data=DATA_TEST>>8;
+//        Send_char(char_data);
+//        char_data=DATA_TEST%256;
+//        Send_char(char_data);
+//        DATA_TEST=Uart_KIL_Speed_PI;
+//        char_data=DATA_TEST>>8;
+//        Send_char(char_data);
+//        char_data=DATA_TEST%256;
+//        Send_char(char_data); 
+//        DATA_TEST=Uart_KDL_Speed_PI;
+//        char_data=DATA_TEST>>8;
+//        Send_char(char_data);
+//        char_data=DATA_TEST%256;
+//        Send_char(char_data);      
+//        Send_char(0xAB);
         
 //
 //        char_data=refSpeed>>8;

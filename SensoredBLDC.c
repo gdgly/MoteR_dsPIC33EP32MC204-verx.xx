@@ -10,6 +10,7 @@
 #include "defs_ram.h"
 #include "Init.h"
 #include "pi.h"
+#include "PInew.h"
 #include "DCInjection.h"
 
 /*********************************************************************
@@ -136,7 +137,8 @@ void RunMotor(void)
         timer3value_Last=MAX_PERIOD;
         timer3avg=MAX_PERIOD;
 
-        InitPI(&speed_PIparms,SPEED_PI_P,SPEED_PI_I,SPEED_PI_C,MAX_SPEED_PI,(-MAX_SPEED_PI),0);
+        //InitPI(&speed_PIparms,SPEED_PI_P,SPEED_PI_I,SPEED_PI_C,MAX_SPEED_PI,(-MAX_SPEED_PI),0);
+        PID_init();
 }
 
 /*********************************************************************
@@ -276,6 +278,7 @@ void APP_Motor_MODE_B_data (void)
                 default:
                        break ;
            }
+           SET_UP_SPEED_form_Uart=2900;   //PID TEST
 #ifdef CLOSEDLOOP
            SET_SPEED=SET_UP_SPEED_form_Uart;           
 #else
@@ -308,6 +311,7 @@ void APP_Motor_MODE_B_data (void)
                 default:
                        break ;
            }
+           SET_DOWN_SPEED_form_Uart=2900;    //PID TEST
 #ifdef CLOSEDLOOP
            SET_SPEED=SET_DOWN_SPEED_form_Uart;           
 #else
@@ -558,7 +562,8 @@ void Motor_Start_OpenLoop(void)
     static unsigned int cnt100ms = 0; 
     unsigned int speed_start_error;
     
-    if(((++cnt100ms >= Motor_MODE_B_data[27]*10)&&(ActualSpeed<800))||(ActualSpeed>=800))
+    Motor_MODE_B_data[27]=1;   //PID TEST
+    if(((++cnt100ms >= Motor_MODE_B_data[27]*8)&&(ActualSpeed<800))||(ActualSpeed>=800))    //PID TEST 10
     {
         cnt100ms = 0;
         //Out_LED_PGD=!Out_LED_PGD;
@@ -566,7 +571,7 @@ void Motor_Start_OpenLoop(void)
 
        if(SET_SPEED >= 200)
         {
-            if((ActualSpeed < SET_SPEED)&&(Flag_Motor_CloseLOOP==0))
+            if((ActualSpeed < SET_SPEED)&&(Flag_Motor_CloseLOOP==0))   //PID TEST   /2
             {
                 speed_start_error=(SET_SPEED-ActualSpeed)/open_loop_inc_inc;
                 refSpeed = refSpeed+open_loop_inc+speed_start_error;
