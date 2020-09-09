@@ -323,11 +323,17 @@ VOID svm(SHORT volts, WORD angle)
 //void __attribute__((interrupt, no_auto_psv)) _T7Interrupt (void)
 //{
 //}
+UINT8 lockRelease_pwm = 0;  //8k
 void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 {
     WORD phaseDiff;
     
     IFS5bits.PWM1IF = 0;
+	if(++lockRelease_pwm >=2)
+	{
+		lockRelease_pwm=0;
+		lockRelease_OUT=!lockRelease_OUT;
+	}
          Out_LED_PGD=!Out_LED_PGD;
     if(PWMCON1bits.FLTSTAT)
     {

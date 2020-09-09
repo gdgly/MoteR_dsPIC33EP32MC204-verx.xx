@@ -21,6 +21,7 @@
 
 #define lockApply  (PORTCbits.RC9 = 0)
 #define lockRelease (PORTCbits.RC9 = 1)
+#define lockRelease_OUT PORTCbits.RC9
 
 
 //PWM coasting time in ms
