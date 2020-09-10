@@ -76,11 +76,11 @@ INT main(VOID)
 
 	CORCONbits.SATA = 0;
     CORCONbits.IF = 0;
+	initGPIO(); /* Initialize all the I/O's required in application */
     //Add powerup delay
     delayMs(50);
 	ClrWdt();   // clear the WDT to inhibit the device reset
-    
-    initGPIO(); /* Initialize all the I/O's required in application */   
+	      
 	initADC();		/* Initialize ADC to be signed fractional */
 	//Added for ADC2- RN- NOV2015
     initADC2();		/* Initialize ADC to be signed fractional */
@@ -89,7 +89,7 @@ INT main(VOID)
     initTMR2();		/* Initialize TMR2 1 ms periodic ISR for current controller */
     initTMR3();		/* Initialize TMR3 for timebase of capture */
 	ClrWdt();   // clear the WDT to inhibit the device reset
-	initMCPWM();
+	//initMCPWM();
     initTMR9();
     InitUART1(); 
     measureADCOffset();

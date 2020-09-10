@@ -15,6 +15,7 @@
 #include <p33Exxxx.h>
 #include "GPIO.h"
 #include "./Common/UserDefinition/Userdef.h"
+#include "./Application/RampGenerator/RampGenerator.h"
 
 /******************************************************************************
  * initGPIO
@@ -91,6 +92,7 @@ Added for motor control board hardware version 2 on 30 Dec 2014
         In_CLOSE_dir=1;
 	
 	    Out_BRAKE_dir = 0;//enable brake
+        lockRelease_OUT=0;
 		
 	/* Analog inputs configuration starts*/
 	In_ADC_IBUS_dir = 1; /*BLDC Curent Monitoring, common current in all legs*/
