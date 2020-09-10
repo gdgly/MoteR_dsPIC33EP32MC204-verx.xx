@@ -69,3 +69,4 @@ EXTERN BOOL Motor_ERR_overcurrent_or_igbtOverTemp;
 extern unsigned int SET_SPEED;
 extern BOOL FLAG_Motor_start;
 extern WORD SPD_INC_INTERVAL;
+extern BOOL FLAG_lockRelease;

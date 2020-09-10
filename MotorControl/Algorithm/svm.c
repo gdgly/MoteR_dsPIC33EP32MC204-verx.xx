@@ -332,7 +332,8 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 	if(++lockRelease_pwm >=2)
 	{
 		lockRelease_pwm=0;
-		lockRelease_OUT=!lockRelease_OUT;
+		if(FLAG_lockRelease==TRUE)
+			lockRelease_OUT=!lockRelease_OUT;
 	}
          Out_LED_PGD=!Out_LED_PGD;
     if(PWMCON1bits.FLTSTAT)

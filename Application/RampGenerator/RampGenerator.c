@@ -37,6 +37,8 @@ rampStatusFlags_t rampStatusFlags;
 BOOL pwmCostingReq = FALSE;
 BOOL FLAG_Motor_start=FALSE;
 
+BOOL FLAG_lockRelease=FALSE;
+
 /******************************************************************************
  * chargeBootstraps
  *

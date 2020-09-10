@@ -19,8 +19,8 @@
 #include "./Common/UserDefinition/Userdef.h"
 
 
-#define lockApply  (PORTCbits.RC9 = 0)
-#define lockRelease (PORTCbits.RC9 = 1)
+#define lockApply  {PORTCbits.RC9 = 0;FLAG_lockRelease=FALSE;}
+#define lockRelease {PORTCbits.RC9 = 1;FLAG_lockRelease=TRUE;}
 #define lockRelease_OUT PORTCbits.RC9
 
 
