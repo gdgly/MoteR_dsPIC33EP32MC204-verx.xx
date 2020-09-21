@@ -501,13 +501,13 @@ VOID measureActualSpeed(VOID)
 //    phaseIncPerSec = __builtin_muluu(measuredSpeed,655);
 //    phaseInc = __builtin_divud(phaseIncPerSec,1000);
     
-    
+#ifdef PHASE_ADVANCE    
     register int a_reg asm("A");
     a_reg = __builtin_mpy(MAX_PH_ADV,SPD_CAL_FOR_PHASEADVANCE , 0,0,0,0,0,0);//SPD_CAL_FOR_PHASEADVANCE
     PhaseAdvance = __builtin_sac(a_reg,0);
     if(requiredDirection == CCW)
         PhaseAdvance = -PhaseAdvance;
-        
+#endif        
 }
 
 VOID speedControl(VOID) 

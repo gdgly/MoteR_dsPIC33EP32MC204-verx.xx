@@ -345,9 +345,6 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
 
 #ifdef USE_PHASE_INC_AND_CORRECTION
     //Use phase increment only when shutter moving Up
-    //if((requiredDirection == CW) && (!rampStatusFlags.rampDcInjectionOn))
-    if(!rampStatusFlags.rampDcInjectionOn)
-    {
         if(phaseIncFlg == PHASE_DECREMENT_FLAG)
         {
             phase -= phaseInc;   
@@ -362,9 +359,8 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
             if (phaseDiff >= SIXTY_DEG)
                 phase = phaseCopy + SIXTY_DEG;
         }
-    }
 #endif
-#if 1
+#ifdef PHASE_ADVANCE
     if(controlOutput < 0)
         svm(-(controlOutput+1), phase+ PhaseAdvance);  
     else

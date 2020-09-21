@@ -15,6 +15,8 @@
 #define USERDEF_H
 #include "./Common/Typedefs/Typedefs.h"
 
+#undef PHASE_ADVANCE	// for extended speed ranges this should be defined
+
 #define USE_PHASE_INC_AND_CORRECTION
 #define PICOMO_MOTOR        1//not use
 #define NEW_MOTOR_1         2//not use
