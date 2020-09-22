@@ -39,9 +39,9 @@ WORD MotorStopCount;
 	UINT8	u_char[4] ;
   }uni_ll;
   
-#define SET_VBUS_PowerOFF_VAC  80   //??VAC
-#define SET_VBUS_PowerOFF_VDC 113      //SET_VBUS_PowerOFF_VAC*1.414    //??VDC
-#define SET_VBUS_PowerOFF     347      //(SET_VBUS_PowerOFF_VDC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
+#define SET_VBUS_PowerOFF_VAC  90   //??VAC
+#define SET_VBUS_PowerOFF_VDC 127      //SET_VBUS_PowerOFF_VAC*1.414    //??VDC
+#define SET_VBUS_PowerOFF     390      //(SET_VBUS_PowerOFF_VDC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
 
 #define MAXIMUM_WORKING_VOLTAGE_ac   178  //??VAC
 #define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*4.414  //??VDC

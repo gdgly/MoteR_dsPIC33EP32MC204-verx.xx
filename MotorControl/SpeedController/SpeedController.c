@@ -59,7 +59,7 @@
                             /* consider stalled and it's stopped    */
 
 /* PI parameters */
-#define P_SPEED_PI_MoteR 10000
+#define P_SPEED_PI_MoteR 20000
 #define I_SPEED_PI_MoteR 700
 //#define P_SPEED_PI_CW_750W 10000//6000//7000//10000//13106//20000//15000//5000
 //#define I_SPEED_PI_CW_750W 700//1500//1800//2000//9830//10000//8000//4000

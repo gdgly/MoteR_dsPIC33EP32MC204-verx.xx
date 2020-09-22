@@ -6,15 +6,15 @@
 #include "./Application/RampGenerator/RampGenerator.h"
 
 /* current limit PI parameters */
-#define P_CURRENT_LIMIT_PI 15000
+#define P_CURRENT_LIMIT_PI 25000
 #define I_CURRENT_LIMIT_PI 1500
 #define C_CURRENT_LIMIT_PI 0x7FFF
 #define MAX_CURRENT_LIMIT_PI 31128   //95% of max value ie 32767
 
-#define TARGET_CURRENT_LIMIT   2000//15000       //12000//7000   
+#define TARGET_CURRENT_LIMIT   4500//15000       //12000//7000   
 
-#define SUSTAINED_OVER_CURRENT_TIMEOUT      50//10//100 //100ms
-#define SUSTAINED_OVER_CURRENT_VALUE       5000//26000            //20000 //1A = 1000mA
+#define SUSTAINED_OVER_CURRENT_TIMEOUT      10//100 //100ms
+#define SUSTAINED_OVER_CURRENT_VALUE       5500//20000 //1A = 1000mA
 
 /* PI configuration structure */
 tPIParm currentLimitPIparms;
