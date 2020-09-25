@@ -343,7 +343,7 @@ void TEST_uart_speed_pi(void)
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);        
-        DATA_TEST=UBUS;                     //DATA3  bit16
+        DATA_TEST=controlOutput;                     //DATA3  bit16
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;
@@ -352,12 +352,12 @@ void TEST_uart_speed_pi(void)
         char_data=0;                        //DATA4  bit8
         else char_data=1;
         Send_char(char_data);
-        DATA_TEST=0;                      //DATA5 bit16
+        DATA_TEST=feedbackCurrent;                      //DATA5 bit16
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;
         Send_char(char_data);
-        DATA_TEST=0;                      //DATA6 bit16
+        DATA_TEST=iTotalADCCnt;                      //DATA6 bit16
         char_data=DATA_TEST>>8;
         Send_char(char_data);
         char_data=DATA_TEST%256;

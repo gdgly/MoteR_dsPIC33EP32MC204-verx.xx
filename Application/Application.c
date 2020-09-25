@@ -99,104 +99,7 @@ UINT32 getSystemTick(VOID)
 VOID application(VOID)
 {
 #if 0    
-        CMDStatus = (UINT8) ((In_OPEN<< 1) | (In_CLOSE));
-        if((CMDStatus == 0x02) || (CMDStatus == 0x03))
-        {
-            Motor_ERR_overcurrent_or_igbtOverTemp=0;
-        }
-        
-        if((CMDStatus == 0x00) && (!flags.motorRunning)&&(Motor_ERR_overcurrent_or_igbtOverTemp==0))
-        {
-            lockRelease;
-            flags.RunDirection = CCW;            
-            startMotor();
-        }
-        else if((CMDStatus == 0x01) && (!flags.motorRunning)&&(Motor_ERR_overcurrent_or_igbtOverTemp==0))
-        {
-            lockRelease; 
-            flags.RunDirection = CW;
-            startMotor();
-        }
-        else if((CMDStatus == 0x01) && (flags.motorRunning) && (flags.RunDirection == CCW))
-        {
-            if(MotorDecActive==0)
-            {
-                MotorDecActive = 1;
-                MotorStopCount = 0;
-            }
-            else 
-            {
-                if((MotorStopCount >= 40)||(measuredSpeed_bak<200))
-                {
-                    stopMotor(); 
-                    delayMs(100);
-                    lockApply;                    
-                }
-                else if(MotorStopCount >= 60)
-                {
-                    flags.RunDirection = CW;
-                    startMotor();
-                    MotorStopCount = 0;
-                }            
-            } 
-        }
-        else if((CMDStatus == 0x00) && (flags.motorRunning) && (flags.RunDirection == CW))
-        {
-            if(MotorDecActive==0)
-            {
-                MotorDecActive = 1;
-                MotorStopCount = 0;
-            }
-            else 
-            {
-                if((MotorStopCount >= 40)||(measuredSpeed_bak<200))
-                {
-                    stopMotor(); 
-                    delayMs(100);
-                    lockApply;                    
-                }
-                else if(MotorStopCount >= 60)
-                {
-                    flags.RunDirection = CCW;
-                    startMotor();
-                    MotorStopCount = 0;
-                }            
-            }
-        }
-        else if((CMDStatus == 0x02) && (flags.motorRunning))
-        {
-            if(MotorDecActive==0)
-            {
-                MotorDecActive = 1;
-                MotorStopCount = 0;
-            }
-            else 
-            {
-                if((MotorStopCount >= 40)||(measuredSpeed_bak<200))
-                {
-                    stopMotor(); 
-                    delayMs(100);
-                    lockApply;                    
-                }
-            }
-        }
-        else if((CMDStatus == 0x03) && (flags.motorRunning))
-        {
-            if(MotorDecActive==0)
-            {
-                MotorDecActive = 1;
-                MotorStopCount = 0;
-            }
-            else 
-            {
-                if((MotorStopCount >= 40)||(measuredSpeed_bak<200))
-                {
-                    stopMotor(); 
-                    delayMs(100);
-                    lockApply;                    
-                }
-            }
-        }
+
 #else 
       
         
@@ -206,7 +109,7 @@ VOID application(VOID)
      SET_origin_mode();
      adc_IBUSandVBUS();
      
-     //TEST_uart_speed_pi();
+     TEST_uart_speed_pi();
      
 #endif
 }
