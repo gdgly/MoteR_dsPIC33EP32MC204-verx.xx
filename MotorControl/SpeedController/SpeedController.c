@@ -59,14 +59,14 @@
                             /* consider stalled and it's stopped    */
 
 /* PI parameters */
-#define P_SPEED_PI_MoteR 20000
-#define I_SPEED_PI_MoteR 700
+#define P_SPEED_PI_MoteR 25000
+#define I_SPEED_PI_MoteR 1500//700
 //#define P_SPEED_PI_CW_750W 10000//6000//7000//10000//13106//20000//15000//5000
 //#define I_SPEED_PI_CW_750W 700//1500//1800//2000//9830//10000//8000//4000
 //#define P_SPEED_PI_CCW_750W 10000//22000
 //#define I_SPEED_PI_CCW_750W 700//100
 
-#define C_SPEED_PI 0x7FFF 
+#define C_SPEED_PI 15000//0x7FFF 
 #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 
 /* In the sinewave generation algorithm we need an offset to be added to the */
