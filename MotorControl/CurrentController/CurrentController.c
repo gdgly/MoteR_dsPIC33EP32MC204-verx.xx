@@ -305,7 +305,14 @@ VOID initCurrentControllerVariables(VOID)
     
     diffiTotal = 0;
     phaseValue = MIN_PHASE_COMP * PHASE_INC_STEP;
-    initPiNew(&currentPIparms,P_CURRENT_PI,I_CURRENT_PI,C_CURRENT_PI,currentLimitClamp,0,0);
+    //initPiNew(&currentPIparms,P_CURRENT_PI,I_CURRENT_PI,C_CURRENT_PI,currentLimitClamp,0,0);
+    currentPIparms.qdSum = 0;
+    currentPIparms.qKp = P_CURRENT_PI;
+    currentPIparms.qKi = I_CURRENT_PI;
+    currentPIparms.qKc = C_CURRENT_PI;
+    currentPIparms.qOutMax = currentLimitClamp;
+    currentPIparms.qOutMin = 0;
+    currentPIparms.qOut = 0;    
 }
 
 /******************************************************************************
@@ -327,7 +334,7 @@ VOID currentControl(VOID)
     currentPIparms.qOutMax = currentLimitClamp;
     currentPIparms.qOutMin = 0;  
     
-        calcPiNew(&currentPIparms);        
+        CalcPI(&currentPIparms);        
         if(flags.currentControl)
         {
             controlOutput = currentPIparms.qOut;

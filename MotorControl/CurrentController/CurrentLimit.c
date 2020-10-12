@@ -36,7 +36,14 @@ VOID initCurrentLimitPI(VOID)
     feedbackCurrent = 0;
     currentLimitClamp = MAX_CURRENT_LIMIT_PI;
     
-    initPiNew(&currentLimitPIparms,P_CURRENT_LIMIT_PI,I_CURRENT_LIMIT_PI,C_CURRENT_LIMIT_PI,MAX_CURRENT_LIMIT_PI,0,0);
+    //initPiNew(&currentLimitPIparms,P_CURRENT_LIMIT_PI,I_CURRENT_LIMIT_PI,C_CURRENT_LIMIT_PI,MAX_CURRENT_LIMIT_PI,0,0);
+    currentLimitPIparms.qdSum = 0;
+    currentLimitPIparms.qKp = P_CURRENT_LIMIT_PI;
+    currentLimitPIparms.qKi = I_CURRENT_LIMIT_PI;
+    currentLimitPIparms.qKc = C_CURRENT_LIMIT_PI;
+    currentLimitPIparms.qOutMax = MAX_CURRENT_LIMIT_PI;
+    currentLimitPIparms.qOutMin = 0;
+    currentLimitPIparms.qOut = 0;     
 }
 
 VOID runCurrentLimitPI(VOID) 
@@ -46,7 +53,7 @@ VOID runCurrentLimitPI(VOID)
     {
         currentLimitPIparms.qInRef = refCurrentLimit;
         currentLimitPIparms.qInMeas = feedbackCurrent;
-        calcPiNew(&currentLimitPIparms);        
+        CalcPI(&currentLimitPIparms);        
         //set current limit PI output as clamp for speed and current PI
         currentLimitClamp = currentLimitPIparms.qOut;
     }

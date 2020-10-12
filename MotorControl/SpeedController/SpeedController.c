@@ -57,16 +57,11 @@
 
 #define MS_500T 1000//300//500          /* after this time has elapsed, the motor is    */
                             /* consider stalled and it's stopped    */
-
-/* PI parameters */
-#define P_SPEED_PI_MoteR 25000
-#define I_SPEED_PI_MoteR 1500//700
-//#define P_SPEED_PI_CW_750W 10000//6000//7000//10000//13106//20000//15000//5000
-//#define I_SPEED_PI_CW_750W 700//1500//1800//2000//9830//10000//8000//4000
-//#define P_SPEED_PI_CCW_750W 10000//22000
-//#define I_SPEED_PI_CCW_750W 700//100
-
-#define C_SPEED_PI 15000//0x7FFF 
+       
+// PI parameters        
+#define P_SPEED_PI_MoteR Q15(0.7)   //prop
+#define I_SPEED_PI_MoteR Q15(0.03)  //integ
+#define C_SPEED_PI 0x7FFF                   //windup
 #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 
 /* In the sinewave generation algorithm we need an offset to be added to the */
@@ -517,7 +512,7 @@ VOID speedControl(VOID)
 
         speedPIparms.qOutMax = 31128;//currentLimitClamp;
         speedPIparms.qOutMin = -(31128);
-        calcPiNew(&speedPIparms);
+        CalcPI(&speedPIparms);
 
         if(flags.speedControl)
             controlOutput = speedPIparms.qOut;  
@@ -562,7 +557,14 @@ VOID intitSpeedController(VOID)
     lastSector = sector;
     calculatePhaseValue(sector);
     
-    initPiNew(&speedPIparms,P_SPEED_PI_MoteR,I_SPEED_PI_MoteR,C_SPEED_PI,5000,-5000,0);
+    //initPiNew(&speedPIparms,P_SPEED_PI_MoteR,I_SPEED_PI_MoteR,C_SPEED_PI,5000,-5000,0);
+    speedPIparms.qdSum = 0;
+    speedPIparms.qKp = P_SPEED_PI_MoteR;
+    speedPIparms.qKi = I_SPEED_PI_MoteR;
+    speedPIparms.qKc = C_SPEED_PI;
+    speedPIparms.qOutMax = 5000;
+    speedPIparms.qOutMin = 5000;
+    speedPIparms.qOut = 0;
 
 //        if(requiredDirection == CW)
 //        {

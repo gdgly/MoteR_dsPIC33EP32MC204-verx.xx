@@ -28,6 +28,7 @@
         <itemPath>../MotorControl/Braking/DCInjection.h</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentController.h</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentLimit.h</itemPath>
+        <itemPath>../MotorControl/PIController/pi.inc</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -63,7 +64,7 @@
         <itemPath>../MotorControl/CurrentController/CurrentController.c</itemPath>
         <itemPath>../MotorControl/Braking/DCInjection.c</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentLimit.c</itemPath>
-        <itemPath>../MotorControl/PIController/pi.c</itemPath>
+        <itemPath>../MotorControl/PIController/pi.s</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

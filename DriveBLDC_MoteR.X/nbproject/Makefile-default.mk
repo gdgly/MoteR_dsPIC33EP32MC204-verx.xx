@@ -57,7 +57,7 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../Application/Application.c ../Application/RampGenerator/RampGenerator.c ../Application/APP_uart.c ../Common/Delay/Delay.c ../Drivers/GPIO/GPIO.c ../Drivers/InputCapture/InputCapture.c ../Drivers/ADC/ADC.c ../Drivers/Timer/Timer.c ../Drivers/PWM/MCPWM.c ../Main/Main.c ../MotorControl/SpeedController/SpeedController.c ../MotorControl/Algorithm/svm.c ../MotorControl/CurrentController/CurrentController.c ../MotorControl/Braking/DCInjection.c ../MotorControl/CurrentController/CurrentLimit.c ../MotorControl/PIController/pi.c
+SOURCEFILES_QUOTED_IF_SPACED=../Application/Application.c ../Application/RampGenerator/RampGenerator.c ../Application/APP_uart.c ../Common/Delay/Delay.c ../Drivers/GPIO/GPIO.c ../Drivers/InputCapture/InputCapture.c ../Drivers/ADC/ADC.c ../Drivers/Timer/Timer.c ../Drivers/PWM/MCPWM.c ../Main/Main.c ../MotorControl/SpeedController/SpeedController.c ../MotorControl/Algorithm/svm.c ../MotorControl/CurrentController/CurrentController.c ../MotorControl/Braking/DCInjection.c ../MotorControl/CurrentController/CurrentLimit.c ../MotorControl/PIController/pi.s
 
 # Object Files Quoted if spaced
 OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1693421727/Application.o ${OBJECTDIR}/_ext/1001158509/RampGenerator.o ${OBJECTDIR}/_ext/1693421727/APP_uart.o ${OBJECTDIR}/_ext/1444361294/Delay.o ${OBJECTDIR}/_ext/1185296862/GPIO.o ${OBJECTDIR}/_ext/1685861263/InputCapture.o ${OBJECTDIR}/_ext/1977904179/ADC.o ${OBJECTDIR}/_ext/1923288882/Timer.o ${OBJECTDIR}/_ext/1977889165/MCPWM.o ${OBJECTDIR}/_ext/761766712/Main.o ${OBJECTDIR}/_ext/1549342795/SpeedController.o ${OBJECTDIR}/_ext/629317769/svm.o ${OBJECTDIR}/_ext/1214161667/CurrentController.o ${OBJECTDIR}/_ext/654305744/DCInjection.o ${OBJECTDIR}/_ext/1214161667/CurrentLimit.o ${OBJECTDIR}/_ext/1156753997/pi.o
@@ -67,7 +67,7 @@ POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1693421727/Application.o.d ${OBJECTDIR}/_ext
 OBJECTFILES=${OBJECTDIR}/_ext/1693421727/Application.o ${OBJECTDIR}/_ext/1001158509/RampGenerator.o ${OBJECTDIR}/_ext/1693421727/APP_uart.o ${OBJECTDIR}/_ext/1444361294/Delay.o ${OBJECTDIR}/_ext/1185296862/GPIO.o ${OBJECTDIR}/_ext/1685861263/InputCapture.o ${OBJECTDIR}/_ext/1977904179/ADC.o ${OBJECTDIR}/_ext/1923288882/Timer.o ${OBJECTDIR}/_ext/1977889165/MCPWM.o ${OBJECTDIR}/_ext/761766712/Main.o ${OBJECTDIR}/_ext/1549342795/SpeedController.o ${OBJECTDIR}/_ext/629317769/svm.o ${OBJECTDIR}/_ext/1214161667/CurrentController.o ${OBJECTDIR}/_ext/654305744/DCInjection.o ${OBJECTDIR}/_ext/1214161667/CurrentLimit.o ${OBJECTDIR}/_ext/1156753997/pi.o
 
 # Source Files
-SOURCEFILES=../Application/Application.c ../Application/RampGenerator/RampGenerator.c ../Application/APP_uart.c ../Common/Delay/Delay.c ../Drivers/GPIO/GPIO.c ../Drivers/InputCapture/InputCapture.c ../Drivers/ADC/ADC.c ../Drivers/Timer/Timer.c ../Drivers/PWM/MCPWM.c ../Main/Main.c ../MotorControl/SpeedController/SpeedController.c ../MotorControl/Algorithm/svm.c ../MotorControl/CurrentController/CurrentController.c ../MotorControl/Braking/DCInjection.c ../MotorControl/CurrentController/CurrentLimit.c ../MotorControl/PIController/pi.c
+SOURCEFILES=../Application/Application.c ../Application/RampGenerator/RampGenerator.c ../Application/APP_uart.c ../Common/Delay/Delay.c ../Drivers/GPIO/GPIO.c ../Drivers/InputCapture/InputCapture.c ../Drivers/ADC/ADC.c ../Drivers/Timer/Timer.c ../Drivers/PWM/MCPWM.c ../Main/Main.c ../MotorControl/SpeedController/SpeedController.c ../MotorControl/Algorithm/svm.c ../MotorControl/CurrentController/CurrentController.c ../MotorControl/Braking/DCInjection.c ../MotorControl/CurrentController/CurrentLimit.c ../MotorControl/PIController/pi.s
 
 
 CFLAGS=
@@ -199,13 +199,6 @@ ${OBJECTDIR}/_ext/1214161667/CurrentLimit.o: ../MotorControl/CurrentController/C
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ../MotorControl/CurrentController/CurrentLimit.c  -o ${OBJECTDIR}/_ext/1214161667/CurrentLimit.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1214161667/CurrentLimit.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I".." -I"../Drivers/GPIO" -I"../Drivers/InputCapture" -I"../Application/RampGenerator" -I"../MotorControl/PIController" -I"../MotorControl/Algorithm" -I"../MotorControl/SpeedController" -I"../DMCI" -I"../Common/Delay" -I"../Common/Extern" -I"../Common/UserDefinition" -I"../Drivers/PWM" -I"../Middleware/ParameterDatabase" -I"../Middleware/CommunicationStack" -I"../MotorControl/Braking" -I"../MotorControl/CurrentController" -I"../Application" -msmart-io=1 -Wall -msfr-warn=off   -mno-eds-warn
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1214161667/CurrentLimit.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
-${OBJECTDIR}/_ext/1156753997/pi.o: ../MotorControl/PIController/pi.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1156753997" 
-	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../MotorControl/PIController/pi.c  -o ${OBJECTDIR}/_ext/1156753997/pi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1156753997/pi.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I".." -I"../Drivers/GPIO" -I"../Drivers/InputCapture" -I"../Application/RampGenerator" -I"../MotorControl/PIController" -I"../MotorControl/Algorithm" -I"../MotorControl/SpeedController" -I"../DMCI" -I"../Common/Delay" -I"../Common/Extern" -I"../Common/UserDefinition" -I"../Drivers/PWM" -I"../Middleware/ParameterDatabase" -I"../Middleware/CommunicationStack" -I"../MotorControl/Braking" -I"../MotorControl/CurrentController" -I"../Application" -msmart-io=1 -Wall -msfr-warn=off   -mno-eds-warn
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1156753997/pi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
 else
 ${OBJECTDIR}/_ext/1693421727/Application.o: ../Application/Application.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1693421727" 
@@ -312,19 +305,26 @@ ${OBJECTDIR}/_ext/1214161667/CurrentLimit.o: ../MotorControl/CurrentController/C
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ../MotorControl/CurrentController/CurrentLimit.c  -o ${OBJECTDIR}/_ext/1214161667/CurrentLimit.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1214161667/CurrentLimit.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I".." -I"../Drivers/GPIO" -I"../Drivers/InputCapture" -I"../Application/RampGenerator" -I"../MotorControl/PIController" -I"../MotorControl/Algorithm" -I"../MotorControl/SpeedController" -I"../DMCI" -I"../Common/Delay" -I"../Common/Extern" -I"../Common/UserDefinition" -I"../Drivers/PWM" -I"../Middleware/ParameterDatabase" -I"../Middleware/CommunicationStack" -I"../MotorControl/Braking" -I"../MotorControl/CurrentController" -I"../Application" -msmart-io=1 -Wall -msfr-warn=off   -mno-eds-warn
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1214161667/CurrentLimit.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
-${OBJECTDIR}/_ext/1156753997/pi.o: ../MotorControl/PIController/pi.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1156753997" 
-	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ../MotorControl/PIController/pi.c  -o ${OBJECTDIR}/_ext/1156753997/pi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1156753997/pi.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -I".." -I"../Drivers/GPIO" -I"../Drivers/InputCapture" -I"../Application/RampGenerator" -I"../MotorControl/PIController" -I"../MotorControl/Algorithm" -I"../MotorControl/SpeedController" -I"../DMCI" -I"../Common/Delay" -I"../Common/Extern" -I"../Common/UserDefinition" -I"../Drivers/PWM" -I"../Middleware/ParameterDatabase" -I"../Middleware/CommunicationStack" -I"../MotorControl/Braking" -I"../MotorControl/CurrentController" -I"../Application" -msmart-io=1 -Wall -msfr-warn=off   -mno-eds-warn
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1156753997/pi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
 endif
 
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/_ext/1156753997/pi.o: ../MotorControl/PIController/pi.s  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/1156753997" 
+	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o.d 
+	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o 
+	${MP_CC} $(MP_EXTRA_AS_PRE)  ../MotorControl/PIController/pi.s  -o ${OBJECTDIR}/_ext/1156753997/pi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -DXPRJ_default=$(CND_CONF)    -I"../PIController" -I".." -I"../MotorControl/PIController" -Wa,-MD,"${OBJECTDIR}/_ext/1156753997/pi.o.d",--defsym=__MPLAB_BUILD=1,--defsym=__ICD2RAM=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_ICD3=1,-g,--no-relax,-g$(MP_EXTRA_AS_POST)
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1156753997/pi.o.d"  $(SILENT)  -rsi ${MP_CC_DIR}../  
+	
 else
+${OBJECTDIR}/_ext/1156753997/pi.o: ../MotorControl/PIController/pi.s  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/1156753997" 
+	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o.d 
+	@${RM} ${OBJECTDIR}/_ext/1156753997/pi.o 
+	${MP_CC} $(MP_EXTRA_AS_PRE)  ../MotorControl/PIController/pi.s  -o ${OBJECTDIR}/_ext/1156753997/pi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -omf=elf -DXPRJ_default=$(CND_CONF)    -I"../PIController" -I".." -I"../MotorControl/PIController" -Wa,-MD,"${OBJECTDIR}/_ext/1156753997/pi.o.d",--defsym=__MPLAB_BUILD=1,-g,--no-relax,-g$(MP_EXTRA_AS_POST)
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1156753997/pi.o.d"  $(SILENT)  -rsi ${MP_CC_DIR}../  
+	
 endif
 
 # ------------------------------------------------------------------------------------

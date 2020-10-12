@@ -33,28 +33,23 @@
 * certify, or support the code.
 *
 ******************************************************************************/
-#include "./Common/Typedefs/Typedefs.h"
 
 //------------------  C API for PI routines ---------------------
 
 typedef struct {
-    LONG    qdSum;          // 1.31 format
-    SHORT   qKp;
-    SHORT   qKi;
-    SHORT   qKc;
-    SHORT   qOutMax;
-    SHORT   qOutMin;
-    SHORT   qInRef; 
-    SHORT   qInMeas;
-    SHORT   qOut;
+    long    qdSum;          // 1.31 format
+    short   qKp;
+    short   qKi;
+    short   qKc;
+    short   qOutMax;
+    short   qOutMin;
+    short   qInRef; 
+    short   qInMeas;
+    short   qOut;
     } tPIParm;
 
-VOID InitPI( tPIParm *pParm);
-VOID CalcPI( tPIParm *pParm);
-
-VOID initPiNew(tPIParm *pParm,int Kp,int Ki,int Kc,int max,int min,int out);
-VOID calcPiNew(tPIParm *pParm);
-    
+void InitPI( tPIParm *pParm);
+void CalcPI( tPIParm *pParm);
 #endif
 
 
