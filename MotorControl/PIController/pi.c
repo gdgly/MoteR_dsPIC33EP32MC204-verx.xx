@@ -65,31 +65,47 @@ void calcPiNew( tPIParm *pParm)
 {
     /*
 ;    Error  = Reference - Measurement
-;    U  = Sum + Kp * Error
+;    Up  = (Kp * Error)>>15;
+;    Sum  = Sum + (Ki * Up)>>15;
+;    U = Up + Sum;
 ;    if( U > Outmax )
 ;        Out = Outmax
 ;    else if( U < OutMin )
 ;        Out = OutMin
 ;    else
 ;        Out = U
-;    Exc = U - Out
-;    Sum = Sum + Ki * Err - Kc * Exc
+;    Exc = Out - U
+;    Sum = Sum + (Kc * Exc)>>15
 */
     int currentError;
-    long U;
+    long Up,Ui,Uc,U;
     int outTemp;
-    
+    int Reference,Measurement;
+
+    Reference = __builtin_divsd(((long)pParm->qInRef*(long)32768),10000);     //???Q15??Ref×32768/10000RPM; 
+	Measurement = __builtin_divsd(((long)pParm->qInMeas*(long)32768),10000); 
     //Error  = Reference - Measurement
-    currentError = pParm->qInRef - pParm->qInMeas;
+    currentError = Reference - Measurement;
+    if(currentError>15000)
+    {
+        currentError=15000;
+    }
+    else if(currentError<-15000)
+    {
+        currentError=-15000;
+    }
     
-    //U  = Sum + Kp * Error
+    //Up  = (Kp * Error)>>15;
     U = __builtin_mulss(currentError, pParm->qKp);
-    U = U + pParm->qdSum;
-    
+    Up = U>>15;
+    //Sum  = Sum + (Ki * Up)>>15;
+    U = __builtin_mulss(Up, pParm->qKi);
+    Ui = U>>15;
+    pParm->qdSum = pParm->qdSum + Ui;   
     
     //limit the output between the allowed limits
     //pParm->qOut is the PI output
-    outTemp = (int)(U>>15);
+    outTemp = (int)(pParm->qdSum + Up);
     if(outTemp >  pParm->qOutMax)
         pParm->qOut=  pParm->qOutMax;
     else if(outTemp < pParm->qOutMin)
@@ -97,17 +113,14 @@ void calcPiNew( tPIParm *pParm)
     else
         pParm->qOut = outTemp;
     
-    //U = Ki * Err
-    U = __builtin_mulss(currentError, pParm->qKi);
     
     //compute the difference between the limited and not limites output
     //currentError is used as a temporary variable
-    currentError = outTemp - pParm->qOut;
+    currentError = pParm->qOut - outTemp;
     
-    //U = U - Kc * Err = Ki * Err - Kc * Exc
-    U -= __builtin_mulss(currentError,  pParm->qKc);
-    
-    //Sum = Sum + U = Sum + Ki * Err - Kc * Exc
-    pParm->qdSum = pParm->qdSum + U;
+    //Sum = Sum + (Kc * Exc)>>15
+    U = __builtin_mulss(currentError,  pParm->qKc);
+    Uc = U>>15;
+    pParm->qdSum = pParm->qdSum + Uc;
 }
 
