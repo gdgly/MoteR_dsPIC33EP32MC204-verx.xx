@@ -33,7 +33,7 @@ VOID initTMR1(VOID)
 	T1CON = 0x0030;			/* internal Tcy/256 clock */
 	TMR1 = 0;
 	PR1 = 273;				/* 1 ms timer */
-    IPC0bits.T1IP = 3;
+    IPC0bits.T1IP = 5;
 }
 /******************************************************************************
  * initTMR2

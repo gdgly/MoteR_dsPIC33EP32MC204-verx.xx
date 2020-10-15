@@ -68,5 +68,5 @@ EXTERN BOOL Motor_ERR_overcurrent_or_igbtOverTemp;
 //*********************************this is new add********
 extern unsigned int SET_SPEED;
 extern BOOL FLAG_Motor_start;
-extern WORD SPD_INC_INTERVAL;
+extern UINT8 TIME_MotorForCurve;
 extern BOOL FLAG_lockRelease;

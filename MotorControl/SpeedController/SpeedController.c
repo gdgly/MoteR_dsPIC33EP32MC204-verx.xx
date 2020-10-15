@@ -51,7 +51,7 @@
 #define PHASE_FIVE	((PHASE_FOUR + 65536/6) % 65536)
 
 #define INVALID     -1
-#define CNT_10MS    10      /* Used as a timeout with no hall effect sensors */
+#define CNT_40MS    40      /* Used as a timeout with no hall effect sensors */
                             /* transitions and Forcing steps according to the */
                             /* actual position of the motor */
 
@@ -146,7 +146,6 @@ SHORT phaseInc;
 
 WORD MotorCycleCount = 0;
 BYTE MotorDecActive = 0;
-WORD SPD_INC_INTERVAL=100;
 
 /* This function is used to measure actual running speed of motor */
 VOID measureActualSpeed(VOID);
@@ -174,43 +173,11 @@ VOID initSpeedControllerVariables(VOID);
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt (void)
 {   
     IFS0bits.T1IF = 0;
-    
-    static WORD cnt1000ms = 0;
-     if((FLAG_Motor_start==TRUE)&&(measuredSpeed<=200))
-    {
-       SPD_INC_INTERVAL=1;
-    }
-    else if(measuredSpeed>200)
-    {
-        FLAG_Motor_start=FALSE;
-        SPD_INC_INTERVAL=100;
-    }
-     
-        if(++cnt1000ms >= SPD_INC_INTERVAL)
-        {
-            cnt1000ms = 0;
-            if(MotorDecActive == 0)
-            {
-                        if(refSpeed < SET_SPEED) refSpeed += 100;
-                        if(refSpeed >= SET_SPEED)refSpeed = SET_SPEED;
-            }
-            else
-            {
-                    if(refSpeed > 200)
-                    {            
-                        refSpeed -= 100;
-                        if(refSpeed <= 200)
-                            refSpeed = 200;
-                    }
-            }
-        }         
-	measureActualSpeed();
-    
-    if(++cnt_motor_stop>CNT_10MS*4)
-	{
-		if(MotorDecActive == 0)measuredSpeed = 0;
-		cnt_motor_stop = CNT_10MS*4;
-	}
+
+    TIME_MotorForCurve++;        
+	measureActualSpeed();   
+    if(++cnt_motor_stop>CNT_40MS)
+		measuredSpeed = 0;
     
     speedControl(); 
 }

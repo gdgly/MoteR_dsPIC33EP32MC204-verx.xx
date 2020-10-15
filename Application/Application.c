@@ -60,12 +60,14 @@ UINT16 TIME_Origin_mode_learning;
 UINT8 TIME_down_limit;
 UINT8 TIME_up_limit;
 UINT16 TIME_Origin_mode_down=0;
+UINT8 TIME_MotorForCurve=0;
 unsigned int avg_VBUS_value;
 
 void Key_scan(void);
 void SET_origin_mode(void);
 void APP_Motor_MODE_B_data (void);
 void Control_MotorForKey(void);
+void Control_MotorForCurve(void);
 void UPlimitDOWNlimit(void);
 void VBUS_PowerOFF_fun(void);
 void adc_IBUSandVBUS(void);
@@ -98,20 +100,15 @@ UINT32 getSystemTick(VOID)
  ********************************************************************************/
 VOID application(VOID)
 {
-#if 0    
-
-#else 
-      
-        
      Key_scan();
      Control_MotorForKey();
+     if(flags.motorRunning) Control_MotorForCurve();
      UPlimitDOWNlimit();
      SET_origin_mode();
      adc_IBUSandVBUS();
      
      TEST_uart_speed_pi();
-     
-#endif
+
 }
 
 void __attribute__((interrupt, no_auto_psv)) _T9Interrupt (void)
@@ -130,8 +127,48 @@ void __attribute__((interrupt, no_auto_psv)) _T9Interrupt (void)
 
 
 
+/*********************************************************************
+  Function:        void Control_MotorForCurve(void)
 
+  Overview:        None.
 
+  Note:            None.
+********************************************************************/
+void Control_MotorForCurve(void)
+{
+    static UINT8 SPD_INC_INTERVAL_def=0,INC_I=0;;
+
+     if((FLAG_Motor_start==TRUE)&&(measuredSpeed<=200))
+    {
+       SPD_INC_INTERVAL_def=1;
+       INC_I=10;
+    }
+    else if(measuredSpeed>200)
+    {
+        FLAG_Motor_start=FALSE;
+        SPD_INC_INTERVAL_def=100;
+        INC_I=100;
+    }
+     
+    if(TIME_MotorForCurve >= SPD_INC_INTERVAL_def)
+    {
+            TIME_MotorForCurve = 0;
+            if(MotorDecActive == 0)
+            {
+                        if(refSpeed < SET_SPEED) refSpeed += INC_I;
+                        if(refSpeed >= SET_SPEED)refSpeed = SET_SPEED;
+            }
+            else
+            {
+                    if(refSpeed > 200)
+                    {            
+                        refSpeed -= 100;
+                        if(refSpeed <= 200)
+                            refSpeed = 200;
+                    }
+            }
+    }
+}
 /*********************************************************************
   Function:        void adc_IBUS(void)
 
