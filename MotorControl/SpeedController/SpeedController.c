@@ -59,7 +59,7 @@
                             /* consider stalled and it's stopped    */
        
 // PI parameters        
-#define P_SPEED_PI_MoteR Q15(0.7)   //prop
+#define P_SPEED_PI_MoteR Q15(0.85)   //prop
 #define I_SPEED_PI_MoteR Q15(0.03)  //integ
 #define C_SPEED_PI 0x7FFF                   //windup
 #define MAX_SPEED_PI    31128   //95% of max value ie 32767
