@@ -349,8 +349,8 @@ void __attribute__((interrupt, no_auto_psv)) _PWM1Interrupt (void)
         {
             phase -= phaseInc;   
             phaseDiff = phaseCopy - phase;
-            if (phaseDiff >= SIXTY_DEG)
-                phase = phaseCopy - SIXTY_DEG;
+            if (phaseDiff >= 5461)  //SIXTY_DEG
+                phase = phaseCopy - 5461;  //SIXTY_DEG
         }
         else if(phaseIncFlg == PHASE_INCREMENT_FLAG)
         {
