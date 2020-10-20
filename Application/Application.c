@@ -107,7 +107,7 @@ VOID application(VOID)
      SET_origin_mode();
      adc_IBUSandVBUS();
      
-     TEST_uart_speed_pi();
+     //TEST_uart_speed_pi();
 
 }
 
