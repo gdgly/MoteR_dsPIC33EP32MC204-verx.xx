@@ -13,8 +13,8 @@
 
 #define TARGET_CURRENT_LIMIT   4500//15000       //12000//7000   
 
-#define SUSTAINED_OVER_CURRENT_TIMEOUT      50//10//100 //100ms
-#define SUSTAINED_OVER_CURRENT_VALUE       3000 //1A = 1000mA
+#define SUSTAINED_OVER_CURRENT_TIMEOUT      10//100 //100ms
+#define SUSTAINED_OVER_CURRENT_VALUE       5500 //1A = 1000mA
 
 /* PI configuration structure */
 tPIParm currentLimitPIparms;
