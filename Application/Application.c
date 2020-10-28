@@ -549,7 +549,7 @@ void APP_Motor_MODE_B_data (void)
            switch	( Motor_MODE_B_data[25] )
            {
                  case 1 :       //????
-                       SET_UP_SPEED_form_Uart=1000;
+                       SET_UP_SPEED_form_Uart=1200;
 
                        break ;
                  case 2 :       //??2??
@@ -577,7 +577,7 @@ void APP_Motor_MODE_B_data (void)
 
                        break ;
                  case 3 :       //????
-                       SET_DOWN_SPEED_form_Uart=1000;
+                       SET_DOWN_SPEED_form_Uart=1200;
 
                        break ;
                  case 4 :       //??2??
