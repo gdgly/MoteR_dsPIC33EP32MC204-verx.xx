@@ -39,12 +39,12 @@ WORD MotorStopCount;
 	UINT8	u_char[4] ;
   }uni_ll;
   
-#define SET_VBUS_PowerOFF_VAC  90   //??VAC
-#define SET_VBUS_PowerOFF_VDC 127      //SET_VBUS_PowerOFF_VAC*1.414    //??VDC
+#define SET_VBUS_PowerOFF_VAC  90   //unit VAC
+#define SET_VBUS_PowerOFF_VDC 127      //SET_VBUS_PowerOFF_VAC*1.414    //unit VDC
 #define SET_VBUS_PowerOFF     390      //(SET_VBUS_PowerOFF_VDC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
 
-#define MAXIMUM_WORKING_VOLTAGE_ac   178  //??VAC
-#define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*4.414  //??VDC
+#define MAXIMUM_WORKING_VOLTAGE_ac   178  //unit VAC
+#define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*4.414  //unit VDC
 #define MAXIMUM_WORKING_VOLTAGE      774  //(MAXIMUM_WORKING_VOLTAGE_DC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
 
   
@@ -343,7 +343,7 @@ else
     if((TIME_Origin_mode_learning==0)&&(Origin_mode_step==4))
     {
                M_Flags.flag_EEPROM_LOAD_OK=1;
-               Origin_mode_step=0;  //????????
+               Origin_mode_step=0;  //退出原点设置模式
                M_Flags.flag_open=1;
                M_Flags.flag_stop=0;
                M_Flags.flag_close=0;
@@ -394,7 +394,7 @@ void SET_origin_mode(void)
 //            if(Origin_mode_step==4)
 //            {
 //                Flags.flag_EEPROM_LOAD_OK=1;
-//                Origin_mode_step=0;  //????????
+//                Origin_mode_step=0;  //退出原点设置模式
 //                Flags.flag_open=1;  
 //            }                      
     }
@@ -498,9 +498,9 @@ void Key_scan(void)
       if((KEY_wired_value!=0x00)&&(KEY_wired_value_old!=KEY_wired_value))
       {
           KEY_wired_value_old=KEY_wired_value;
-            switch(KEY_wired_value){             //????
+            switch(KEY_wired_value){             //接收数据
                 case 0x00:
-    //                           if(Origin_mode_step!=0)   //?????????????OPEN/CLOSE
+    //                           if(Origin_mode_step!=0)   //在设置原点时，需要一直按着OPEN/CLOSE
     //                           {
     //                               Flags.flag_open=0;
     //                               Flags.flag_stop=1;
@@ -548,15 +548,15 @@ void APP_Motor_MODE_B_data (void)
     {
            switch	( Motor_MODE_B_data[25] )
            {
-                 case 1 :       //????
+                 case 1 :       //上升等速
                        SET_UP_SPEED_form_Uart=1200;
 
                        break ;
-                 case 2 :       //??2??
+                 case 2 :       //上升2倍速
                        SET_UP_SPEED_form_Uart=2000;
 
                        break ;
-                 case 3 :       //??3??
+                 case 3 :       //上升3倍速
                        SET_UP_SPEED_form_Uart=2900;
 
                        break ;
@@ -568,23 +568,23 @@ void APP_Motor_MODE_B_data (void)
     else {
            switch	( Motor_MODE_B_data[26] )
            {
-                 case 1 :       //??0.5??
+                 case 1 :       //下降0.5倍速
                        SET_DOWN_SPEED_form_Uart=500;
 
                        break ;
-                 case 2 :       //??0.75??
+                 case 2 :       //下降0.75倍速
                        SET_DOWN_SPEED_form_Uart=750;
 
                        break ;
-                 case 3 :       //????
+                 case 3 :       //下降等速
                        SET_DOWN_SPEED_form_Uart=1200;
 
                        break ;
-                 case 4 :       //??2??
+                 case 4 :       //下降2倍速
                        SET_DOWN_SPEED_form_Uart=2000;
 
                        break ;
-                 case 5 :       //??3??
+                 case 5 :       //下降3倍速
                        SET_DOWN_SPEED_form_Uart=2900;
 
                        break ;
@@ -596,9 +596,9 @@ void APP_Motor_MODE_B_data (void)
     }
 
 
-    if(Origin_mode_step!=0)   //???????????????
+    if(Origin_mode_step!=0)   //在设置原点、上限、下限时的转速
     {
-         //0.5??
+         //0.5倍速
                        SET_SPEED=750;    //500
     }
 }

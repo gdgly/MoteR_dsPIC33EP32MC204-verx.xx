@@ -47,7 +47,7 @@ UINT8 UART_KEY_wired_value;
 ********************************************************************/
 void InitUART1(void)
 {
-    TRISBbits.TRISB0=1;      //??????????UART RX???
+    TRISBbits.TRISB0=1;      //必须设置为输入，否则UART RX不正常
 
     U1BRG = 454; //Set Baud rate 9600      ((FCY/(16*9600))-1)
     U1MODE = 0;
@@ -113,7 +113,7 @@ void UART_RX_decode(void)
 }
 
 
-void Send_char(unsigned char ch){			// ????
+void Send_char(unsigned char ch){			// 发送字符
         while(U1STAbits.UTXBF);
 	U1TXREG=ch;
 }
@@ -126,16 +126,16 @@ void UART_ack(unsigned char ch)
 	Send_char(UART1_DATA[0]);   //0xbb
         sum=UART1_DATA[0];
 	Send_char(UART1_DATA[1]);   //0x00
-        Send_char(UART1_DATA[2]);   //?????
+        Send_char(UART1_DATA[2]);   //命令低字节
         sum= sum+UART1_DATA[2];
-        Send_char(UART1_DATA[3]);  //?????
+        Send_char(UART1_DATA[3]);  //命令高字节
         sum= sum+UART1_DATA[3];
-        Send_char(UART1_DATA[4]);  //????
+        Send_char(UART1_DATA[4]);  //设备地址
         sum= sum+UART1_DATA[4];
-        Send_char(ch);             //????
+        Send_char(ch);             //返信情报
         sum= sum+ch;
-        Send_char(0x00);           //???????
-        Send_char(0x00);           //???????
+        Send_char(0x00);           //数据长度低字节
+        Send_char(0x00);           //数据长度高字节
         Send_char(sum%256);        //sum_L
         Send_char(sum/256);        //sum_H
 }
@@ -150,24 +150,24 @@ void UART_send_Motor(UINT16 d_COM,UINT8 d_addr,UINT8 d_length,UINT8 *d_data)
         sum=0xbb;
 	Send_char(0x00);   //0x00
         d_num=d_COM%256;
-        Send_char(d_num);   //?????
+        Send_char(d_num);   //命令低字节
         sum= sum+d_num;
         d_num=d_COM/256;
-        Send_char(d_num);  //?????
+        Send_char(d_num);  //命令高字节
         sum= sum+d_num;
-        Send_char(d_addr);  //????
+        Send_char(d_addr);  //设备地址
         sum= sum+d_addr;
-        Send_char(0x00);             //????
+        Send_char(0x00);             //返信情报
         d_num=d_length%256;
-        Send_char(d_num);           //???????
+        Send_char(d_num);           //数据长度低字节
         sum= sum+d_num;
         d_num=d_length/256;
-        Send_char(d_num);           //???????
+        Send_char(d_num);           //数据长度高字节
         sum= sum+d_num;
         for(i=0;i<d_length;i++)
         {
           d_num=d_data[i];
-          Send_char(d_num);   //?? DATA
+          Send_char(d_num);   //数据 DATA
           sum= sum+d_num;
           //ClearWDT(); // Service the WDT
         }
@@ -182,13 +182,13 @@ void UART_Handler(void)
     UINT8 uart_num,uart_i,d_x,num_data[6];
 
   if(FLAG_UART_R!=0){
-    if(UART1_DATA[4]==2){         //??mcu???addr:2??????????
-      if(FLAG_UART_R==1){   //??????????
+    if(UART1_DATA[4]==2){         //电机mcu（设备addr:2）收到其它设备的呼叫
+      if(FLAG_UART_R==1){   //接收数据完整，并校验
          UART_ack(0);
-         uart_x.uc[0]=UART1_DATA[2];       //??
+         uart_x.uc[0]=UART1_DATA[2];       //指令
          uart_x.uc[1]=UART1_DATA[3];
-         switch(uart_x.ui){             //????
-            case 0x0101:         //??????  OPEN?STOP?CLOSE???+STOP
+         switch(uart_x.ui){             //接收数据
+            case 0x0101:         //无线控制指令  OPEN、STOP、CLOSE、登录+STOP
                         uart_num=UART1_DATA[8];
                         if(uart_num==0x01){
                            M_Flags.flag_open=1;
@@ -212,14 +212,14 @@ void UART_Handler(void)
                            M_Flags.flag_origin=1;
                         }
                         break;
-             case 0x0102:  //????MODE?????????????
+             case 0x0102:  //如果进入MODE，即在操作按键，电机就停止
                         if((M_Flags.flag_open)||(M_Flags.flag_close)){
                            M_Flags.flag_open=0;
                            M_Flags.flag_stop=1;
                            M_Flags.flag_close=0;
                         }
                         break;
-             case 0x0103:   //??STM8???DIP SWITCH??
+             case 0x0103:   //接收STM8上面的DIP SWITCH信息
                         uart_num=UART1_DATA[8];
                         if((uart_num==0)||(uart_num==3)){
                            M_Flags.flag_open=0;
@@ -229,11 +229,11 @@ void UART_Handler(void)
                         else if(uart_num==1){M_Flags.flag_CW=0;M_Flags.flag_CCW=1;}
                         else if(uart_num==2){M_Flags.flag_CW=1;M_Flags.flag_CCW=0;}
                         break;
-             case 0x0201:  //?MODE?????STM8??copy??
+             case 0x0201:  //将MODE所有参数从STM8上面copy下来
                         for(uart_i=0;uart_i<50;uart_i++)
                             Motor_MODE_B_data[uart_i]=UART1_DATA[uart_i+8];
                         break;
-             case 0x0202:  //????????????????STM8??
+             case 0x0202:  //上电时，将原点、上限、下限位置从STM8取出
                         for(uart_i=0;uart_i<12;uart_i++)
                             Motor_Origin_data[uart_i]=UART1_DATA[uart_i+8];
                         for(uart_i=0;uart_i<3;uart_i++)
@@ -248,7 +248,7 @@ void UART_Handler(void)
                         M_Flags.flag_EEPROM_LOAD_OK=1;
                         //if((Motor_Origin_data_u32[2]!=0)&&(Motor_Origin_data_u32[2]!=0xffffffff))Flags.flag_open=1;
                         break;
-             case 0x0203:  //????????????STM8??
+             case 0x0203:  //上电时，将电机位置信息从STM8取出
                         for(uart_i=0;uart_i<6;uart_i++)
                             num_data[uart_i]=UART1_DATA[uart_i+8];
                         uart_l.u_char[0]=num_data[0];
@@ -279,19 +279,19 @@ void UART_Handler(void)
                         break;
          }
       }
-      else if(FLAG_UART_R==2)UART_ack(1);  //????????
+      else if(FLAG_UART_R==2)UART_ack(1);  //接收数据校验失败
     }
-    else {         //??mcu???addr:2??????????????
-      if(FLAG_UART_R==1)  //????OK
+    else {         //电机mcu（设备addr:2）送信给其它设备后的反馈情况
+      if(FLAG_UART_R==1)  //表示送信OK
       {
-         uart_x.uc[0]=UART1_DATA[2];       //??
+         uart_x.uc[0]=UART1_DATA[2];       //指令
          uart_x.uc[1]=UART1_DATA[3];
          switch(uart_x.ui){             
             case 0x8001:  
 //                        if(Origin_mode_step==4)
 //                        {
 //                            Flags.flag_EEPROM_LOAD_OK=1;
-//                            Origin_mode_step=0;  //????????
+//                            Origin_mode_step=0;  //退出原点设置模式
 //                            Flags.flag_open=1;  
 //                        }
                         break;
@@ -299,7 +299,7 @@ void UART_Handler(void)
                         break;
          }                
       }
-      else if(FLAG_UART_R==2);  //???????????
+      else if(FLAG_UART_R==2);  //表示送信失败，需要处理
     }
     FLAG_UART_R=0;
   }

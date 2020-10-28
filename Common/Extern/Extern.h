@@ -13,6 +13,11 @@
 *****************************************************************************/
 #include "./Common/Typedefs/Typedefs.h"
 
+//define IGBT type    
+//#define IGBT_LowActive
+#define IGBT_HighActive
+
+
 EXTERN SHORT refSpeed;
 EXTERN SHORT measuredSpeed;
 EXTERN DWORD period;

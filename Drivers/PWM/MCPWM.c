@@ -35,12 +35,16 @@ VOID initMCPWM(VOID)
 	PHASE3 = (FCY/FPWM - 1);
     PTPER = 2*(FCY/FPWM - 1)+1;
     
-//    IOCON1 = 0xF000;    //PWM?????
-//    IOCON2 = 0xF000;
-//    IOCON3 = 0xF000;
-    IOCON1 = 0xC000;    //PWM?????
+#ifdef IGBT_LowActive
+    IOCON1 = 0xF000;
+	IOCON2 = 0xF000;
+	IOCON3 = 0xF000;    
+#endif    
+#ifdef IGBT_HighActive
+    IOCON1 = 0xC000;    
     IOCON2 = 0xC000;
-    IOCON3 = 0xC000; 
+    IOCON3 = 0xC000;     
+#endif
 	
 	/* 2 us of dead time */
 	DTR1 = 0x0000;	

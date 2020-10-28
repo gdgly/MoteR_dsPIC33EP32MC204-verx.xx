@@ -54,20 +54,28 @@ BOOL FLAG_lockRelease=FALSE;
  ********************************************************************************/    
 VOID chargeBootstraps(VOID)
 {   
-//    IOCON1 = 0xC780;  //PWM?????
-//	  IOCON2 = 0xC780;
-//	  IOCON3 = 0xC780;
-    IOCON1 = 0xC740;   //PWM?????
+#ifdef IGBT_LowActive
+    IOCON1 = 0xC780;
+	IOCON2 = 0xC780;
+	IOCON3 = 0xC780;
+#endif
+#ifdef IGBT_HighActive
+    IOCON1 = 0xC740;
 	IOCON2 = 0xC740;
-	IOCON3 = 0xC740;  
+	IOCON3 = 0xC740;
+#endif 
     PTCONbits.PTEN = 1;
 	delayMs(CHARGE_BOOTSTRAP_CAP);  
-//    IOCON1 = 0xF000;    //PWM?????
-//    IOCON2 = 0xF000;
-//    IOCON3 = 0xF000;
-    IOCON1 = 0xC000;    //PWM?????
+#ifdef IGBT_LowActive
+    IOCON1 = 0xF000;
+    IOCON2 = 0xF000;
+    IOCON3 = 0xF000;
+#endif
+#ifdef IGBT_HighActive
+    IOCON1 = 0xC000;
     IOCON2 = 0xC000;
-    IOCON3 = 0xC000; 
+    IOCON3 = 0xC000;
+#endif
     PTCONbits.PTEN = 0;
     
     PDC1 = PHASE1 / 2;	// initialise as 0 volts
