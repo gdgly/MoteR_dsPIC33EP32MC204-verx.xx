@@ -178,9 +178,11 @@ void Control_MotorForCurve(void)
 ********************************************************************/
 void adc_IBUSandVBUS(void)
 {
-static unsigned int  sum_IBUS_value=0,sum_VBUS_value=0;
-//static unsigned int  avg_IBUS_value=0,avg_VBUS_value=0;
-static unsigned char IBUS_value_count=0,VBUS_value_count=0;
+//static unsigned int  sum_IBUS_value=0;
+//static unsigned int  avg_IBUS_value=0;
+//static unsigned char IBUS_value_count=0;
+static unsigned int  sum_VBUS_value=0;
+static unsigned char VBUS_value_count=0;
 static UINT8 FLAG_powerOFF=0;
 
     if(FLAG_read_UBUS==1)

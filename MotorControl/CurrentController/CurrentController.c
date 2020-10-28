@@ -36,14 +36,12 @@
 #define C_CURRENT_PI 0x7FFF
 #define MAX_CURRENT_PI    31128   //95% of max value ie 32767
 
-//#define ADC_CNT_TO_CURR_FACTOR      59//30000/512 = 58.59 = 59//MAX_TOTAL_CURRENT/512
-//#define ADC_CNT_TO_CURR_FACTOR      83//42500/512 = 83.00 = 83//MAX_TOTAL_CURRENT/512
-#define ADC_CNT_TO_CURR_FACTOR      56//28500/512 = 56.66 = 56.66//MAX_TOTAL_CURRENT/512
-#define ADC_CNT_AVAILABLE           1024//512
-#define ADC_MEASURABLE_CURRENT_VALUE    3300 //30.5A ie 3.3V = 30.5A
+#define ADC_CNT_TO_CURR_FACTOR      56  //MAX_TOTAL_CURRENT/ADC_CNT_AVAILABLE    //No Used
+#define ADC_CNT_AVAILABLE           1024
+#define ADC_MEASURABLE_CURRENT_VALUE    3300 //3.3A ie 3.3V = 3.3A
 
 #define MAXIMUM_WORKING_VOLTAGE_ac   178  //??VAC
-#define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*4.414  //??VDC
+#define MAXIMUM_WORKING_VOLTAGE_DC   252  //MAXIMUM_WORKING_VOLTAGE_ac*1.414  //??VDC
 #define MAXIMUM_WORKING_VOLTAGE      774  //(MAXIMUM_WORKING_VOLTAGE_DC*2.2k/(82k+82k+56k+2.2k))/3.3*1024
 
 currCntrlFlg currControlFlag;
@@ -79,20 +77,10 @@ BOOL calcTotalCurrentFlag;
 tPIParm currentPIparms;
 
 WORD curriTotal;
-WORD previTotal;
-SHORT diffiTotal;
 WORD phaseValue;
 
 WORD UBUS = 0;
 BOOL FLAG_read_UBUS;
-
-#define NO_LOAD_CURRENT_750W 300 //300 mA
-
-#define CURRENT_DIFF_FOR_PHASE_INC_750W 275//225//250//300
-
-#define PHASE_INC_STEP  182
-#define MAX_PHASE_COMP_750W  9646    //(PHASE_INC_STEP * 53)
-#define MIN_PHASE_COMP  0
 
 
 /* This function is current PI controller */
@@ -103,8 +91,6 @@ VOID initCurrentControllerVariables(VOID);
 
 /* This function is used to measure total phase current of motor */
 VOID measureTotalCurrent(VOID);
-
-VOID checkPhaseCompensation(VOID);
 
 /******************************************************************************
  * _AD1Interrupt
@@ -170,9 +156,7 @@ VOID executePowerFailRoutine(VOID)
 void __attribute__((interrupt, no_auto_psv)) _T2Interrupt (void)
 {
 	IFS0bits.T2IF = 0;
-    
-    checkPhaseCompensation();
-    
+        
     runCurrentLimitPI();
     
     //currentControl();
@@ -210,52 +194,6 @@ VOID filterTotalCurrent(VOID)
     //measurediTotal = iTotalInstFilter * ADC_CNT_TO_CURR_FACTOR;
     measurediTotal = iTotalInstFilter * adcCntToAmps;    
     feedbackCurrent = measurediTotal;
-}
-
-VOID checkPhaseCompensation(VOID)
-{
-    WORD phaseIncAng = 0;
-//    SHORT tmpDiff = 0;
-    
-    curriTotal = measurediTotal;
-    //phase compensation should be applied when measured current is more than 300 mA 
-        if(curriTotal > NO_LOAD_CURRENT_750W)
-        {
-        //check difference between current and previous total current value
-            diffiTotal = curriTotal - previTotal;
-        //if difference is positive side then icnrement phase, if difference is negative side then 
-        //decrement phse
-            if(diffiTotal < 0)
-            {
-                if(diffiTotal <= (-CURRENT_DIFF_FOR_PHASE_INC_750W))
-                {
-                    diffiTotal = -diffiTotal;
-                    phaseIncAng = __builtin_divud(diffiTotal,CURRENT_DIFF_FOR_PHASE_INC_750W);
-                    if(phaseValue > MIN_PHASE_COMP)
-                    {
-                        phaseValue -= (PHASE_INC_STEP * phaseIncAng);
-                    }
-                    previTotal = curriTotal;
-                }
-            }
-            else
-            {   
-                if(diffiTotal >= CURRENT_DIFF_FOR_PHASE_INC_750W)
-                {
-                    phaseIncAng = __builtin_divud(diffiTotal,CURRENT_DIFF_FOR_PHASE_INC_750W);
-                    if(phaseValue < MAX_PHASE_COMP_750W)
-                    {
-                        phaseValue += (PHASE_INC_STEP * phaseIncAng);
-                    }
-                    previTotal = curriTotal;
-                }
-            }
-        }
-        else
-        {
-            phaseValue = MIN_PHASE_COMP * PHASE_INC_STEP;
-        }
-
 }
 
 /******************************************************************************
@@ -301,10 +239,7 @@ VOID initCurrentControllerVariables(VOID)
     measurediTotal = 0;
 
     curriTotal = 0;
-        previTotal = NO_LOAD_CURRENT_750W;
-    
-    diffiTotal = 0;
-    phaseValue = MIN_PHASE_COMP * PHASE_INC_STEP;
+
     //initPiNew(&currentPIparms,P_CURRENT_PI,I_CURRENT_PI,C_CURRENT_PI,currentLimitClamp,0,0);
     currentPIparms.qdSum = 0;
     currentPIparms.qKp = P_CURRENT_PI;

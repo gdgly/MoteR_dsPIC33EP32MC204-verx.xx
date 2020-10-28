@@ -24,16 +24,15 @@
 #include "./Application/Application.h"
 
 //	Macro to enable feature of motor cable fault - Dec 2015
-//#define ENABLE_MOTOR_CABLE_FAULT
 
-#define PERIOD_FILTER_CONST 2000//2500//2000 /* the smaller the value, the higher the filter
+#define PERIOD_FILTER_CONST 2000//2500 /* the smaller the value, the higher the filter
                                     //and the delay introduced */
 /* In the sinewave generation algorithm we need an offset to be added to the */
 /* pointer when energizing the motor */
 
 #ifdef USE_PHASE_INC_AND_CORRECTION
-#define PHASE_OFFSET_CW_750W  364//8500//2002     //1274 //measured offset is 1274*(360/65536) = 7 degrees.
-#define PHASE_OFFSET_CCW_750W 10558//10740     //9828//9646//53 degrees
+#define PHASE_OFFSET_CW_MoteR  364   //measured offset is 65536/360 = 182 = 1 degrees.
+#define PHASE_OFFSET_CCW_MoteR 10558  //n degrees
 #else
 #define PHASE_OFFSET_CW 10000 
 #define PHASE_OFFSET_CCW 0
@@ -54,26 +53,24 @@
 #define CNT_40MS    40      /* Used as a timeout with no hall effect sensors */
                             /* transitions and Forcing steps according to the */
                             /* actual position of the motor */
-
-#define MS_500T 1000//300//500          /* after this time has elapsed, the motor is    */
-                            /* consider stalled and it's stopped    */
        
 // PI parameters        
 #define P_SPEED_PI_MoteR Q15(0.85)   //prop
 #define I_SPEED_PI_MoteR Q15(0.03)  //integ
-#define C_SPEED_PI 0x7FFF                   //windup
+#define C_SPEED_PI 0x7FFF           //windup
 #define MAX_SPEED_PI    31128   //95% of max value ie 32767
 
 /* In the sinewave generation algorithm we need an offset to be added to the */
 /* pointer when energizing the motor in CCW. This is done to compensate an   */
 /* asymetry of the sinewave */
-SHORT phaseOffsetCW =PHASE_OFFSET_CW_750W;
-SHORT phaseOffsetCCW =PHASE_OFFSET_CCW_750W;
+SHORT phaseOffsetCW =PHASE_OFFSET_CW_MoteR;
+SHORT phaseOffsetCCW =PHASE_OFFSET_CCW_MoteR;
 
-
-#define SPD_CAL_FOR_PHASEADVANCE    (int)((float)((((float)(measuredSpeed / 60) * NO_POLEPAIRS_750W) * 360) / 1000))
+#ifdef PHASE_ADVANCE
+#define SPD_CAL_FOR_PHASEADVANCE    (int)((float)((((float)(measuredSpeed / 60) * NO_POLEPAIRS_MoteR) * 360) / 1000))
 #define MAX_PH_ADV_DEG      1
 #define MAX_PH_ADV 		(int)(((float)MAX_PH_ADV_DEG / 360.0) * 65536.0)
+#endif
 UINT16 PhaseAdvance;
 
 
@@ -114,12 +111,10 @@ CHAR sectorTable[8]={-1,4,2,3,0,5,1,-1};
 /* Variables containing the Period of half an electrical cycle, which is an */
 /* interrupt each edge of one of the hall sensor input */
 DWORD period;
-DWORD phaseIncPerSec = 0;
 
 /* Used as a temporal variable to perform a fractional divide operation in */
 /* assembly */
 SHORT measuredSpeed;  /* Actual speed for the PID */
-SHORT measuredSpeed_bak;
 BOOL Motor_ERR_overcurrent_or_igbtOverTemp;
 SHORT refSpeed = 200;	    /* Desired speeds for the PID */ 
 
@@ -144,7 +139,6 @@ DWORD totalTimePeriod;
 
 SHORT phaseInc;
 
-WORD MotorCycleCount = 0;
 BYTE MotorDecActive = 0;
 
 /* This function is used to measure actual running speed of motor */
@@ -355,24 +349,15 @@ void __attribute__((interrupt, no_auto_psv)) _IC3Interrupt (void)
 VOID calculatePhaseValue(WORD sectorNo)
 {   
    
-        phaseOffsetCW = PHASE_OFFSET_CW_750W;
-        phaseOffsetCCW = PHASE_OFFSET_CCW_750W;
-    #if 1        
+        phaseOffsetCW = PHASE_OFFSET_CW_MoteR;
+        phaseOffsetCCW = PHASE_OFFSET_CCW_MoteR;
+       
     /* Motor commutation is actually based on the required direction, not */
     /* the current dir. This allows driving the motor in four quadrants */    
     if(((controlOutput >= 0) && (requiredDirection == CW)) || ((controlOutput < 0) && (requiredDirection == CCW)))
     {
         tmpQu = __builtin_divmodud((DWORD)sectorNo, (WORD)SECTOR_END, &tmpRe);
-        //Use phase offset calculation only when shutter moving up and DC injection not applied
-    //    if((requiredDirection == CW) && (!rampStatusFlags.rampDcInjectionOn))
-    //        phaseCopy = phase = phaseValues[tmpRe] + phaseOffsetCW;
-    //    else
-			phaseCopy = phase = phaseValues[tmpRe] + phaseOffsetCW;// + phaseValue;
-//        if((requiredDirection == CW) && (!rampStatusFlags.rampDcInjectionOn))
-//            phaseCopy = phase = phaseValues[tmpRe] + (phaseOffsetCW + phaseValue);
-//        else
-//			phaseCopy = phase = phaseValues[tmpRe] + phaseOffsetCW;
-        
+		phaseCopy = phase = phaseValues[tmpRe] + phaseOffsetCW;// + phaseValue;    
         phaseIncFlg = PHASE_INCREMENT_FLAG;
     }
     else if(((controlOutput >= 0) && (requiredDirection == CCW)) || ((controlOutput < 0) && (requiredDirection == CW)))
@@ -380,33 +365,9 @@ VOID calculatePhaseValue(WORD sectorNo)
         /* For CCW an offset must be added to compensate difference in */
         /* symmetry of the sine table used for CW and CCW */
         tmpQu = __builtin_divmodud((DWORD)(sectorNo + SECTOR_THREE), (WORD)SECTOR_END, &tmpRe);
-        //Use phase offset calculation only when shutter moving up
-    //    if((requiredDirection == CW) && (!rampStatusFlags.rampDcInjectionOn))
-    //        phaseCopy = phase = phaseValues[tmpRe]+ (phaseOffsetCCW - phaseValue);
-    //    else
-            phaseCopy = phase = phaseValues[tmpRe] + phaseOffsetCCW;// + phaseValue;
-//        if((requiredDirection == CW) && (!rampStatusFlags.rampDcInjectionOn))
-//            phaseCopy = phase = phaseValues[tmpRe]+ (phaseOffsetCCW - phaseValue);
-//        else
-//            phaseCopy = phase = phaseValues[tmpRe]+ phaseOffsetCCW;
-        
-        
+        phaseCopy = phase = phaseValues[tmpRe] + phaseOffsetCCW;// + phaseValue;        
         phaseIncFlg = PHASE_DECREMENT_FLAG;
     }
-    #else
-    if (requiredDirection == CW)
-	{
-        phaseCopy = phase = phaseValues[sectorNo] + 2002;
-        phaseIncFlg = PHASE_INCREMENT_FLAG;
-	}
-	else
-	{
-        // For CCW an offset must be added to compensate difference in 
-        // symmetry of the sine table used for CW and CCW
-		phaseCopy = phase = phaseValues[(sectorNo + 3) % 6] + 9828; //+ phaseValue;//+ PhaseOffset;
-        phaseIncFlg = PHASE_DECREMENT_FLAG;
-	}
-    #endif
     
 }
 #else
@@ -450,18 +411,15 @@ VOID measureActualSpeed(VOID)
         cnt_motor_stop = 0;
     }
     
-        if (period < MINPERIOD_750W)  
-            period = MINPERIOD_750W;
-        else if (period > MAXPERIOD_750W)
-            period = MAXPERIOD_750W;
+        if (period < MINPERIOD_MoteR)  
+            period = MINPERIOD_MoteR;
+        else if (period > MAXPERIOD_MoteR)
+            period = MAXPERIOD_MoteR;
     
 	periodStateVar+= ((period - periodFilter)*(periodFilterConstant));
 	periodFilter = periodStateVar>>15;
-        measuredSpeed = __builtin_divud(SPEED_RPM_CALC_750W,periodFilter);
-    measuredSpeed_bak=measuredSpeed;
+        measuredSpeed = __builtin_divud(SPEED_RPM_CALC_MoteR,periodFilter);
     phaseInc = __builtin_divud(PHASE_INC_CALC,periodFilter);
-//    phaseIncPerSec = __builtin_muluu(measuredSpeed,655);
-//    phaseInc = __builtin_divud(phaseIncPerSec,1000);
     
 #ifdef PHASE_ADVANCE    
     register int a_reg asm("A");
@@ -510,10 +468,10 @@ VOID intitSpeedController(VOID)
     PhaseAdvance = 0;
     
         controlOutput = 0;
-        period = MAXPERIOD_750W;
-        periodFilter = MAXPERIOD_750W;
+        period = MAXPERIOD_MoteR;
+        periodFilter = MAXPERIOD_MoteR;
         periodFilterConstant = PERIOD_FILTER_CONST;
-        periodStateVar = ((DWORD)MAXPERIOD_750W << 15);
+        periodStateVar = ((DWORD)MAXPERIOD_MoteR << 15);
         phaseInc = __builtin_divud(PHASE_INC_CALC, periodFilter);
 
     tmpQu = 0;
@@ -532,17 +490,6 @@ VOID intitSpeedController(VOID)
     speedPIparms.qOutMax = 5000;
     speedPIparms.qOutMin = 5000;
     speedPIparms.qOut = 0;
-
-//        if(requiredDirection == CW)
-//        {
-////            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,currentLimitClamp,-(currentLimitClamp),0);
-//            initPiNew(&speedPIparms,P_SPEED_PI_CW_750W,I_SPEED_PI_CW_750W,C_SPEED_PI,5000,-5000,0);
-//        }
-//        else
-//        {
-//            initPiNew(&speedPIparms,P_SPEED_PI_CCW_750W,I_SPEED_PI_CCW_750W,C_SPEED_PI,5000,-5000,0);
-//        }
-
 }
 
 

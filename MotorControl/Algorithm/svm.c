@@ -285,20 +285,20 @@ VOID svm(SHORT volts, WORD angle)
 	}
     
 	/* Limit the minimum duty cycle per Errata #21 workaround */
-        if (PDC1Latch > ALTDTR_DIV2_750W)
+        if (PDC1Latch > ALTDTR_DIV2_MoteR)
             PDC1 = PDC1Latch;		
         else
-            PDC1 = ALTDTR_DIV2_750W;
+            PDC1 = ALTDTR_DIV2_MoteR;
 	
-        if (PDC2Latch > ALTDTR_DIV2_750W)
+        if (PDC2Latch > ALTDTR_DIV2_MoteR)
             PDC2 = PDC2Latch;
         else
-            PDC2 = ALTDTR_DIV2_750W;
+            PDC2 = ALTDTR_DIV2_MoteR;
 	
-        if (PDC3Latch > ALTDTR_DIV2_750W)
+        if (PDC3Latch > ALTDTR_DIV2_MoteR)
             PDC3 = PDC3Latch;
         else
-            PDC3 = ALTDTR_DIV2_750W;
+            PDC3 = ALTDTR_DIV2_MoteR;
     
     /* Calculate Trigger points */
     

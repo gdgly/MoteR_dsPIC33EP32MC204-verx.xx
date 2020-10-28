@@ -20,7 +20,6 @@
 #include "./MotorControl/Algorithm/svm.h"
 #include "./MotorControl/SpeedController/SpeedController.h"
 #include "./MotorControl/CurrentController/CurrentController.h"
-#include "./MotorControl/Braking/DCInjection.h"
 #include "./Application/Application.h"
 #include "./MotorControl/CurrentController/CurrentLimit.h"
 

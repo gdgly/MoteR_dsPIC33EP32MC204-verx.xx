@@ -15,7 +15,6 @@
 
 EXTERN SHORT refSpeed;
 EXTERN SHORT measuredSpeed;
-EXTERN SHORT measuredSpeed_bak;
 EXTERN DWORD period;
 EXTERN SHORT controlOutput;
 EXTERN BYTE currentDirection;
@@ -56,7 +55,6 @@ extern WORD systemTick;
 
 EXTERN WORD UBUS;
 EXTERN BOOL FLAG_read_UBUS;
-EXTERN WORD MotorCycleCount;
 EXTERN BYTE MotorDecActive;
 EXTERN UINT8 CMDStatus;
 EXTERN WORD MotorStopCount;

@@ -25,7 +25,6 @@
         <itemPath>../MotorControl/PIController/pi.h</itemPath>
         <itemPath>../MotorControl/Algorithm/svm.h</itemPath>
         <itemPath>../MotorControl/SpeedController/SpeedController.h</itemPath>
-        <itemPath>../MotorControl/Braking/DCInjection.h</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentController.h</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentLimit.h</itemPath>
         <itemPath>../MotorControl/PIController/pi.inc</itemPath>
@@ -62,7 +61,6 @@
         <itemPath>../MotorControl/SpeedController/SpeedController.c</itemPath>
         <itemPath>../MotorControl/Algorithm/svm.c</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentController.c</itemPath>
-        <itemPath>../MotorControl/Braking/DCInjection.c</itemPath>
         <itemPath>../MotorControl/CurrentController/CurrentLimit.c</itemPath>
         <itemPath>../MotorControl/PIController/pi.s</itemPath>
       </logicalFolder>
