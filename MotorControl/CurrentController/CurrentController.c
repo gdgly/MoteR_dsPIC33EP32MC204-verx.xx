@@ -111,29 +111,9 @@ void __attribute__((interrupt, no_auto_psv)) _AD1Interrupt (void)
     
     iTotalADCCnt = ADC1BUF0;   
     calculateTotalCurrent();
-	//	Capture DC Bus current
-	//uEEPDriveMotorCtrlBlock.stEEPDriveMotorCtrlBlock.PWMFreqMotorCtrl_A500 = ADC1BUF0;
+
 }
 
-//	Added for implementation of power fail functionality on DC Bus for version 4 board- RN- NOV 2015
-void __attribute__((interrupt, no_auto_psv)) _AD2Interrupt (void)
-{
-static unsigned int VBUS_value_Last;
-	
-    IFS1bits.AD2IF = 0;
-	//	Capture DC Bus volatage
-    
-    VBUS_value_Last=UBUS;
-    UBUS = ADC2BUF0;
-    
-    if((UBUS>MAXIMUM_WORKING_VOLTAGE)&&(VBUS_value_Last>MAXIMUM_WORKING_VOLTAGE))
-    {
-        Out_DBR_CTRL=1;
-    }
-    else Out_DBR_CTRL=0; 
-	
-	FLAG_read_UBUS=1;
-}
 
 VOID executePowerFailRoutine(VOID)
 {

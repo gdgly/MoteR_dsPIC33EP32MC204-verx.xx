@@ -111,9 +111,9 @@ VOID application(VOID)
 
 }
 
-void __attribute__((interrupt, no_auto_psv)) _T9Interrupt (void)
+void __attribute__((interrupt, no_auto_psv)) _T5Interrupt (void)
 {
-    IFS3bits.T9IF = 0;
+    IFS1bits.T5IF = 0;
     if(TIME_Key_scan)TIME_Key_scan--;    
     MotorStopCount++;
     test_SPEED_PI_FLAG++;
@@ -220,7 +220,7 @@ static UINT8 FLAG_powerOFF=0;
 //        
 //        Out_LED_PGD=1;
 //    }
-    if((avg_VBUS_value<SET_VBUS_PowerOFF)&&(M_Flags.flag_EEPROM_LOAD_OK==1)&&(FLAG_powerOFF==0))    // ?????????
+    if((avg_VBUS_value<SET_VBUS_PowerOFF)&&(M_Flags.flag_EEPROM_LOAD_OK==1)&&(FLAG_powerOFF==0))    // 断电时保存位置数据
     {
         FLAG_powerOFF=1;
         SET_SPEED=0;
@@ -272,7 +272,7 @@ void VBUS_PowerOFF_fun(void)
 ********************************************************************/
 void UPlimitDOWNlimit(void)
 {
-if(Origin_mode_step==0)   //???????????????
+if(Origin_mode_step==0)   //工作时，在原点、上限、下限时的曲线转速
 {
     if(M_Flags.flag_down_limit==0){
         if(hallCounts>=Motor_Origin_data_u32[2]){

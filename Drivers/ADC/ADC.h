@@ -19,7 +19,6 @@
 
 /* Initialization of all ADC channels */
 VOID initADC(VOID);
-//Added for ADC2- RN- NOV2015
-VOID initADC2(VOID);
+
 
 #endif /* ADC_H */

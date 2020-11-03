@@ -31,7 +31,6 @@ BYTE currentDirection;
 
 BYTE requiredDirection;
 SHORT currentRampProfileNo;
-SHORT rampCurrentState;
 rampStatusFlags_t rampStatusFlags;
 BOOL pwmCostingReq = FALSE;
 BOOL FLAG_Motor_start=FALSE;
@@ -199,28 +198,6 @@ VOID overcurrentfaultTriggered(BOOL sts)
         //Sense emergency in all the profiles
             //if emergency switch is triggered the stop shutter immediately
             forceStopShutter();
-    }
-}
-
-VOID checkPwmCoastingRequired(VOID)
-{
-    if(rampCurrentState == RAMP_PWM_COASTING)
-    {
-        if(pwmCostingReq == TRUE)
-        {
-            if(currentLimitClamp > 0)
-            {
-                currentLimitClamp -= outputDecRate;
-                if(currentLimitClamp < 0)
-                    currentLimitClamp = 0;
-            }
-            else
-            {
-                currentLimitClamp = 0;
-                pwmCostingReq = FALSE;
-                forceStopShutter();
-            }
-        }        
     }
 }
 

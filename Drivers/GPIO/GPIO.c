@@ -83,7 +83,12 @@ Added for motor control board hardware version 2 on 30 Dec 2014
         RPINR8 = 0;
         RPINR8bits.IC3R = 33;//35;/*  Assign IC3(HALLC) to RP35 */
     /*UART configuration*/
+#ifdef MCU_dsPIC33EPxxxGM3xxx      
         RPOR6bits.RP54R=1;         //Set RP54 RC6-->U1TX
+#endif
+#ifdef MCU_dsPIC33EPxxxMC2xxx      
+        RPOR5bits.RP54R=1;         //Set RP54 RC6-->U1TX
+#endif
         RPINR18bits.U1RXR=32;         //Set U1RX-->RPI32 RB0    
         
         In_STOP_dir=1;

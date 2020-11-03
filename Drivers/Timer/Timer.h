@@ -24,7 +24,7 @@ VOID initTMR2(VOID);
 
 /* TIMER3 used as a timebase for the two input capture channels */
 VOID initTMR3(VOID);
-/*This function initializes Timer9 used to app*/
-VOID initTMR9(VOID);
+/*This function initializes Timer5 used to app*/
+VOID initTMR5(VOID);
 
 #endif /* TIMER_H */

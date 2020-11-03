@@ -57,10 +57,7 @@ VOID runCurrentLimitPI(VOID)
         //set current limit PI output as clamp for speed and current PI
         currentLimitClamp = currentLimitPIparms.qOut;
     }
-    
-    //Check PWM coasting is required or not
-    checkPwmCoastingRequired();
-    
+        
     //Check sustained overcurrent occured or not
     checkSustainedOvercurrent();
 }

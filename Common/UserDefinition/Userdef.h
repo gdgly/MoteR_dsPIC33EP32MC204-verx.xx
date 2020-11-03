@@ -15,6 +15,14 @@
 #define USERDEF_H
 #include "./Common/Typedefs/Typedefs.h"
 
+/*  define MCU type   */ 
+#define MCU_dsPIC33EPxxxGM3xxx
+//#define MCU_dsPIC33EPxxxMC2xxx
+
+/*  define IGBT type   */ 
+//#define IGBT_LowActive
+#define IGBT_HighActive
+
 #undef PHASE_ADVANCE	// for extended speed ranges this should be defined
 
 #define USE_PHASE_INC_AND_CORRECTION

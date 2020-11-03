@@ -81,9 +81,9 @@ VOID initTMR3(VOID)
 }
 
 /******************************************************************************
- * initTMR9
+ * initTMR5
  *
- * This function initializes Timer9 used to app
+ * This function initializes Timer5 used to app
  *
  * PARAMETER REQ: none
  *
@@ -91,15 +91,15 @@ VOID initTMR3(VOID)
  *
  * ERRNO: none
  ********************************************************************************/
-VOID initTMR9(VOID)
+VOID initTMR5(VOID)
 {
-	T9CON = 0x0030;	 /* internal Tcy/256 clock */
-	TMR9 = 0;
-	PR9 = 2734;				/* 10 ms timer */
-	IFS3bits.T9IF = 0;  /* Clear timer 8 flag */
-	IEC3bits.T9IE = 1;	/* Enable interrupts for Timer 8 */
-    T9CONbits.TON = 1; //stop timer
-    IPC13bits.T9IP = 1;
+	T5CON = 0x0030;	 /* internal Tcy/256 clock */
+	TMR5 = 0;
+	PR5 = 2734;				/* 10 ms timer */
+	IFS1bits.T5IF = 0;  /* Clear timer 8 flag */
+	IEC1bits.T5IE = 1;	/* Enable interrupts for Timer 8 */
+    T5CONbits.TON = 1; //stop timer
+    IPC7bits.T5IP = 1;
 }
 
 

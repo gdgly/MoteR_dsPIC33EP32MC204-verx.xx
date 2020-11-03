@@ -79,10 +79,12 @@ VOID initMCPWM(VOID)
 	FCLCON2 = 0x0007;
 	FCLCON3 = 0x0007;
 	/**************************************************/
-    
+
+#ifdef MCU_dsPIC33EPxxxGM3xxx    
     PMD6bits.PWM4MD = 1; //Disable PWM4 
     PMD6bits.PWM5MD = 1; //Disable PWM5 
-    PMD6bits.PWM6MD = 1; //Disable PWM6 
+    PMD6bits.PWM6MD = 1; //Disable PWM6
+#endif 
 	
     IPC23bits.PWM1IP = 6;
 	PTCON = 0x0000;		// stop PWM

@@ -60,41 +60,4 @@ VOID initADC(VOID)
     IPC3bits.AD1IP = 4;
 }
 
-//Added for ADC2- RN- NOV2015
-VOID initADC2(VOID)
-{
-	AD2CON1bits.FORM = 0;//3; /* Signed Fractional */	
-	//	Use Timer 5 as trigger source for ADC2 conversion
-	AD2CON1bits.SSRC = 7;//4;//2;//0;//3; /* Timer5 compare ends sampling and starts conversion */
-	AD2CON1bits.SSRCG = 0;//1;//0; /* Sample Trigger Source Group bit */	
-    AD2CON1bits.SIMSAM = 1;
-	AD2CON1bits.ASAM = 1; /* Sampling begins immediately after last conversion */	
-	AD2CON1bits.AD12B = 0; /* Select 10-bit, 4 channel ADC operation */	
-	/* No channel scan for CH0+, Use MUX A, SMPI = 1 per interrupt, Vref = AVdd/AVss */ 
-	AD2CON2 = 0x0000;	
-	/* Samples CH0, CH1, CH2, CH3 simultaneously (when CHPS = 1x) */
-    AD2CON2bits.CHPS = 0;
-	/*Select alternet input selection*/
-	//AD1CON2bits.ALTS = 1;
-	/* Set Samples and bit conversion time */
-    AD2CON3 = 0x032F;//0x4;//0x0204;
-	/* Disable DMA */    
-	AD2CON4 = 0x0000;	
-	/* CH1 positive input is CMP0, CH2 positive input is CMP1, CH3 positive input is CMP2 */
-	/* No Channels to Scan */
-	AD2CSSL = 0x0000;	
-	//AD1CHS0 = 14;	// Itotal measurement AN14
-	AD2CHS0bits.CH0SA = 0x06;	// DC Bus measurement on AN6
-	AD2CHS0bits.CH0NA = 0x0;
-    /* ADCSSL: ADC Input Scan Select Register */
-    AD2CSSL = 0;    
-	/* Reset ADC interrupt flag */
-	IFS1bits.AD2IF = 0;	
-	/* Disable ADC interrupts, disable this interrupt if the DMA is enabled */	  
-	IEC1bits.AD2IE = 1;	
-	/* Turn off ADC module */
-	AD2CON1bits.ADON = 1;      
-    IPC5bits.AD2IP = 1;
-         
-}
 

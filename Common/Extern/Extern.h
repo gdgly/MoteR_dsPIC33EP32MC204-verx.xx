@@ -13,10 +13,6 @@
 *****************************************************************************/
 #include "./Common/Typedefs/Typedefs.h"
 
-//define IGBT type    
-//#define IGBT_LowActive
-#define IGBT_HighActive
-
 
 EXTERN SHORT refSpeed;
 EXTERN SHORT measuredSpeed;
@@ -46,7 +42,6 @@ EXTERN WORD iTotalADCCntAccSmpls;
 EXTERN BOOL calcTotalCurrentFlag;
 EXTERN SHORT rampCurrentPosition;
 EXTERN SHORT rampCurrentSpeed;
-EXTERN SHORT rampCurrentState;
 	 			
 EXTERN SHORT phaseInc;
 EXTERN SHORT currentLimitClamp;

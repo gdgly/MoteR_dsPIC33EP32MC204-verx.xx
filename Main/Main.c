@@ -33,7 +33,12 @@
 /******************************************************************************/
 /* Configuration bits                                                         */
 /******************************************************************************/
+#ifdef MCU_dsPIC33EPxxxGM3xxx
 _FPOR(ALTI2C1_OFF & ALTI2C2_OFF & BOREN_OFF);
+#endif
+#ifdef MCU_dsPIC33EPxxxMC2xxx
+_FPOR(ALTI2C1_OFF & ALTI2C2_OFF );
+#endif
 _FWDT(WDTPOST_PS1024 & WDTPRE_PR32 & PLLKEN_ON & WINDIS_OFF & FWDTEN_ON);
 _FOSCSEL(FNOSC_FRC & IESO_OFF & PWMLOCK_OFF);
 _FGS(GWRP_OFF & GCP_OFF);
@@ -82,15 +87,13 @@ INT main(VOID)
     
     initGPIO(); /* Initialize all the I/O's required in application */   
 	initADC();		/* Initialize ADC to be signed fractional */
-	//Added for ADC2- RN- NOV2015
-    initADC2();		/* Initialize ADC to be signed fractional */
 	initInputCapture();		/* Initialize Hall sensor inputs ISRs	 */
 	initTMR1();		/* Initialize TMR1 1 ms periodic ISR for speed controller */
     initTMR2();		/* Initialize TMR2 1 ms periodic ISR for current controller */
     initTMR3();		/* Initialize TMR3 for timebase of capture */
 	ClrWdt();   // clear the WDT to inhibit the device reset
 	initMCPWM();
-    initTMR9();
+    initTMR5();
     InitUART1(); 
     measureADCOffset();
 	ClrWdt();   // clear the WDT to inhibit the device reset
