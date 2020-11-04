@@ -330,30 +330,8 @@ if(Origin_mode_step==0)   //工作时，在原点、上限、下限时的曲线�
     }
     else if(hallCounts>Motor_Origin_data_u32[1])M_Flags.flag_up_limit=0;
     
-    if((M_Flags.flag_Origin_mode_down==1)&&(TIME_Origin_mode_down==0)&&(M_Flags.flag_up_limit==1))
-    {
-        M_Flags.flag_Origin_mode_down=0;
-        M_Flags.flag_open=0;
-        M_Flags.flag_stop=0;
-        M_Flags.flag_close=1;        
-    }
 }
-else 
-{
-    if((TIME_Origin_mode_learning==0)&&(Origin_mode_step==4))
-    {
-               M_Flags.flag_EEPROM_LOAD_OK=1;
-               Origin_mode_step=0;  //退出原点设置模式
-               M_Flags.flag_open=1;
-               M_Flags.flag_stop=0;
-               M_Flags.flag_close=0;
-               M_Flags.flag_origin=0;   
-               M_Flags.flag_up_limit=0;
-               M_Flags.flag_down_limit=1;
-               
-               M_Flags.flag_Origin_mode_down=1;
-    }
-}    
+    
 }
 /*********************************************************************
   Function:        void SET_origin_mode(void)
@@ -390,14 +368,37 @@ void SET_origin_mode(void)
         }
         UART_send_Motor(UART_send_CMD,0x01,0x05,d_number); 
         if(Origin_mode_step==4)
-            TIME_Origin_mode_learning=320;
-//            if(Origin_mode_step==4)
-//            {
-//                Flags.flag_EEPROM_LOAD_OK=1;
-//                Origin_mode_step=0;  //退出原点设置模式
-//                Flags.flag_open=1;  
-//            }                      
+            TIME_Origin_mode_learning=320;                     
     }
+ 
+    //The following is automatic learning
+    if(Origin_mode_step==0)
+    {
+        if((M_Flags.flag_Origin_mode_down==1)&&(TIME_Origin_mode_down==0)&&(M_Flags.flag_up_limit==1))
+        {
+            M_Flags.flag_Origin_mode_down=0;
+            M_Flags.flag_open=0;
+            M_Flags.flag_stop=0;
+            M_Flags.flag_close=1;        
+        }
+    }
+    else 
+    {
+        if((TIME_Origin_mode_learning==0)&&(Origin_mode_step==4))
+        {
+                M_Flags.flag_EEPROM_LOAD_OK=1;
+                Origin_mode_step=0;  //退出原点设置模式
+                M_Flags.flag_open=1;
+                M_Flags.flag_stop=0;
+                M_Flags.flag_close=0;
+                M_Flags.flag_origin=0;   
+                M_Flags.flag_up_limit=0;
+                M_Flags.flag_down_limit=1;
+                
+                M_Flags.flag_Origin_mode_down=1;
+        }
+    }    
+
 }
 /*********************************************************************
   Function:        void Control_MotorForKey(void)
@@ -412,6 +413,7 @@ void Control_MotorForKey(void)
              {
                  if(!flags.motorRunning)
                  { 
+                    M_Flags.flag_open=0;
                     flags.RunDirection = M_Flags.flag_CW;
                     APP_Motor_MODE_B_data();
                     lockRelease; 
@@ -419,11 +421,13 @@ void Control_MotorForKey(void)
                  }
                  else
                  {
-                     if(flags.RunDirection==M_Flags.flag_CW);
+                     if(flags.RunDirection==M_Flags.flag_CW)
+                        M_Flags.flag_open=0;
                      else {
                          SET_SPEED=0;
                          MotorDecActive = 1;
                          if(refSpeed<=200){
+                             M_Flags.flag_open=0;
                              delayMs(20);
                              flags.RunDirection = M_Flags.flag_CW;
                              APP_Motor_MODE_B_data();
@@ -437,6 +441,7 @@ void Control_MotorForKey(void)
              {
                  if(!flags.motorRunning)
                  {
+                    M_Flags.flag_close=0;
                     flags.RunDirection = M_Flags.flag_CCW;
                     APP_Motor_MODE_B_data();
                     lockRelease; 
@@ -444,11 +449,13 @@ void Control_MotorForKey(void)
                  }
                  else
                  {
-                     if(flags.RunDirection==M_Flags.flag_CCW);
+                     if(flags.RunDirection==M_Flags.flag_CCW)
+                        M_Flags.flag_close=0;
                      else {
                          SET_SPEED=0;
                          MotorDecActive = 1;
                          if(refSpeed<=200){
+                             M_Flags.flag_close=0;
                              delayMs(20);
                              flags.RunDirection = M_Flags.flag_CCW;
                              APP_Motor_MODE_B_data();
@@ -463,6 +470,7 @@ void Control_MotorForKey(void)
                  SET_SPEED=0;
                  MotorDecActive = 1;
                  if(refSpeed<=200){
+                    M_Flags.flag_stop=0; 
                     stopMotor(); 
                     delayMs(20);
                     lockApply; 

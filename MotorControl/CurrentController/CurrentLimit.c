@@ -11,10 +11,10 @@
 #define C_CURRENT_LIMIT_PI 0x7FFF
 #define MAX_CURRENT_LIMIT_PI 31128   //95% of max value ie 32767
 
-#define TARGET_CURRENT_LIMIT   4500  
+#define TARGET_CURRENT_LIMIT   2500  //1A = 1000mA
 
 #define SUSTAINED_OVER_CURRENT_TIMEOUT      50//10//100 //100ms
-#define SUSTAINED_OVER_CURRENT_VALUE       3000 //1A = 1000mA
+#define SUSTAINED_OVER_CURRENT_VALUE       1500 //1A = 1000mA
 
 /* PI configuration structure */
 tPIParm currentLimitPIparms;
@@ -55,7 +55,8 @@ VOID runCurrentLimitPI(VOID)
         currentLimitPIparms.qInMeas = feedbackCurrent;
         CalcPI(&currentLimitPIparms);        
         //set current limit PI output as clamp for speed and current PI
-        currentLimitClamp = currentLimitPIparms.qOut;
+        //currentLimitClamp = currentLimitPIparms.qOut;
+        currentLimitClamp = MAX_CURRENT_LIMIT_PI;
     }
         
     //Check sustained overcurrent occured or not
@@ -104,7 +105,6 @@ VOID checkSustainedOvercurrent(VOID)
         {
             currentLimitClamp = 0;
             forceStopShutter();
-            //uDriveStatusFaultBlockEEP.stEEPDriveStatFaultBlock.uDriveMotorFault.bits.motorSusOC = TRUE;
         }
     }
 }

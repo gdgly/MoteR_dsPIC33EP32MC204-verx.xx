@@ -435,8 +435,8 @@ VOID speedControl(VOID)
     speedPIparms.qInRef = refSpeed;
     speedPIparms.qInMeas = measuredSpeed;
 
-        speedPIparms.qOutMax = 31128;//currentLimitClamp;
-        speedPIparms.qOutMin = -(31128);
+        speedPIparms.qOutMax = currentLimitClamp;
+        speedPIparms.qOutMin = -(currentLimitClamp);
         CalcPI(&speedPIparms);
 
         if(flags.speedControl)

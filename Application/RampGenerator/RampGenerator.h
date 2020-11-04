@@ -27,54 +27,18 @@
 //PWM coasting time in ms
 #define PWM_COASTING_TIME   200      //50ms
 
-typedef enum rampState
-{
-    RAMP_START,
-    RAMP_RESTART,
-    RAMP_RUNNING,
-    RAMP_STOP,
-    RAMP_PWM_COASTING,
-    RAMP_STATE_END
-}rampState_en;
-
 /* flags used for the application */
 typedef struct StatusFlags
 {
 	unsigned motorRunning	:1;  /* This bit is 1 if motor running */
-	unsigned speedOpenLoop  :1;  /* This bit is 1 if motor is running in open loop */
     unsigned StartStop      :1;  /* Start/Stop command for motor from DMCI */
     unsigned speedControl   :1;  /* Set to operate in speed mode */
     unsigned currentControl :1;  /* Set to operate in current mode */
-    unsigned currOpenLoop	:1;  /* This bit is 1 if motor is running in open loop */
-    unsigned exstFanOn      :1;   //indicates fan ON status
-    unsigned MotorType      :1;
     unsigned RunDirection   :1;
-	unsigned unused			:7;
+	unsigned unused			:11;
 }StatusFlags_t;
 
-typedef struct _rampStatusFlags
-{
-	unsigned rampGenRunning	:1;
-    unsigned rampDcInjectionOn :1;
-    unsigned rampBrakeOn :1;
-    unsigned shutterOperationStart :1;
-    unsigned shutterOperationComplete :1;
-    unsigned rampSpeedControlRequired:1;
-    unsigned rampCurrentControlRequired:1;
-    unsigned rampLockRelDmci:1;
-    unsigned rampLockAppDmci:1;
-    unsigned safetySensorTriggered:1;
-    unsigned rampOpenInProgress:1;
-    unsigned rampCloseInProgress:1;
-    unsigned rampMaintainHoldingDuty:1;
-    unsigned rampDriftCalculated:1;
-    unsigned mechLockRelFlag:1;
-	unsigned saveParamToEeprom:1;
-}rampStatusFlags_t;
-
 EXTERN StatusFlags_t flags;         /* Application status flag */
-EXTERN rampStatusFlags_t rampStatusFlags;
-
 /* This function charges bootstrap capacitor for quick start */
 VOID chargeBootstraps(VOID);
 

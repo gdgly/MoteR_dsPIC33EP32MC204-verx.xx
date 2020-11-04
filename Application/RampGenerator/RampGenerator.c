@@ -30,8 +30,6 @@ StatusFlags_t flags;
 BYTE currentDirection;
 
 BYTE requiredDirection;
-SHORT currentRampProfileNo;
-rampStatusFlags_t rampStatusFlags;
 BOOL pwmCostingReq = FALSE;
 BOOL FLAG_Motor_start=FALSE;
 
