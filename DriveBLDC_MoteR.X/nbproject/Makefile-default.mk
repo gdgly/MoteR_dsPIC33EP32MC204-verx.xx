@@ -89,8 +89,8 @@ ifneq ($(INFORMATION_MESSAGE), )
 endif
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/DriveBLDC_MoteR.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
-MP_PROCESSOR_OPTION=33EP128GM304
-MP_LINKER_FILE_OPTION=,--script=p33EP128GM304.gld
+MP_PROCESSOR_OPTION=33EP32MC204
+MP_LINKER_FILE_OPTION=,--script=p33EP32MC204.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)

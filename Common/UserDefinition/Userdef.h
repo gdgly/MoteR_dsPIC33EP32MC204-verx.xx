@@ -16,8 +16,8 @@
 #include "./Common/Typedefs/Typedefs.h"
 
 /*  define MCU type   */ 
-#define MCU_dsPIC33EPxxxGM3xxx
-//#define MCU_dsPIC33EPxxxMC2xxx
+//#define MCU_dsPIC33EPxxxGM3xxx
+#define MCU_dsPIC33EPxxxMC2xxx
 
 /*  define IGBT type   */ 
 //#define IGBT_LowActive
@@ -55,7 +55,8 @@
 #define MINPERIOD_MoteR	((DWORD)((FCY/PDIV)*60)/((DWORD)MAX_RPM*2*4))  
 #define MAXPERIOD_MoteR	((DWORD)((FCY/PDIV)*60)/((DWORD)MIN_RPM*2*4))  
 
-#define PHASE_INC_CALC 1792000UL //((DWORD)(FCY/((DWORD)PDIV*2*FPWM))*65536) //For 5Khz
+//Because there are decimals, please calculate manually
+#define PHASE_INC_CALC 560000UL //((DWORD)(FCY/((DWORD)PDIV*2*FPWM))*65536) //For FPWM_5Khz --->1792000UL   FPWM_16khz --->560000UL
 
 /* Half of the PWM Deadtime; The effective deadtime written in ALTDTR registers is 2*ALTDTR_DIV2 */
 #define	ALTDTR_DIV2_MoteR	140//120
